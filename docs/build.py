@@ -15,11 +15,11 @@ SITE_URL = "https://triplicat.com"     # used for canonical links, sitemap and t
 # ---- Fill in before going online. While a field is empty, the legal page shows a red notice
 # ---- and the build ends with "NOT READY TO PUBLISH". Template only, not legal advice.
 LEGAL = {
-    "name": "",        # full name of the person responsible, e.g. "Max Mustermann"
-    "street": "",      # street and number of an address where post reaches you
-    "city": "",        # postcode and city
+    "name": "Linus Brocks",        # full name of the person responsible, e.g. "Max Mustermann"
+    "street": "Eckenerstraße 11",      # street and number of an address where post reaches you
+    "city": "48147 Münster",        # postcode and city
     "country": "Germany",
-    "email": "",       # contact address, e.g. "hello@triplicat.com"
+    "email": "triplicat.service@gmail.com",       # contact address, e.g. "hello@triplicat.com"
 }
 HOSTING = {            # the privacy notice names the hosting provider; change if you host elsewhere
     "name": "GitHub Pages",
@@ -462,7 +462,7 @@ page("legal.html", f"Imprint and privacy | {BRAND}", "Imprint (Impressum) and pr
 <p>This site sets no cookies and uses no analytics or advertising services. If you switch between the light and dark design, that choice is saved in your browser's local storage so that it is remembered on your next visit. It is not transmitted.</p>
 
 <h3>Contact by email</h3>
-<p>If you write to me, I use your address and the content of your message only to answer you (Art. 6 (1) (f) GDPR), and delete the correspondence when it is no longer needed.</p>
+<p>If you write to me, I use your address and the content of your message only to answer you (Art. 6 (1) (f) GDPR), and delete the correspondence when it is no longer needed. Emails to this address are received and stored by Gmail, a service of Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland; data may also be processed in the USA. Details are in <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>
 
 <h3>Your rights</h3>
 <p>You have the right to access, rectification, erasure, restriction of processing, data portability and objection under Art. 15 to 21 GDPR. You also have the right to lodge a complaint with a data protection supervisory authority.</p>
