@@ -2,8 +2,6 @@
 (function(){
   'use strict';
   var TK = window.TK;
-  // URL that counts clicks on the "Pro" button. Empty = nothing is sent.
-  var INTEREST_ENDPOINT = '';
 
   // ---------- Colours ----------
   var LIGHT = { bg: '#ffffff', text: '#15171c', faint: '#6f7383', grid: '#e6e3da', axis: '#b9b4a6',
@@ -173,8 +171,8 @@
       else if(act === 'clear'){ (t.getAttribute('data-target') || '').split(',').forEach(function(id){ if(el(id)) el(id).value = ''; }); run(); }
       else if(act === 'pro'){
         var box = el('pro'); box.hidden = !box.hidden;
-        // Interest counter: only active once an endpoint is configured. Sends no user data, just the page name.
-        if(!box.hidden && INTEREST_ENDPOINT && navigator.sendBeacon){ try { navigator.sendBeacon(INTEREST_ENDPOINT, location.pathname.split('/').pop()); } catch(e){} }
+        // Click counter (site.js): sends only the event name, and only if build.py sets an endpoint.
+        if(!box.hidden && window.tcCount) window.tcCount('pro-' + (location.pathname.split('/').pop().replace('.html', '') || 'index'));
       }
       else if(opts.actions && opts.actions[act]) opts.actions[act]();
     });

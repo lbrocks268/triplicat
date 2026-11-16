@@ -17,7 +17,7 @@
 <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <link rel="stylesheet" href="css/site.css?v=c3250611">
 </head>
-<body data-brand="Triplicat">
+<body data-brand="Triplicat" data-counter="https://triplicat.goatcounter.com/count">
 <header class="top"><div class="wrap">
 <a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
 <nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html" aria-current="page">Toolkit</a><a href="articles.html">Articles</a>
@@ -43,29 +43,14 @@
 
 <div class="wl" id="waitlist" style="margin-top:56px">
   <h2>Updates</h2>
-  <p>Leave your email address to hear about new analyses.</p>
-  <form class="form" id="wl" method="post">
-    <input type="email" name="email" id="wl_email" placeholder="you@example.org" aria-label="Email address" required disabled>
-    <button class="btn accent" type="submit" id="wl_btn" disabled>Notify me</button>
-  </form>
-  <p class="muted" id="wl_msg" style="margin-top:12px">The list is not open yet.</p>
+  <p>Want to hear when new analyses or the Pro version arrive? Send a short email and I will let you know. Your address is used for nothing else, and one reply is enough to have it deleted.</p>
+  <p><a class="btn accent" href="mailto:triplicat.service@gmail.com?subject=Triplicat%20updates" data-count="waitlist-updates">Email me about updates</a></p>
 </div>
 </main>
 <footer class="foot"><div class="wrap">
 <span>Triplicat &middot; Check critical results yourself before you pipette.</span>
 <nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
 </div></footer>
-<script src="js/site.js?v=eb39b29e"></script>
-<script>
-(function(){
-  // URL of the email provider's form endpoint. Empty = form disabled.
-  var WAITLIST_ENDPOINT = '';
-  if(!WAITLIST_ENDPOINT) return;
-  document.getElementById('wl').action = WAITLIST_ENDPOINT;
-  document.getElementById('wl_email').disabled = false;
-  document.getElementById('wl_btn').disabled = false;
-  document.getElementById('wl_msg').textContent = 'Occasional emails about new analyses. Unsubscribe any time.';
-})();
-</script>
+<script src="js/site.js?v=1385b09c"></script>
 </body>
 </html>

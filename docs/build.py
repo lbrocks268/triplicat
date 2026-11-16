@@ -26,6 +26,12 @@ HOSTING = {            # the privacy notice names the hosting provider; change i
     "company": "GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA",
     "privacy_url": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
 }
+COUNTER = {            # click counter for the demand test; empty endpoint = nothing is sent anywhere
+    "endpoint": "https://triplicat.goatcounter.com/count",
+    "name": "GoatCounter",
+    "company": "GoatCounter (operated by Martin Tournoij, Ireland; servers at Hetzner Online GmbH in Germany and Finland)",
+    "privacy_url": "https://www.goatcounter.com/help/privacy",
+}
 LEGAL_READY = all(LEGAL[k].strip() for k in ("name", "street", "city", "email"))
 PAGES = []             # (file name, indexable) for the sitemap
 
@@ -40,6 +46,9 @@ CHECK = ('<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-widt
          'stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8"/></svg>')
 THEME_BOOT = ("<script>try{var t=localStorage.getItem('theme');"
               "if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>")
+
+
+COUNTER_ATTR = f' data-counter="{COUNTER["endpoint"]}"' if COUNTER["endpoint"] else ""
 
 
 def page(fname, title, desc, body, current="", scripts="", robots=""):
@@ -68,7 +77,7 @@ def page(fname, title, desc, body, current="", scripts="", robots=""):
 {THEME_BOOT}
 <link rel="stylesheet" href="css/site.css">
 </head>
-<body data-brand="{BRAND}">
+<body data-brand="{BRAND}"{COUNTER_ATTR}>
 <header class="top"><div class="wrap">
 <a class="brand" href="index.html" aria-label="{BRAND} home">{LOGO}<b>{BRAND}</b></a>
 <nav aria-label="Main">{nav("calculators.html", "Calculators", "calc")}{nav("toolkit.html", "Toolkit", "kit")}{nav("articles.html", "Articles", "art")}
@@ -244,25 +253,10 @@ page("toolkit.html", f"Analysis toolkit: enzyme kinetics, Bradford, thermal shif
 
 <div class="wl" id="waitlist" style="margin-top:56px">
   <h2>Updates</h2>
-  <p>Leave your email address to hear about new analyses.</p>
-  <form class="form" id="wl" method="post">
-    <input type="email" name="email" id="wl_email" placeholder="you@example.org" aria-label="Email address" required disabled>
-    <button class="btn accent" type="submit" id="wl_btn" disabled>Notify me</button>
-  </form>
-  <p class="muted" id="wl_msg" style="margin-top:12px">The list is not open yet.</p>
+  <p>Want to hear when new analyses or the Pro version arrive? Send a short email and I will let you know. Your address is used for nothing else, and one reply is enough to have it deleted.</p>
+  <p><a class="btn accent" href="mailto:{LEGAL["email"]}?subject=Triplicat%20updates" data-count="waitlist-updates">Email me about updates</a></p>
 </div>
-</main>""", current="kit", scripts="""
-<script>
-(function(){
-  // URL of the email provider's form endpoint. Empty = form disabled.
-  var WAITLIST_ENDPOINT = '';
-  if(!WAITLIST_ENDPOINT) return;
-  document.getElementById('wl').action = WAITLIST_ENDPOINT;
-  document.getElementById('wl_email').disabled = false;
-  document.getElementById('wl_btn').disabled = false;
-  document.getElementById('wl_msg').textContent = 'Occasional emails about new analyses. Unsubscribe any time.';
-})();
-</script>""")
+</main>""", current="kit")
 
 
 # ---------- Analysis pages ----------
@@ -300,7 +294,7 @@ def tool(fname, title, desc, h1, lead, inputs, options, script, second_plot=Fals
       <div class="pro-box" id="pro" hidden><span class="pill">Pro &middot; planned</span>
         <p>Downloads are free and carry a small &ldquo;made with {BRAND}&rdquo; mark. A paid Pro version is planned with:</p>
         <ul><li>figures without the mark, in print resolution</li><li>a report with the methods text for your thesis</li><li>several files in one go</li><li>more models, such as substrate inhibition</li></ul>
-        <p class="muted">Pro is not available yet. <a href="toolkit.html#waitlist">Get an email when it is &rarr;</a></p></div></div>
+        <p class="muted">Pro is not available yet. If you would use it, <a href="mailto:{LEGAL["email"]}?subject=Triplicat%20Pro%20waiting%20list" data-count="waitlist-pro">send me a short email</a> and you will hear from me when it is ready.</p></div></div>
   </section>
 </div>
 </main>""", current="kit", scripts=f'\n<script src="js/stats.js"></script>\n<script src="js/xlsx.js"></script>\n<script src="js/toolkit.js"></script>\n<script src="js/{script}"></script>')
@@ -432,6 +426,14 @@ _idx = ROOT / "index.html"
 _idx.write_text(_idx.read_text(encoding="utf-8").replace("__ARTICLE_TEASERS__", teasers), encoding="utf-8")
 
 # ---------- Legal ----------
+if COUNTER["endpoint"]:
+    COUNTER_NOTE = " The only measurement is the click counter described below."
+    COUNTER_SECTION = f"""<h3>Click counter</h3>
+<p>To find out whether a paid version is wanted, I count how often the &ldquo;Without watermark&rdquo; button and the email links for the waiting list are clicked. On such a click your browser sends a request to {COUNTER["company"]}. It contains the name of the click (for example &ldquo;pro-kinetics&rdquo;) and the technical data every browser sends, such as your IP address and browser type. No values or files from the analyses are sent, and nothing is sent when you only open a page. According to its <a href="{COUNTER["privacy_url"]}" rel="noopener">privacy policy</a>, {COUNTER["name"]} sets no cookies, does not store IP addresses and does not recognise you on later visits. The legal basis is Art. 6 (1) (f) GDPR (legitimate interest in knowing whether a paid version is worth building).</p>
+
+"""
+else:
+    COUNTER_NOTE = COUNTER_SECTION = ""
 # Template, not legal advice. Have it checked (lawyer or a reputable generator) before going online.
 L = {k: (v.strip() or f"[{k.upper()} MISSING]") for k, v in LEGAL.items()}
 legal_todo = "" if LEGAL_READY else '<p class="todo" style="margin-top:24px">Not complete. Name, address and email are still missing in <code>build.py</code>. Do not publish the site in this state.</p>'
@@ -459,10 +461,10 @@ page("legal.html", f"Imprint and privacy | {BRAND}", "Imprint (Impressum) and pr
 <p>This site is hosted on {HOSTING["name"]}, a service of {HOSTING["company"]}. When you open a page, the hosting provider processes technical data that your browser sends automatically, in particular your IP address, the time of the request and the requested file, in order to deliver the site and keep it secure. The legal basis is Art. 6 (1) (f) GDPR (legitimate interest in a reliable and secure website). The data may be processed in the USA. Details are in the provider's <a href="{HOSTING["privacy_url"]}" rel="noopener">privacy statement</a>.</p>
 
 <h3>Cookies, tracking and local storage</h3>
-<p>This site sets no cookies and uses no analytics or advertising services. If you switch between the light and dark design, that choice is saved in your browser's local storage so that it is remembered on your next visit. It is not transmitted.</p>
+<p>This site sets no cookies and uses no analytics or advertising services that follow you around.{COUNTER_NOTE} If you switch between the light and dark design, that choice is saved in your browser's local storage so that it is remembered on your next visit. It is not transmitted.</p>
 
-<h3>Contact by email</h3>
-<p>If you write to me, I use your address and the content of your message only to answer you (Art. 6 (1) (f) GDPR), and delete the correspondence when it is no longer needed. Emails to this address are received and stored by Gmail, a service of Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland; data may also be processed in the USA. Details are in <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>
+{COUNTER_SECTION}<h3>Contact by email</h3>
+<p>If you write to me, I use your address and the content of your message only to answer you (Art. 6 (1) (f) GDPR), and delete the correspondence when it is no longer needed. If you ask to be told about new analyses or the Pro version, I keep your address only for that purpose and delete it once I have told you, or earlier if you ask (Art. 6 (1) (a) GDPR, your request is the consent). Emails to this address are received and stored by Gmail, a service of Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland; data may also be processed in the USA. Details are in <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>
 
 <h3>Your rights</h3>
 <p>You have the right to access, rectification, erasure, restriction of processing, data portability and objection under Art. 15 to 21 GDPR. You also have the right to lodge a complaint with a data protection supervisory authority.</p>

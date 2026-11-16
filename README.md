@@ -26,7 +26,7 @@ Then open http://localhost:8765. The build prints `NOT READY TO PUBLISH` while t
 
 1. Fill in `LEGAL` (name, street, city, email) at the top of `docs/build.py` and run the build. The imprint and privacy notice are a template, not legal advice: have them checked.
 2. If the site is not hosted on GitHub Pages, change `HOSTING` in `build.py` so the privacy notice names the right provider.
-3. The waiting list (`WAITLIST_ENDPOINT` in `build.py`) and the interest counter (`INTEREST_ENDPOINT` in `docs/js/toolkit.js`) are switched off while those values are empty. If you switch them on, add the provider to the privacy notice first.
+3. The click counter (`COUNTER` in `build.py`) is off while its endpoint is empty. To switch it on, create a site at goatcounter.com and enter `https://<code>.goatcounter.com/count`; the privacy notice then names GoatCounter automatically. The waiting list is an email link to the contact address.
 
 ## Put it online with GitHub Pages
 

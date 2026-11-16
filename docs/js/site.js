@@ -1,5 +1,17 @@
-/* Theme switch and active-section highlight. No dependencies. */
+/* Theme switch, click counter and active-section highlight. No dependencies. */
 (function(){
+  // Click counter for the demand test. build.py sets data-counter on <body> only when COUNTER["endpoint"]
+  // is filled in. Sends the event name and nothing else (GoatCounter pixel API, GET request, no cookies).
+  var counter = document.body.getAttribute('data-counter');
+  window.tcCount = function(name){
+    if(!counter) return;
+    try { new Image().src = counter + '?p=' + encodeURIComponent(name) + '&e=true&rnd=' + Date.now(); } catch(e){}
+  };
+  document.addEventListener('click', function(ev){
+    var t = ev.target.closest ? ev.target.closest('[data-count]') : null;
+    if(t) window.tcCount(t.getAttribute('data-count'));
+  });
+
   var root = document.documentElement, btn = document.getElementById('theme');
   if(btn){
     btn.addEventListener('click', function(){
