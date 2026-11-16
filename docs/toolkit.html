@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analysis toolkit: enzyme kinetics, Bradford, thermal shift | Triplicat</title>
+<meta name="description" content="Analyse enzyme kinetics, Bradford and thermal shift data in the browser: paste your values, get the fit, the numbers and a figure. No installation, no upload.">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/toolkit.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="Analysis toolkit: enzyme kinetics, Bradford, thermal shift | Triplicat">
+<meta property="og:description" content="Analyse enzyme kinetics, Bradford and thermal shift data in the browser: paste your values, get the fit, the numbers and a figure. No installation, no upload.">
+<meta property="og:url" content="https://triplicat.com/toolkit.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=c3250611">
+</head>
+<body data-brand="Triplicat">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html" aria-current="page">Toolkit</a><a href="articles.html">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap">
+<div class="page-head">
+  <span class="pill">Beta</span>
+  <h1>From measurement to fit and figure.</h1>
+  <p>Paste your values or open a file. The analysis runs in your browser, so nothing is installed and your data is not uploaded anywhere.</p>
+</div>
+<div class="bento three" style="margin-top:36px"><a class="tile toolcard" href="kinetics.html"><span class="go" aria-hidden="true">&#8599;</span><div class="f">v = V<sub>max</sub>&middot;[S] / (K<sub>m</sub> + [S])</div><div><b>Enzyme kinetics</b><span class="d">Michaelis-Menten fit with K<sub>m</sub>, V<sub>max</sub>, standard errors and confidence intervals.</span></div></a><a class="tile toolcard" href="bradford.html"><span class="go" aria-hidden="true">&#8599;</span><div class="f">A = b&#8320; + b&#8321;&middot;c</div><div><b>Bradford</b><span class="d">Standard curve, linear or quadratic, and the concentration of every sample with its dilution.</span></div></a><a class="tile toolcard" href="thermal-shift.html"><span class="go" aria-hidden="true">&#8599;</span><div class="f">T<sub>m</sub> = max dF/dT</div><div><b>Thermal shift</b><span class="d">T<sub>m</sub> per well from the melting curve, group means and the shift against a reference.</span></div></a></div>
+
+<h2 class="sub">How it works</h2>
+<div class="cols">
+  <div class="panel"><span class="n">01</span><h3>Paste or open</h3><p>Copy the cells from Excel, or open an .xlsx or CSV file. Decimal commas and semicolons are understood.</p></div>
+  <div class="panel"><span class="n">02</span><h3>Check the fit</h3><p>Parameters with their uncertainty, the plot, and warnings when the data do not support the result.</p></div>
+  <div class="panel"><span class="n">03</span><h3>Take it with you</h3><p>Figure as SVG or PNG, results as CSV, and an R script that reproduces the fit for your methods section.</p></div>
+</div>
+
+<h2 class="sub">What beta means</h2>
+<p class="lead-p">The calculations were checked against SciPy on test data. Compare important results with a second method before they go into a thesis or paper, and read the notes under each result: they say which method was used and where it stops being reliable.</p>
+
+<div class="wl" id="waitlist" style="margin-top:56px">
+  <h2>Updates</h2>
+  <p>Leave your email address to hear about new analyses.</p>
+  <form class="form" id="wl" method="post">
+    <input type="email" name="email" id="wl_email" placeholder="you@example.org" aria-label="Email address" required disabled>
+    <button class="btn accent" type="submit" id="wl_btn" disabled>Notify me</button>
+  </form>
+  <p class="muted" id="wl_msg" style="margin-top:12px">The list is not open yet.</p>
+</div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=eb39b29e"></script>
+<script>
+(function(){
+  // URL of the email provider's form endpoint. Empty = form disabled.
+  var WAITLIST_ENDPOINT = '';
+  if(!WAITLIST_ENDPOINT) return;
+  document.getElementById('wl').action = WAITLIST_ENDPOINT;
+  document.getElementById('wl_email').disabled = false;
+  document.getElementById('wl_btn').disabled = false;
+  document.getElementById('wl_msg').textContent = 'Occasional emails about new analyses. Unsubscribe any time.';
+})();
+</script>
+</body>
+</html>

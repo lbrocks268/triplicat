@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting Tm from a thermal shift assay: derivative or Boltzmann fit? | Triplicat</title>
+<meta name="description" content="A thermal shift assay, also called differential scanning fluorimetry (DSF), gives you one melting curve per well. The number you want from each curve is ...">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/thermal-shift-tm.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="Getting Tm from a thermal shift assay: derivative or Boltzmann fit? | Triplicat">
+<meta property="og:description" content="A thermal shift assay, also called differential scanning fluorimetry (DSF), gives you one melting curve per well. The number you want from each curve is ...">
+<meta property="og:url" content="https://triplicat.com/thermal-shift-tm.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=c3250611">
+</head>
+<body data-brand="Triplicat">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html" aria-current="page">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap narrow">
+<article>
+<div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
+<p class="kicker">Thermal shift</p><h1>Getting T<sub>m</sub> from a thermal shift assay: derivative or Boltzmann fit?</h1></div>
+<div class="prose">
+<p>A thermal shift assay, also called differential scanning fluorimetry (DSF), gives you one melting curve per well. The number you want from each curve is the melting temperature T<sub>m</sub>, and from a set of curves the shift ΔT<sub>m</sub> between conditions. There are two common ways to get T<sub>m</sub>. They usually agree within a few tenths of a degree, and it helps to know why they sometimes do not.</p>
+<h2>What the curve shows</h2>
+<p>The sample contains protein and a dye such as SYPRO Orange, whose fluorescence is low in water and high in a hydrophobic environment. As the temperature rises, the protein unfolds and exposes hydrophobic regions. The dye binds and the fluorescence rises. After the maximum the signal typically falls again, which is commonly attributed to aggregation of the unfolded protein and dissociation of the dye (Niesen, Berglund and Vedadi, 2007).</p>
+<p>T<sub>m</sub> is the midpoint of the rising part: the temperature at which half of the protein is unfolded, in the simplest two-state picture.</p>
+<h2>Method 1: maximum of the first derivative</h2>
+<p>The midpoint of a sigmoid is where it is steepest. So you calculate the slope dF/dT along the curve and take the temperature at which it is largest.</p>
+<ul><li><strong>Advantage:</strong> no model. It works for curves that are not clean sigmoids, and it ignores what happens after the maximum.</li><li><strong>Caveat:</strong> differentiating amplifies noise, so the curve has to be smoothed first. The smoothing window matters. Too narrow and noise spikes are picked as the maximum. Too wide and the peak is flattened and shifted. A Savitzky-Golay filter (Savitzky and Golay, 1964) smooths and differentiates in one step and is a common choice.</li></ul>
+<p>Most instrument software reports this value.</p>
+<h2>Method 2: Boltzmann fit</h2>
+<p>Here you fit a sigmoid to the rising part of the curve:</p>
+<p class="eq">F = F<sub>min</sub> + (F<sub>max</sub> - F<sub>min</sub>) / (1 + exp((T<sub>m</sub> - T) / a))</p>
+<p>T<sub>m</sub> is a parameter of the fit and comes with a standard error. The parameter a describes how steep the transition is.</p>
+<ul><li><strong>Advantage:</strong> it uses all points of the transition and is less sensitive to noise in single points.</li><li><strong>Caveat:</strong> you must cut off the falling part after the maximum, and the result depends on where you cut. The equation also assumes flat baselines before and after the transition, which real curves often do not have.</li></ul>
+<h2>Which one should you use?</h2>
+<p>For comparing conditions within one experiment, either is fine as long as you use the same method and the same settings for every well. Do not mix values from two methods in one table. State the method, including the smoothing window or the fitted range, in your methods section.</p>
+<p>The two methods disagree mainly when the curve is asymmetric or the baselines are sloped. That is a sign to look at the curve, not to pick the nicer number.</p>
+<h2>Things that go wrong</h2>
+<ul><li><strong>High fluorescence at the start.</strong> The dye already binds at low temperature. The protein may be partly unfolded or aggregated, or a buffer component such as a detergent binds the dye.</li><li><strong>Two transitions.</strong> Multi-domain proteins and complexes can unfold in steps. A single T<sub>m</sub> does not describe such a curve.</li><li><strong>The steepest point lies at the edge of the range.</strong> That is usually an artefact at the first or last temperatures. Restrict the search window to the region of the transition.</li><li><strong>Over-interpreting small shifts.</strong> Differences well below 1 °C are often within the well-to-well scatter. Measure at least triplicates and compare the shift with the standard deviation of the reference.</li><li><strong>Reading ΔT<sub>m</sub> as affinity.</strong> A larger shift does not by itself mean tighter binding. The size of the shift also depends on the ligand concentration and on the thermodynamics of binding and unfolding.</li></ul>
+<h2>Try it</h2>
+<p>The <a href="thermal-shift.html">thermal shift tool</a> takes one column per well, calculates T<sub>m</sub> from the smoothed first derivative, groups replicates by their name, and reports mean, standard deviation and ΔT<sub>m</sub> against a reference of your choice. The smoothing window and the search range can be set.</p>
+<h2>References</h2>
+<ul><li>Niesen, F.H., Berglund, H. and Vedadi, M. (2007) 'The use of differential scanning fluorimetry to detect ligand interactions that promote protein stability', <em>Nature Protocols</em>, 2(9), pp. 2212-2221.</li><li>Pantoliano, M.W. et al. (2001) 'High-density miniaturized thermal shift assays as a general strategy for drug discovery', <em>Journal of Biomolecular Screening</em>, 6(6), pp. 429-440.</li><li>Savitzky, A. and Golay, M.J.E. (1964) 'Smoothing and differentiation of data by simplified least squares procedures', <em>Analytical Chemistry</em>, 36(8), pp. 1627-1639.</li></ul>
+</div>
+</article>
+<h2 class="sub">More articles</h2>
+<div class="more-arts"><a class="more-art" href="michaelis-menten-fit.html"><span class="meta">Enzyme kinetics</span><b>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot)</b></a><a class="more-art" href="bradford-curve-not-linear.html"><span class="meta">Protein assays</span><b>Why your Bradford standard curve is not linear, and what to do about it</b></a></div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=eb39b29e"></script>
+</body>
+</html>

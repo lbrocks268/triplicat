@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot) | Triplicat</title>
+<meta name="description" content="You measured initial rates at a handful of substrate concentrations and now you need Km and Vmax. Many lab courses still teach the double-reciprocal plot ...">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/michaelis-menten-fit.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot) | Triplicat">
+<meta property="og:description" content="You measured initial rates at a handful of substrate concentrations and now you need Km and Vmax. Many lab courses still teach the double-reciprocal plot ...">
+<meta property="og:url" content="https://triplicat.com/michaelis-menten-fit.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=c3250611">
+</head>
+<body data-brand="Triplicat">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html" aria-current="page">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap narrow">
+<article>
+<div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
+<p class="kicker">Enzyme kinetics</p><h1>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot)</h1></div>
+<div class="prose">
+<p>You measured initial rates at a handful of substrate concentrations and now you need K<sub>m</sub> and V<sub>max</sub>. Many lab courses still teach the double-reciprocal plot for this. It is a good way to <em>look</em> at kinetic data and a poor way to <em>estimate</em> the parameters. This article explains why, and what to do instead.</p>
+<h2>The model</h2>
+<p>For an enzyme that follows Michaelis-Menten kinetics (Michaelis and Menten, 1913), the initial rate depends on the substrate concentration as</p>
+<p class="eq">v = V<sub>max</sub> · [S] / (K<sub>m</sub> + [S])</p>
+<p>V<sub>max</sub> is the rate at saturating substrate. K<sub>m</sub> is the substrate concentration at which the rate is half of V<sub>max</sub>.</p>
+<h2>What goes wrong with the double-reciprocal plot</h2>
+<p>Lineweaver and Burk (1934) rearranged the equation so that 1/v plotted against 1/[S] gives a straight line. The intercepts then give 1/V<sub>max</sub> and -1/K<sub>m</sub>.</p>
+<p>The problem is the error. Your measurement error is roughly the same size for every rate. Taking the reciprocal turns a small error on a small rate into a very large error on 1/v. The points at the lowest substrate concentrations, which are the least precise, end up far out on the right of the plot and pull the line more than all other points together. The resulting K<sub>m</sub> and V<sub>max</sub> can be clearly off even when the data are good.</p>
+<h2>What to do instead: fit the curve directly</h2>
+<p>Nonlinear regression fits the hyperbola to the untransformed data. Every point keeps its original weight. This is what statistics programs and the toolkit on this site do.</p>
+<p>In R it is three lines:</p>
+<pre><code>fit &lt;- nls(v ~ Vmax * S / (Km + S), data = d,
+           start = list(Vmax = max(d$v) * 1.2, Km = median(d$S)))
+summary(fit)</code></pre>
+<p>The fit needs starting values. A V<sub>max</sub> a little above your highest rate and a K<sub>m</sub> in the middle of your concentration range usually work.</p>
+<h2>Reading the result</h2>
+<ul><li><strong>Estimate and standard error.</strong> The standard error says how well the data pin down the parameter. A K<sub>m</sub> of 0.85 ± 0.02 mM is well determined. A K<sub>m</sub> of 0.85 ± 0.60 mM is not.</li><li><strong>95 % confidence interval.</strong> The range of values compatible with your data. Report it, or the standard error, together with the estimate.</li><li><strong>R².</strong> Of limited use for nonlinear fits. A high R² does not show that the model is right. Look at the plot.</li></ul>
+<h2>Planning the experiment</h2>
+<p>Most bad fits are caused by the choice of concentrations, not by the mathematics.</p>
+<ul><li><strong>Cover both sides of K<sub>m</sub>.</strong> You need points well below K<sub>m</sub>, where the rate rises almost linearly, and points well above, where it levels off. A common rule of thumb is a range from about 0.2 to 5 times K<sub>m</sub>.</li><li><strong>Reach saturation.</strong> If your highest concentration is below about twice K<sub>m</sub>, the curve never bends enough and V<sub>max</sub> is an extrapolation.</li><li><strong>Six to eight concentrations, in replicates.</strong> Fit all individual values, not the means.</li><li><strong>Measure initial rates.</strong> The equation holds for the start of the reaction, while substrate depletion and product inhibition are negligible.</li></ul>
+<h2>When the model does not fit</h2>
+<ul><li><strong>The rate drops again at high substrate.</strong> That points to substrate inhibition, which needs a different equation.</li><li><strong>The curve is S-shaped.</strong> That points to cooperativity (Hill equation).</li><li><strong>The points scatter evenly around a line and never bend.</strong> You are far below K<sub>m</sub>. Only the ratio V<sub>max</sub>/K<sub>m</sub> can be determined from such data.</li></ul>
+<h2>Try it</h2>
+<p>Paste your substrate concentrations and rates into the <a href="kinetics.html">enzyme kinetics tool</a>. It fits all individual points, reports standard errors and confidence intervals, and warns when saturation is not reached.</p>
+<h2>References</h2>
+<ul><li>Michaelis, L. and Menten, M.L. (1913) 'Die Kinetik der Invertinwirkung', <em>Biochemische Zeitschrift</em>, 49, pp. 333-369.</li><li>Lineweaver, H. and Burk, D. (1934) 'The determination of enzyme dissociation constants', <em>Journal of the American Chemical Society</em>, 56(3), pp. 658-666.</li><li>Johnson, K.A. and Goody, R.S. (2011) 'The original Michaelis constant: translation of the 1913 Michaelis-Menten paper', <em>Biochemistry</em>, 50(39), pp. 8264-8269.</li></ul>
+</div>
+</article>
+<h2 class="sub">More articles</h2>
+<div class="more-arts"><a class="more-art" href="bradford-curve-not-linear.html"><span class="meta">Protein assays</span><b>Why your Bradford standard curve is not linear, and what to do about it</b></a><a class="more-art" href="thermal-shift-tm.html"><span class="meta">Thermal shift</span><b>Getting T<sub>m</sub> from a thermal shift assay: derivative or Boltzmann fit?</b></a></div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=eb39b29e"></script>
+</body>
+</html>

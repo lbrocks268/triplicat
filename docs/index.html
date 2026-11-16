@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triplicat | Calculators and analysis tools for the wet lab</title>
+<meta name="description" content="Free lab calculators for dilutions, molarity, master mixes, A280 and RCF, plus an in-browser analysis toolkit for enzyme kinetics, Bradford and thermal shift data.">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="Triplicat | Calculators and analysis tools for the wet lab">
+<meta property="og:description" content="Free lab calculators for dilutions, molarity, master mixes, A280 and RCF, plus an in-browser analysis toolkit for enzyme kinetics, Bradford and thermal shift data.">
+<meta property="og:url" content="https://triplicat.com/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=c3250611">
+</head>
+<body data-brand="Triplicat">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main>
+<section class="hero"><div class="wrap">
+  <div>
+    <span class="eyebrow"><i></i>Free lab calculators &middot; no sign-up</span>
+    <h1>Less arithmetic at the bench. <em>Cleaner numbers</em> in the notebook.</h1>
+    <p class="sub">Seven calculators for everyday lab work, built for the phone next to your pipettes. And an analysis toolkit that turns raw measurements into fitted curves and figures, without programming.</p>
+    <div class="btns">
+      <a class="btn" href="calculators.html">Open the calculators <span class="arr" aria-hidden="true">&rarr;</span></a>
+      <a class="btn ghost" href="toolkit.html">See the toolkit</a>
+    </div>
+    <div class="facts"><span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8"/></svg>Runs in your browser</span><span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8"/></svg>No data leaves your device</span><span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8"/></svg>Comma or point decimals</span></div>
+  </div>
+  <figure class="plot" style="margin:0">
+<div class="plot-head"><span class="dots"><i></i><i></i><i></i></span><span><b>kinetics.csv</b> &rarr; fit</span></div>
+<svg viewBox="0 0 480 280" role="img" aria-label="Michaelis-Menten curve fitted through eight demo data points">
+<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--accent-2)"/></linearGradient></defs>
+<text class="lbl" x="38" y="180" text-anchor="end">4</text><line class="gridl" x1="46" x2="466" y1="175.9" y2="175.9"/><text class="lbl" x="38" y="116" text-anchor="end">8</text><line class="gridl" x1="46" x2="466" y1="111.8" y2="111.8"/><text class="lbl" x="38" y="52" text-anchor="end">12</text><line class="gridl" x1="46" x2="466" y1="47.6" y2="47.6"/>
+<line class="axis" x1="46" x2="466" y1="240" y2="240"/><line class="axis" x1="46" x2="46" y1="22" y2="240"/>
+<line class="guide" x1="90.6" x2="90.6" y1="240" y2="140.6"/>
+<line class="guide" x1="46" x2="90.6" y1="140.6" y2="140.6"/>
+<text class="lbl" x="97" y="232" style="fill:var(--accent-strong)">Km</text>
+<path class="curve" d="M46.0 240.0 L51.2 219.1 L56.5 202.1 L61.8 188.1 L67.0 176.4 L72.2 166.4 L77.5 157.8 L82.8 150.2 L88.0 143.6 L93.2 137.8 L98.5 132.6 L103.8 127.9 L109.0 123.6 L114.2 119.8 L119.5 116.3 L124.8 113.1 L130.0 110.2 L135.2 107.5 L140.5 105.0 L145.8 102.7 L151.0 100.5 L156.2 98.5 L161.5 96.6 L166.8 94.9 L172.0 93.2 L177.2 91.7 L182.5 90.2 L187.8 88.8 L193.0 87.5 L198.2 86.3 L203.5 85.1 L208.8 84.0 L214.0 83.0 L219.2 81.9 L224.5 81.0 L229.8 80.1 L235.0 79.2 L240.2 78.4 L245.5 77.6 L250.8 76.8 L256.0 76.1 L261.2 75.4 L266.5 74.7 L271.8 74.0 L277.0 73.4 L282.2 72.8 L287.5 72.2 L292.8 71.7 L298.0 71.1 L303.2 70.6 L308.5 70.1 L313.8 69.6 L319.0 69.2 L324.2 68.7 L329.5 68.3 L334.8 67.8 L340.0 67.4 L345.2 67.0 L350.5 66.6 L355.8 66.3 L361.0 65.9 L366.2 65.5 L371.5 65.2 L376.8 64.9 L382.0 64.5 L387.2 64.2 L392.5 63.9 L397.8 63.6 L403.0 63.3 L408.2 63.0 L413.5 62.8 L418.8 62.5 L424.0 62.2 L429.2 62.0 L434.5 61.7 L439.8 61.5 L445.0 61.2 L450.2 61.0 L455.5 60.8 L460.8 60.5 L466.0 60.3"/>
+<circle class="pt" cx="59.1" cy="192.1" r="4.6" style="animation-delay:0.50s"/><circle class="pt" cx="72.2" cy="170.1" r="4.6" style="animation-delay:0.63s"/><circle class="pt" cx="98.5" cy="128.3" r="4.6" style="animation-delay:0.76s"/><circle class="pt" cx="151.0" cy="104.7" r="4.6" style="animation-delay:0.89s"/><circle class="pt" cx="203.5" cy="80.5" r="4.6" style="animation-delay:1.02s"/><circle class="pt" cx="256.0" cy="78.5" r="4.6" style="animation-delay:1.15s"/><circle class="pt" cx="361.0" cy="62.4" r="4.6" style="animation-delay:1.28s"/><circle class="pt" cx="466.0" cy="62.1" r="4.6" style="animation-delay:1.41s"/>
+<text class="lbl" x="46" y="258" text-anchor="middle">0</text><text class="lbl" x="151" y="258" text-anchor="middle">2</text><text class="lbl" x="256" y="258" text-anchor="middle">4</text><text class="lbl" x="361" y="258" text-anchor="middle">6</text><text class="lbl" x="466" y="258" text-anchor="middle">8</text>
+<text class="lbl" x="466" y="276" text-anchor="end">[S] / mM</text>
+<text class="lbl" x="54" y="26">v / U mg&#8315;&#185;</text>
+</svg>
+<div class="readout"><div><span>Vmax</span><b>12.4</b></div><div><span>Km / mM</span><b>0.85</b></div><div><span>R&sup2;</span><b>0.997</b></div></div>
+<figcaption class="plot-cap">Illustration with made-up demo values.</figcaption>
+</figure>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="sec-head">
+    <div><p class="kicker">Calculators</p><h2 class="big">The seven things you keep working out by hand.</h2></div>
+    <a class="link" href="calculators.html">All on one page &rarr;</a>
+  </div>
+  <div class="bento"><a class="tile wide tint" href="calculators.html#dilution"><span class="go" aria-hidden="true">&#8599;</span><div class="f">C&#8321;V&#8321; = C&#8322;V&#8322;</div><div><b>Dilution</b><span class="d">Stock and solvent volumes for any target.</span></div></a><a class="tile " href="calculators.html#molarity"><span class="go" aria-hidden="true">&#8599;</span><div class="f">m = c&middot;V&middot;M</div><div><b>Mass and molarity</b><span class="d">What to weigh, shown as it reads on the balance.</span></div></a><a class="tile " href="calculators.html#percent"><span class="go" aria-hidden="true">&#8599;</span><div class="f">g <small>/</small> 100 mL</div><div><b>Percent solution</b><span class="d">% (w/v) and % (v/v).</span></div></a><a class="tile wide" href="calculators.html#series"><span class="go" aria-hidden="true">&#8599;</span><div class="f">1:2 &rarr; 1:5 &rarr; 1:10</div><div><b>Dilution series</b><span class="d">Constant factor or a free list of targets, with a pipetting table.</span></div></a><a class="tile wide" href="calculators.html#mastermix"><span class="go" aria-hidden="true">&#8599;</span><div class="f">n &times; (1 + 10 %)</div><div><b>Master mix</b><span class="d">Any components, excess included, water as the remainder.</span></div></a><a class="tile wide" href="calculators.html#a280"><span class="go" aria-hidden="true">&#8599;</span><div class="f">A = &epsilon;&middot;c&middot;d</div><div><b>A&#8322;&#8328;&#8320;</b><span class="d">Protein concentration from absorbance.</span></div></a><a class="tile wide" href="calculators.html#rcf"><span class="go" aria-hidden="true">&#8599;</span><div class="f">1.118&middot;10&#8315;&#8310;&middot;r&middot;rpm&sup2;</div><div><b>rpm &harr; RCF</b><span class="d">Both directions, radius in mm or cm.</span></div></a></div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="trio">
+    <div><span class="n">01</span><h3>It tells you when not to trust it</h3><p>Volumes below what a pipette can deliver, targets above the stock concentration, absorbance beyond the linear range: flagged, not silently calculated.</p></div>
+    <div><span class="n">02</span><h3>Made for one hand</h3><p>Large number fields, the numeric keypad on the phone, and results in the unit you actually set on the pipette or read on the balance.</p></div>
+    <div><span class="n">03</span><h3>Nothing to install, nothing sent</h3><p>Every calculation happens on your device. No account, no tracking, and it keeps working when the lab Wi-Fi does not.</p></div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="ink">
+    <div>
+      <p class="kicker">Analysis toolkit &middot; beta</p>
+      <h2>From raw export to a fit and a figure.</h2>
+      <p>Enzyme kinetics, Bradford and thermal shift, analysed right in the browser. No installation, and your data is not uploaded.</p>
+      <a class="btn" href="toolkit.html">Open the toolkit <span class="arr" aria-hidden="true">&rarr;</span></a>
+    </div>
+    <ol class="steps">
+      <li><span class="n">01</span><div><b>Paste or open</b><span>Copy the cells from Excel, or open an Excel or CSV file.</span></div></li>
+      <li><span class="n">02</span><div><b>Check the fit</b><span>Parameters with uncertainty, and warnings when the data fall short.</span></div></li>
+      <li><span class="n">03</span><div><b>Take it with you</b><span>Figure, results table and an R script that reproduces the fit.</span></div></li>
+    </ol>
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="sec-head">
+    <div><p class="kicker">Articles</p><h2 class="big">The reasoning behind the numbers.</h2></div>
+    <a class="link" href="articles.html">All articles &rarr;</a>
+  </div>
+  <div class="art-grid"><a class="art-card" href="michaelis-menten-fit.html"><span class="meta">Enzyme kinetics</span><h3>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot)</h3><span class="link">Read &rarr;</span></a><a class="art-card" href="bradford-curve-not-linear.html"><span class="meta">Protein assays</span><h3>Why your Bradford standard curve is not linear, and what to do about it</h3><span class="link">Read &rarr;</span></a><a class="art-card" href="thermal-shift-tm.html"><span class="meta">Thermal shift</span><h3>Getting T<sub>m</sub> from a thermal shift assay: derivative or Boltzmann fit?</h3><span class="link">Read &rarr;</span></a></div>
+</div></section>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=eb39b29e"></script>
+</body>
+</html>

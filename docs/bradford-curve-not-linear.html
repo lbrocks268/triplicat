@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why your Bradford standard curve is not linear, and what to do about it | Triplicat</title>
+<meta name="description" content="You pipette a BSA dilution series, add the reagent, read the plate, and the points bend. The upper standards sit below the straight line through the lower ...">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/bradford-curve-not-linear.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="Why your Bradford standard curve is not linear, and what to do about it | Triplicat">
+<meta property="og:description" content="You pipette a BSA dilution series, add the reagent, read the plate, and the points bend. The upper standards sit below the straight line through the lower ...">
+<meta property="og:url" content="https://triplicat.com/bradford-curve-not-linear.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=c3250611">
+</head>
+<body data-brand="Triplicat">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html" aria-current="page">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap narrow">
+<article>
+<div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
+<p class="kicker">Protein assays</p><h1>Why your Bradford standard curve is not linear, and what to do about it</h1></div>
+<div class="prose">
+<p>You pipette a BSA dilution series, add the reagent, read the plate, and the points bend. The upper standards sit below the straight line through the lower ones. Nothing went wrong. The Bradford assay is not linear over a wide range, and the curvature is built into its chemistry.</p>
+<h2>Where the curvature comes from</h2>
+<p>The assay uses Coomassie Brilliant Blue G-250 (Bradford, 1976). In the acidic reagent the free dye is mostly in a reddish-brown form. When it binds protein, it is stabilised in a blue form that absorbs at about 595 nm. You measure the blue form.</p>
+<p>Two things bend the curve:</p>
+<ul><li><strong>The dye is used up.</strong> Each bit of protein binds dye. At higher protein concentrations less free dye is left, so every further microgram of protein produces a little less colour.</li><li><strong>The free dye also absorbs at 595 nm.</strong> The background is therefore not constant. It falls as dye is converted to the bound form.</li></ul>
+<p>The result is a curve that is close to linear at low protein concentrations and flattens towards the top.</p>
+<h2>Four ways to handle it</h2>
+<p><strong>1. Stay in the near-linear range.</strong> Use standards only over the lower part of the range and dilute your samples so that they fall inside it. This is the simplest solution and often enough. The manual of your reagent states the range the manufacturer considers linear.</p>
+<p><strong>2. Fit a curve instead of a line.</strong> A second-order polynomial (A = b<sub>0</sub> + b<sub>1</sub>·c + b<sub>2</sub>·c²) follows the bend well over the usual working range. Use at least five or six standard concentrations so that the extra parameter is supported by data. Do not read samples beyond the highest standard: a polynomial behaves unpredictably outside the range it was fitted to.</p>
+<p><strong>3. Measure at two wavelengths.</strong> Zor and Selinger (1996) showed that the ratio of the absorbances at 590 nm and 450 nm is linear with protein concentration over a wider range than the absorbance at 590 nm alone. This needs a reader that measures both wavelengths.</p>
+<p><strong>4. Dilute and measure again.</strong> Whatever model you use, a sample above the highest standard should be diluted and measured again, not extrapolated.</p>
+<h2>Other reasons for a strange curve</h2>
+<ul><li><strong>The blank.</strong> Either subtract the reagent blank from everything, or include it as a standard at zero concentration and let the fit determine the intercept. Do not do both.</li><li><strong>The wrong standard protein.</strong> The dye responds differently to different proteins, because binding depends on the amino acid composition, mainly basic and aromatic residues (Compton and Jones, 1985). BSA gives a strong response. A concentration "in BSA equivalents" can differ clearly from the true concentration of your protein.</li><li><strong>Interfering substances.</strong> Detergents such as SDS or Triton, and strongly alkaline buffers, disturb the assay. Prepare the standards in the same buffer as the samples where possible.</li><li><strong>Timing.</strong> The colour develops within minutes and then drifts. Read standards and samples after the same incubation time.</li><li><strong>Single readings.</strong> Measure standards and samples at least in duplicate. One outlier in a single dilution series is enough to tilt the whole curve.</li></ul>
+<h2>How to judge the fit</h2>
+<p>R² is close to 1 for nearly every Bradford curve, straight or bent, so it tells you little. Look at the plot. If the points lie above the line in the middle and below it at both ends, the relationship is curved and a straight line is the wrong model.</p>
+<h2>Try it</h2>
+<p>The <a href="bradford.html">Bradford tool</a> fits a linear or a quadratic curve through all individual standard readings, calculates every sample with its dilution factor, and marks samples that lie outside the range of the standards.</p>
+<h2>References</h2>
+<ul><li>Bradford, M.M. (1976) 'A rapid and sensitive method for the quantitation of microgram quantities of protein utilizing the principle of protein-dye binding', <em>Analytical Biochemistry</em>, 72(1-2), pp. 248-254.</li><li>Compton, S.J. and Jones, C.G. (1985) 'Mechanism of dye response and interference in the Bradford protein assay', <em>Analytical Biochemistry</em>, 151(2), pp. 369-374.</li><li>Zor, T. and Selinger, Z. (1996) 'Linearization of the Bradford protein assay increases its sensitivity: theoretical and experimental studies', <em>Analytical Biochemistry</em>, 236(2), pp. 302-308.</li></ul>
+</div>
+</article>
+<h2 class="sub">More articles</h2>
+<div class="more-arts"><a class="more-art" href="michaelis-menten-fit.html"><span class="meta">Enzyme kinetics</span><b>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot)</b></a><a class="more-art" href="thermal-shift-tm.html"><span class="meta">Thermal shift</span><b>Getting T<sub>m</sub> from a thermal shift assay: derivative or Boltzmann fit?</b></a></div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=eb39b29e"></script>
+</body>
+</html>

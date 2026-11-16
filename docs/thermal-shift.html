@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thermal shift assay analysis: Tm and delta Tm from melting curves | Triplicat</title>
+<meta name="description" content="Analyse thermal shift (DSF) melting curves in the browser: Tm per well from the first derivative, group means, delta Tm against a reference and figures.">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/thermal-shift.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="Thermal shift assay analysis: Tm and delta Tm from melting curves | Triplicat">
+<meta property="og:description" content="Analyse thermal shift (DSF) melting curves in the browser: Tm per well from the first derivative, group means, delta Tm against a reference and figures.">
+<meta property="og:url" content="https://triplicat.com/thermal-shift.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=c3250611">
+</head>
+<body data-brand="Triplicat">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html" aria-current="page">Toolkit</a><a href="articles.html">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap">
+<div class="page-head tool-head"><a class="crumb" href="toolkit.html">&larr; Toolkit</a>
+<h1>Thermal shift</h1><p>Melting temperature from the steepest point of each curve. First column temperature, then one column per well, named like Reference_1, Reference_2, Ligand_1.</p></div>
+<div class="tool">
+  <section class="card tool-in" aria-label="Data">
+    <div class="field"><div class="field-head"><label for="in">Temperature and fluorescence per well</label>
+<span class="chips"><button class="chip" type="button" data-act="demo">Load demo data</button><label class="chip">Open file<input type="file" accept=".xlsx,.xlsm,.csv,.tsv,.txt" data-target="in" hidden></label></span></div>
+<textarea id="in" rows="12" spellcheck="false" autocomplete="off" placeholder="temp&#9;Reference_1&#9;Reference_2&#9;Ligand_1&#9;Ligand_2&#10;25&#9;118.2&#9;121.5&#9;119.9&#9;117.3"></textarea></div>
+    <div class="calc-grid" style="margin-top:14px"><div class="calc-lbl">Reference group</div><div class="calc-in"><select id="o_ref" aria-label="Reference group" style="width:100%"></select></div><div class="calc-lbl">Smoothing window (points)</div><div class="calc-in"><input id="o_win" type="text" inputmode="numeric" autocomplete="off" value="9" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Search from (&deg;C)</div><div class="calc-in"><input id="o_min" type="text" inputmode="decimal" autocomplete="off" placeholder="optional"></div><div class="calc-lbl">Search to (&deg;C)</div><div class="calc-in"><input id="o_max" type="text" inputmode="decimal" autocomplete="off" placeholder="optional"></div></div>
+    <details class="figopts"><summary>Figure labels</summary><div class="calc-grid"><div class="calc-lbl">Title</div><div class="calc-in"><input id="f_title" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">X axis label</div><div class="calc-in"><input id="f_x" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Y axis label</div><div class="calc-in"><input id="f_y" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Y axis label (derivative)</div><div class="calc-in"><input id="f_y2" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div></div>
+    <p class="muted" style="margin:8px 0 0">Leave a field empty to use the default shown in grey.</p></details>
+    <div class="tool-foot"><button class="chip quiet" type="button" data-act="clear" data-target="in">Clear</button>
+    <span class="muted">Your data stays in this browser tab.</span></div>
+  </section>
+  <section class="tool-out" aria-label="Results" aria-live="polite">
+    <div class="card plotcard"><div id="out_plot"></div><div id="out_plot2"></div></div>
+    <div class="card"><div id="out_res"></div><div id="out_notes"></div>
+      <div class="dl" id="dl" hidden><span class="meta">Download</span><button class="chip" type="button" data-act="svg">Figure SVG</button><button class="chip" type="button" data-act="png">Figure PNG</button><button class="chip" type="button" data-act="csv">Results CSV</button><button class="chip pro" type="button" data-act="pro" aria-controls="pro">Without watermark</button></div>
+      <div class="pro-box" id="pro" hidden><span class="pill">Pro &middot; planned</span>
+        <p>Downloads are free and carry a small &ldquo;made with Triplicat&rdquo; mark. A paid Pro version is planned with:</p>
+        <ul><li>figures without the mark, in print resolution</li><li>a report with the methods text for your thesis</li><li>several files in one go</li><li>more models, such as substrate inhibition</li></ul>
+        <p class="muted">Pro is not available yet. <a href="toolkit.html#waitlist">Get an email when it is &rarr;</a></p></div></div>
+  </section>
+</div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=eb39b29e"></script>
+<script src="js/stats.js?v=d6d2f5b3"></script>
+<script src="js/xlsx.js?v=dd5bb396"></script>
+<script src="js/toolkit.js?v=66ffeb69"></script>
+<script src="js/tool-tsa.js?v=9b7b602f"></script>
+</body>
+</html>
