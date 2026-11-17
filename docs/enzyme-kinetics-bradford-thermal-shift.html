@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enzyme kinetics, Bradford, thermal shift: what each assay tells you | Triplicat</title>
+<meta name="description" content="Three assays turn up in almost every protein lab: a Bradford assay to know how much protein you have, enzyme kinetics to know what the enzyme does with ...">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/enzyme-kinetics-bradford-thermal-shift.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="Enzyme kinetics, Bradford, thermal shift: what each assay tells you | Triplicat">
+<meta property="og:description" content="Three assays turn up in almost every protein lab: a Bradford assay to know how much protein you have, enzyme kinetics to know what the enzyme does with ...">
+<meta property="og:url" content="https://triplicat.com/enzyme-kinetics-bradford-thermal-shift.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=c13a642d">
+</head>
+<body data-brand="Triplicat" data-counter="https://triplicat.goatcounter.com/count">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html" aria-current="page">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap narrow">
+<article>
+<div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
+<p class="kicker">Overview</p><h1>Enzyme kinetics, Bradford, thermal shift: what each assay tells you</h1></div>
+<div class="prose">
+<p>Three assays turn up in almost every protein lab: a Bradford assay to know how much protein you have, enzyme kinetics to know what the enzyme does with its substrate, and a thermal shift assay to know how stable the protein is and whether something binds to it. They answer different questions, and each has a blind spot. This article explains what each one measures, what it is good for, and where it misleads you.</p>
+<h2>Bradford: how much protein is in the tube?</h2>
+<p><strong>What it measures.</strong> The dye Coomassie Brilliant Blue G-250 binds to protein in acidic solution, and its absorbance maximum moves from about 465 nm to 595 nm (Bradford, 1976). You read the absorbance at 595 nm and convert it to a concentration with a standard curve of a known protein, usually BSA.</p>
+<p><strong>What it is good for.</strong></p>
+<ul><li>Checking the yield after a purification step.</li><li>Loading equal amounts of protein on a gel or in an assay.</li><li>Following protein through a series of fractions.</li><li>Any situation where you need a quick, cheap number and a few percent of error do not matter.</li></ul>
+<p><strong>Where it misleads you.</strong></p>
+<ul><li><strong>The answer depends on your protein.</strong> The dye binds mainly to basic and aromatic residues, so proteins with a different composition than the standard give a different colour per microgram. The number is "BSA equivalents", not an absolute mass.</li><li><strong>Detergents interfere.</strong> SDS and many other detergents disturb the dye, so lysis and elution buffers can shift the result. Include the buffer in the blank and in the standards.</li><li><strong>The curve is not a straight line.</strong> Over a wide range it bends. See <a href="bradford-curve-not-linear.html">why your Bradford standard curve is not linear</a>.</li></ul>
+<p><strong>Alternatives.</strong> For a pure protein with a known sequence, the absorbance at 280 nm is often more accurate, see the <a href="calculators.html#a280">A<sub>280</sub> calculator</a>. For samples with detergents, a BCA assay is a common choice.</p>
+<h2>Enzyme kinetics: what does the enzyme do with its substrate?</h2>
+<p><strong>What it measures.</strong> You measure the initial rate of the reaction at a series of substrate concentrations. The rate rises and levels off. Fitting the Michaelis-Menten equation (Michaelis and Menten, 1913) gives two numbers:</p>
+<ul><li><strong>V<sub>max</sub></strong>, the rate when the enzyme is saturated with substrate. It depends on how much active enzyme is in the assay.</li><li><strong>K<sub>m</sub></strong>, the substrate concentration at which the rate is half of V<sub>max</sub>. A low K<sub>m</sub> means the enzyme reaches half its top speed at low substrate concentrations.</li></ul>
+<p>If you know the concentration of active enzyme, V<sub>max</sub> divided by it gives k<sub>cat</sub>, the turnover number, and k<sub>cat</sub>/K<sub>m</sub> is the usual measure of how efficiently an enzyme uses a substrate.</p>
+<p><strong>What it is good for.</strong></p>
+<ul><li>Characterising a new enzyme or a new substrate.</li><li>Comparing mutants or variants with the wild type.</li><li>Comparing substrates: which one does the enzyme prefer?</li><li>Finding conditions (pH, temperature, cofactors) under which the enzyme works best.</li><li>As the basis for inhibitor studies, where you compare kinetics with and without an inhibitor.</li></ul>
+<p><strong>Where it misleads you.</strong></p>
+<ul><li><strong>Initial rates only.</strong> The equation assumes that substrate is not used up and product does not inhibit. Take the slope from the early, linear part of each progress curve.</li><li><strong>The substrate range decides the quality.</strong> Without concentrations well above K<sub>m</sub>, V<sub>max</sub> is guessed rather than measured, and without concentrations below K<sub>m</sub>, K<sub>m</sub> is poorly defined.</li><li><strong>Not every enzyme follows Michaelis-Menten.</strong> Substrate inhibition (the rate falls again at high substrate) and cooperativity (a sigmoid instead of a hyperbola) need other models.</li><li><strong>Linearised plots distort the errors.</strong> Fit the curve directly, see <a href="michaelis-menten-fit.html">how to fit Michaelis-Menten kinetics</a>.</li></ul>
+<h2>Thermal shift: how stable is the protein, and does something bind?</h2>
+<p><strong>What it measures.</strong> The protein is heated step by step in the presence of a dye such as SYPRO Orange. When the protein unfolds, the dye binds to the exposed hydrophobic regions and fluoresces. The melting temperature T<sub>m</sub> is the midpoint of this transition. If a ligand binds to the folded protein, it often stabilises it, and T<sub>m</sub> rises. That rise is the "thermal shift", ΔT<sub>m</sub> (Niesen, Berglund and Vedadi, 2007).</p>
+<p><strong>What it is good for.</strong></p>
+<ul><li>Screening ligands, fragments or cofactors for binding, many conditions at once in a qPCR instrument.</li><li>Finding a buffer, pH or salt concentration in which the protein is most stable, for example before crystallisation or long-term storage.</li><li>Comparing the stability of mutants with the wild type.</li><li>A quick quality check of a new protein batch: a clean transition suggests a folded protein.</li></ul>
+<p><strong>Where it misleads you.</strong></p>
+<ul><li><strong>ΔT<sub>m</sub> is not an affinity.</strong> The size of the shift depends on the ligand concentration and on the thermodynamics of binding and unfolding. A larger shift does not by itself mean tighter binding.</li><li><strong>No shift does not prove no binding.</strong> Some ligands bind without a measurable change in stability, and some destabilise the protein.</li><li><strong>The dye has its own preferences.</strong> Detergents, lipids and some buffer components bind the dye and raise the background. Proteins with large exposed hydrophobic surfaces can give a high signal before they unfold.</li><li><strong>One T<sub>m</sub> per curve is a simplification.</strong> Multi-domain proteins can unfold in steps. See <a href="thermal-shift-tm.html">getting T<sub>m</sub> from a thermal shift assay</a>.</li></ul>
+<h2>An example from the lab</h2>
+<p>The assays are most useful together. Two point mutants of the same enzyme, both close to the active site, show why.</p>
+<p><strong>A bulkier residue at the entrance of the substrate channel.</strong> One mutation replaced a small residue with a larger one. K<sub>m</sub> stayed close to the wild type, and so did the thermal shift that the substrate caused. V<sub>max</sub>, however, dropped to about half. Read together, this suggests that the mutant still binds the substrate about as well as before but turns it over more slowly. The structure fits that reading: the residue does not touch the substrate, but it sits at the entrance of the channel that leads to the active site, so access rather than binding is the likely problem. One caveat: V<sub>max</sub> per milligram also falls when part of the protein in a preparation is inactive, so this interpretation assumes that both preparations were comparable.</p>
+<p><strong>A residue that holds the substrate in place.</strong> The second mutation replaced a residue that coordinates the substrate with alanine. Here everything changed. Less than a tenth of the activity remained, K<sub>m</sub> rose by one to two orders of magnitude for both substrates tested, and the substrate shifted the melting temperature of the mutant much less than that of the wild type. Kinetics and thermal shift point the same way: the substrate no longer binds properly.</p>
+<p>The lesson: V<sub>max</sub> alone cannot tell you why an enzyme got slower. K<sub>m</sub> and the thermal shift with the substrate show whether binding is affected. K<sub>m</sub> is not a pure binding constant, but when it rises sharply and the thermal shift shrinks at the same time, weaker binding is the simplest explanation.</p>
+<h2>Which assay for which question?</h2>
+<ul><li><strong>"How much protein do I have?"</strong> Bradford, or A<sub>280</sub> for a pure protein.</li><li><strong>"How fast does my enzyme work, and how much substrate does it need?"</strong> Enzyme kinetics: K<sub>m</sub> and V<sub>max</sub>.</li><li><strong>"Is my mutant still active?"</strong> Enzyme kinetics, ideally with k<sub>cat</sub>.</li><li><strong>"Is my mutant still folded and stable?"</strong> Thermal shift: compare T<sub>m</sub>.</li><li><strong>"Does this compound bind?"</strong> Thermal shift as a first screen; confirm hits with a method that measures binding directly.</li><li><strong>"In which buffer is my protein happiest?"</strong> Thermal shift across a buffer screen.</li></ul>
+<p>The assays also depend on each other: kinetics and thermal shift both need a known protein concentration, which usually comes from a Bradford or A<sub>280</sub> measurement. An error in that first number carries through to k<sub>cat</sub> and to the amount of protein per well.</p>
+<h2>Try it</h2>
+<p>All three analyses run in your browser: <a href="kinetics.html">enzyme kinetics</a>, <a href="bradford.html">Bradford</a> and <a href="thermal-shift.html">thermal shift</a>. Each comes with demo data, so you can see what the input and the result look like before you use your own measurements.</p>
+<h2>References</h2>
+<ul><li>Bradford, M.M. (1976) 'A rapid and sensitive method for the quantitation of microgram quantities of protein utilizing the principle of protein-dye binding', <em>Analytical Biochemistry</em>, 72, pp. 248-254.</li><li>Michaelis, L. and Menten, M.L. (1913) 'Die Kinetik der Invertinwirkung', <em>Biochemische Zeitschrift</em>, 49, pp. 333-369.</li><li>Niesen, F.H., Berglund, H. and Vedadi, M. (2007) 'The use of differential scanning fluorimetry to detect ligand interactions that promote protein stability', <em>Nature Protocols</em>, 2(9), pp. 2212-2221.</li></ul>
+</div>
+</article>
+<h2 class="sub">More articles</h2>
+<div class="more-arts"><a class="more-art" href="michaelis-menten-fit.html"><span class="meta">Enzyme kinetics</span><b>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot)</b></a><a class="more-art" href="bradford-curve-not-linear.html"><span class="meta">Protein assays</span><b>Why your Bradford standard curve is not linear, and what to do about it</b></a><a class="more-art" href="thermal-shift-tm.html"><span class="meta">Thermal shift</span><b>Getting T<sub>m</sub> from a thermal shift assay: derivative or Boltzmann fit?</b></a></div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=1385b09c"></script>
+</body>
+</html>

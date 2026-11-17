@@ -425,8 +425,13 @@ h2.sub{font-family:var(--display); font-size:24px; letter-spacing:-.02em; margin
 .prose p.eq{font:500 17px var(--mono); background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 20px; overflow-x:auto; white-space:nowrap;}
 .prose h2:last-of-type ~ ul{font-size:15px; color:var(--text-dim); list-style:none; padding-left:0;}
 .art-list{display:grid; gap:14px; margin-top:32px;}
-.art-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
-@media (max-width:860px){ .art-grid{grid-template-columns:1fr;} }
+.art-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+@media (max-width:1100px){ .art-grid{grid-template-columns:repeat(2,1fr);} }
+@media (max-width:600px){ .art-grid{grid-template-columns:1fr;} }
+.whatfor{margin-top:14px !important; font-size:15px !important; max-width:44em; padding:12px 16px; border-radius:14px;
+  background:var(--surface); border:1px solid var(--border); color:var(--text-dim);}
+.whatfor b{color:var(--text); font-weight:600;}
+.whatfor a{white-space:nowrap;}
 .art-card{display:flex; flex-direction:column; gap:8px; text-decoration:none; color:inherit; background:var(--surface);
   border:1px solid var(--border); border-radius:var(--r); padding:22px; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;}
 .art-card:hover{transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--border-strong);}

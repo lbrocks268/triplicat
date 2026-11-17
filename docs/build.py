@@ -329,6 +329,12 @@ def data_box(tid, label, hint, rows=11, demo=True):
 def opt(label, inner): return f'<div class="calc-lbl">{label}</div><div class="calc-in">{inner}</div>'
 def text_in(i, v, mode="text"): return f'<input id="{i}" type="text" inputmode="{mode}" autocomplete="off" value="{v}" placeholder="optional" style="text-align:left">'
 
+WHATFOR = {
+    "kinetics.html": "Characterising an enzyme, comparing mutants or substrates, and finding the conditions under which it works best.",
+    "bradford.html": "Knowing how much protein is in a sample, for example after a purification step or before loading a gel.",
+    "thermal-shift.html": "Finding out how stable a protein is and whether a ligand binds, for example in a buffer or ligand screen.",
+}
+
 def tool(fname, title, desc, h1, lead, inputs, options, script, second_plot=False, rscript=True, clear="in"):
     fig = (opt("Title", text_in("f_title", "")) + opt("X axis label", text_in("f_x", "")) + opt("Y axis label", text_in("f_y", ""))
            + (opt("Y axis label (derivative)", text_in("f_y2", "")) if second_plot else "")
@@ -339,7 +345,8 @@ def tool(fname, title, desc, h1, lead, inputs, options, script, second_plot=Fals
           + ('<button class="chip" type="button" data-act="r">R script</button>' if rscript else ""))
     page(fname, f"{title} | {BRAND}", desc, f"""<main class="wrap">
 <div class="page-head tool-head"><a class="crumb" href="toolkit.html">&larr; Toolkit</a>
-<h1>{h1}</h1><p>{lead}</p></div>
+<h1>{h1}</h1><p>{lead}</p>
+<p class="whatfor"><b>What is this for?</b> {WHATFOR[fname]} <a href="enzyme-kinetics-bradford-thermal-shift.html">Which assay answers which question &rarr;</a></p></div>
 <div class="tool">
   <section class="card tool-in" aria-label="Data">
     {inputs}
@@ -399,6 +406,7 @@ tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from m
 # "Target search" lines, "Open points for Linus") are stripped here and never reach the site.
 ARTICLES_REVIEWED = True   # Linus confirmed on 2026-11-16 that texts and references are checked; False shows a draft banner and sets noindex
 ARTICLES = [
+    ("enzyme-kinetics-bradford-thermal-shift.html", "04 What each assay tells you.md", "Overview"),
     ("michaelis-menten-fit.html", "01 Michaelis-Menten fit without Lineweaver-Burk.md", "Enzyme kinetics"),
     ("bradford-curve-not-linear.html", "02 Bradford standard curve not linear.md", "Protein assays"),
     ("thermal-shift-tm.html", "03 Tm from a thermal shift assay.md", "Thermal shift"),
