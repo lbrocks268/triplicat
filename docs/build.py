@@ -210,6 +210,23 @@ page("index.html", f"{BRAND} | Calculators and analysis tools for the wet lab",
 NAV = [("dilution", "Dilution"), ("molarity", "Molarity"), ("percent", "Percent"), ("series", "Series"),
        ("mastermix", "Master mix"), ("a280", "A&#8322;&#8328;&#8320;"), ("rcf", "rpm &harr; RCF")]
 cards = (ROOT / "src" / "cards.html").read_text(encoding="utf-8")
+# Two fixed columns instead of a row grid, so cards of different height do not leave gaps. Left: preparing
+# (dilution, series, master mix); right: converting. On narrow screens the columns dissolve and the cards
+# keep the order of NAV (CSS "order").
+CALC_COLS = (["dilution", "series", "mastermix"], ["molarity", "percent", "a280", "rcf"])
+def _split_cards(html):
+    parts = re.split(r'(?=<section class="card calc-card" id=")', html.strip())
+    out = {}
+    for p in parts:
+        m = re.match(r'<section class="card calc-card" id="([^"]+)"', p)
+        if m: out[m.group(1)] = p.strip()
+    return out
+_cards = _split_cards(cards)
+assert sorted(_cards) == sorted(i for c in CALC_COLS for i in c) == sorted(i for i, _ in NAV), "calculator ids differ between cards.html, NAV and CALC_COLS"
+_order = {i: n for n, (i, _) in enumerate(NAV, 1)}
+cards = "".join('<div class="calc-col">' + "\n".join(
+    _cards[i].replace('<section class="card calc-card"', f'<section style="order:{_order[i]}" class="card calc-card"', 1) for i in col) + "</div>"
+    for col in CALC_COLS)
 page("calculators.html", f"Lab calculators: dilution, molarity, master mix, A280, RCF | {BRAND}",
      "Free lab calculators that run in your browser: C1V1 dilution, molarity, percent solutions, dilution series, PCR master mix, A280 protein concentration and rpm to RCF.",
      f"""<main class="wrap">
@@ -229,9 +246,51 @@ TOOLS = [
     ("bradford.html", "Bradford", "Standard curve, linear or quadratic, and the concentration of every sample with its dilution.", "A = b&#8320; + b&#8321;&middot;c"),
     ("thermal-shift.html", "Thermal shift", "T<sub>m</sub> per well from the melting curve, group means and the shift against a reference.", "T<sub>m</sub> = max dF/dT"),
 ]
+# Small schematic drawings for the toolkit cards. Shapes from textbook formulas, no measured data, no numbers.
+def _ill(kind):
+    W, H, X0, X1, Y0, Y1 = 240, 116, 16, 228, 10, 98
+    def path(pts): return "M" + " L".join(f"{x:.1f} {y:.1f}" for x, y in pts)
+    sx = lambda t, a, b: X0 + (t - a) / (b - a) * (X1 - X0)
+    sy = lambda v, a, b: Y1 - (v - a) / (b - a) * (Y1 - Y0)
+    o = [f'<svg class="ill" viewBox="0 0 {W} {H}" aria-hidden="true" focusable="false">',
+         f'<path class="ax" d="M{X0} {Y0 - 4} L{X0} {Y1} L{X1 + 4} {Y1}"/>']
+    if kind == "kinetics":
+        km, vmax = 1.6, 1.0
+        f = lambda s: vmax * s / (km + s)
+        X = lambda s: sx(s, 0, 10); Y = lambda v: sy(v, 0, 1.15)
+        o.append(f'<path class="g" d="M{X0} {Y(vmax):.1f} L{X1} {Y(vmax):.1f}"/>')
+        o.append(f'<path class="g" d="M{X0} {Y(vmax / 2):.1f} L{X(km):.1f} {Y(vmax / 2):.1f} L{X(km):.1f} {Y1}"/>')
+        o.append(f'<path class="c1" d="{path([(X(s / 10), Y(f(s / 10))) for s in range(0, 101)])}"/>')
+        for s, e in [(0.3, .02), (0.7, -.03), (1.2, .03), (2, -.02), (3.2, .02), (5, -.02), (7.5, .015), (9.6, -.01)]:
+            o.append(f'<circle class="pt" cx="{X(s):.1f}" cy="{Y(f(s) + e):.1f}" r="3"/>')
+        o.append(f'<text x="{X1}" y="{Y(vmax) - 5:.1f}" text-anchor="end">V<tspan dy="2" font-size="8">max</tspan></text>')
+        o.append(f'<text x="{X(km):.1f}" y="{H - 3}" text-anchor="middle">K<tspan dy="2" font-size="8">m</tspan></text>')
+    elif kind == "bradford":
+        f = lambda c: 0.06 + 0.95 * c - 0.28 * c * c
+        X = lambda c: sx(c, 0, 1); Y = lambda a: sy(a, 0, 0.85)
+        a_s = 0.42
+        c_s = (0.95 - (0.95 ** 2 - 4 * 0.28 * (a_s - 0.06)) ** 0.5) / (2 * 0.28)
+        o.append(f'<path class="g" d="M{X0} {Y(a_s):.1f} L{X(c_s):.1f} {Y(a_s):.1f} L{X(c_s):.1f} {Y1}"/>')
+        o.append(f'<path class="c1" d="{path([(X(c / 100), Y(f(c / 100))) for c in range(0, 101)])}"/>')
+        for c, e in [(0, .01), (0.1, -.012), (0.2, .012), (0.4, -.01), (0.6, .012), (0.8, -.01), (1.0, .008)]:
+            o.append(f'<circle class="pt" cx="{X(c):.1f}" cy="{Y(f(c) + e):.1f}" r="3"/>')
+        o.append(f'<circle class="sm" cx="{X(c_s):.1f}" cy="{Y(a_s):.1f}" r="4.2"/>')
+        o.append(f'<text x="{X(c_s) + 8:.1f}" y="{Y(a_s) + 14:.1f}">sample</text>')
+    else:
+        X = lambda t: sx(t, 25, 85); Y = lambda v: sy(v, 0, 1.12)
+        def melt(tm): return lambda t: 0.05 + 0.95 / (1 + 2.718281828 ** ((tm - t) / 2.2)) - max(0.0, t - tm - 7) * 0.012
+        for cls, tm in (("c1", 48), ("c2", 58)):
+            m = melt(tm)
+            o.append(f'<path class="{cls}" d="{path([(X(25 + t * 0.6), Y(m(25 + t * 0.6))) for t in range(0, 101)])}"/>')
+        o.append(f'<path class="g" d="M{X(48):.1f} {Y0 + 12} L{X(48):.1f} {Y1}"/><path class="g" d="M{X(58):.1f} {Y0 + 12} L{X(58):.1f} {Y1}"/>')
+        o.append(f'<path class="ar" d="M{X(48) + 3:.1f} {Y0 + 16} L{X(58) - 3:.1f} {Y0 + 16} M{X(58) - 8:.1f} {Y0 + 12} L{X(58) - 3:.1f} {Y0 + 16} L{X(58) - 8:.1f} {Y0 + 20}"/>')
+        o.append(f'<text x="{(X(48) + X(58)) / 2:.1f}" y="{Y0 + 8}" text-anchor="middle">&#916;T<tspan dy="2" font-size="8">m</tspan></text>')
+    return "".join(o) + "</svg>"
+
+ILL = {"kinetics.html": "kinetics", "bradford.html": "bradford", "thermal-shift.html": "tsa"}
 hub = "".join(
-    f'<a class="tile toolcard" href="{h}"><span class="go" aria-hidden="true">&#8599;</span><div class="f">{f}</div>'
-    f'<div><b>{t}</b><span class="d">{d}</span></div></a>' for h, t, d, f in TOOLS)
+    f'<a class="tile toolcard" href="{h}"><span class="go" aria-hidden="true">&#8599;</span>{_ill(ILL[h])}'
+    f'<div><div class="f">{f}</div><b>{t}</b><span class="d">{d}</span></div></a>' for h, t, d, f in TOOLS)
 page("toolkit.html", f"Analysis toolkit: enzyme kinetics, Bradford, thermal shift | {BRAND}",
      "Analyse enzyme kinetics, Bradford and thermal shift data in the browser: paste your values, get the fit, the numbers and a figure. No installation, no upload.",
      f"""<main class="wrap">
