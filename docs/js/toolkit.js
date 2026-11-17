@@ -16,6 +16,11 @@
   // Series colour on screen, so tables and plate maps can match the plot
   function seriesColor(i){ var p = screenPalette().series; return p[(i || 0) % p.length]; }
   function mutedColor(){ return screenPalette().faint; }
+  // Sentence for "could not read" warnings, pointing to the page's own email link for example files
+  function exampleHint(){
+    var a = document.querySelector('a.send-ex');
+    return a ? ' If the file comes straight from your instrument, <a href="' + esc(a.getAttribute('href')) + '">send me an example</a>.' : '';
+  }
 
   // ---------- Plot ----------
   function niceTicks(lo, hi, count){
@@ -30,24 +35,39 @@
 
   /* spec: { xlabel, ylabel, series: [{ kind: 'points'|'line'|'band', x, y, y2 (band: upper edge), color (index), muted (grey),
              label, dash, width, hollow, opacity }],
-             vlines: [{ x, color, label }], zeroX, zeroY, height } */
+             vlines: [{ x, color, label }], zeroX, zeroY, height,
+             xmin, xmax (optional fixed x range; data outside are clipped and do not set the y range) } */
+  var clipN = 0;
   function plot(spec, pal){
     pal = pal || screenPalette();
     var seen = {}, items = [];
     spec.series.forEach(function(s){ if(s.label && s.kind !== 'band' && !seen[s.label]){ seen[s.label] = 1; items.push(s); } });
     var below = items.length > 6, LH = below ? Math.ceil(items.length / 4) * 18 + 12 : 0;
     var W = 720, T = spec.title ? 46 : 16, H = (spec.height || 420) + (spec.title ? 30 : 0) + LH, L = 64, R = 18, B = 52 + LH;
+    var xlo = isFinite(spec.xmin) ? spec.xmin : -Infinity, xhi = isFinite(spec.xmax) ? spec.xmax : Infinity;
+    if(!(xhi > xlo)){ xlo = -Infinity; xhi = Infinity; }
     var xs = [], ys = [];
-    spec.series.forEach(function(s){ s.x.forEach(function(v, i){
-      if(isFinite(v) && isFinite(s.y[i])){ xs.push(v); ys.push(s.y[i]); }
-      if(s.y2 && isFinite(v) && isFinite(s.y2[i])) ys.push(s.y2[i]);
-    }); });
+    var collect = function(){
+      xs = []; ys = [];
+      spec.series.forEach(function(s){ s.x.forEach(function(v, i){
+        if(!(v >= xlo && v <= xhi)) return;
+        if(isFinite(v) && isFinite(s.y[i])){ xs.push(v); ys.push(s.y[i]); }
+        if(s.y2 && isFinite(v) && isFinite(s.y2[i])) ys.push(s.y2[i]);
+      }); });
+    };
+    collect();
+    if(!xs.length && (isFinite(xlo) || isFinite(xhi))){ xlo = -Infinity; xhi = Infinity; collect(); }   // range misses all data: ignore it
     if(!xs.length) return '';
-    var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
-    if(spec.zeroX) x0 = Math.min(0, x0);
+    var x0 = isFinite(xlo) ? xlo : Math.min.apply(null, xs), x1 = isFinite(xhi) ? xhi : Math.max.apply(null, xs);
+    var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+    if(spec.zeroX && !isFinite(xlo)) x0 = Math.min(0, x0);
     if(spec.zeroY) y0 = Math.min(0, y0);
     var xt = niceTicks(x0, x1, 6), yt = niceTicks(y0, y1 + (y1 - y0) * 0.04, 5);
-    x0 = xt[0]; x1 = xt[xt.length - 1]; y0 = yt[0]; y1 = yt[yt.length - 1];
+    // a fixed end stays exactly where the user put it; ticks outside it are dropped
+    x0 = isFinite(xlo) ? xlo : xt[0]; x1 = isFinite(xhi) ? xhi : xt[xt.length - 1];
+    xt = xt.filter(function(v){ return v >= x0 - 1e-9 * Math.abs(x1 - x0) && v <= x1 + 1e-9 * Math.abs(x1 - x0); });
+    y0 = yt[0]; y1 = yt[yt.length - 1];
+    var clipId = 'tkclip' + (++clipN), po = '';
     var px = function(v){ return L + (v - x0) / (x1 - x0) * (W - L - R); };
     var py = function(v){ return H - B - (v - y0) / (y1 - y0) * (H - T - B); };
     var f = function(v){ return (Math.round(v * 100) / 100).toString(); };
@@ -64,6 +84,7 @@
     });
     o += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + (H - B) + '" y2="' + (H - B) + '" stroke="' + pal.axis + '"/>' +
          '<line x1="' + L + '" x2="' + L + '" y1="' + T + '" y2="' + (H - B) + '" stroke="' + pal.axis + '"/>';
+    o += '<defs><clipPath id="' + clipId + '"><rect x="' + L + '" y="' + (T - 2) + '" width="' + (W - L - R) + '" height="' + (H - B - T + 2) + '"/></clipPath></defs><g clip-path="url(#' + clipId + ')">';
     (spec.vlines || []).forEach(function(v){
       if(!isFinite(v.x) || v.x < x0 || v.x > x1) return;
       var c = pal.series[(v.color || 0) % pal.series.length];
@@ -94,17 +115,19 @@
              (dashOf(s) ? ' stroke-dasharray="' + dashOf(s) + '"' : '') + (s.opacity ? ' opacity="' + s.opacity + '"' : '') + '/>';
       } else {
         for(var k = 0; k < s.x.length; k++){
-          if(!isFinite(s.x[k]) || !isFinite(s.y[k])) continue;
+          // markers are not clipped (a point on the axis stays whole); points outside the x range are left out
+          if(!isFinite(s.x[k]) || !isFinite(s.y[k]) || s.x[k] < x0 || s.x[k] > x1) continue;
           if(s.cross){
             var cx = px(s.x[k]), cy = py(s.y[k]), cr = (s.r || 4.2) * 0.9;
-            o += '<path d="M' + f(cx - cr) + ' ' + f(cy - cr) + 'L' + f(cx + cr) + ' ' + f(cy + cr) + 'M' + f(cx - cr) + ' ' + f(cy + cr) + 'L' + f(cx + cr) + ' ' + f(cy - cr) + '" stroke="' + c + '" stroke-width="2" stroke-linecap="round"/>';
+            po += '<path d="M' + f(cx - cr) + ' ' + f(cy - cr) + 'L' + f(cx + cr) + ' ' + f(cy + cr) + 'M' + f(cx - cr) + ' ' + f(cy + cr) + 'L' + f(cx + cr) + ' ' + f(cy - cr) + '" stroke="' + c + '" stroke-width="2" stroke-linecap="round"/>';
             continue;
           }
-          o += '<circle cx="' + f(px(s.x[k])) + '" cy="' + f(py(s.y[k])) + '" r="' + (s.r || 4.2) + '" fill="' + (s.hollow ? (pal.bg === 'transparent' ? 'none' : pal.bg) : c) +
+          po += '<circle cx="' + f(px(s.x[k])) + '" cy="' + f(py(s.y[k])) + '" r="' + (s.r || 4.2) + '" fill="' + (s.hollow ? (pal.bg === 'transparent' ? 'none' : pal.bg) : c) +
                '" stroke="' + c + '" stroke-width="1.8"' + (s.hollow ? '' : ' fill-opacity=".85"') + '/>';
         }
       }
     });
+    o += '</g>' + po;
     o += '<text x="' + ((L + W - R) / 2) + '" y="' + (H - LH - 10) + '" text-anchor="middle" font-size="13.5" fill="' + pal.text + '" ' + font + '>' + esc(spec.xlabel || '') + '</text>' +
          '<text transform="translate(16 ' + ((T + H - B) / 2) + ') rotate(-90)" text-anchor="middle" font-size="13.5" fill="' + pal.text + '" ' + font + '>' + esc(spec.ylabel || '') + '</text>';
     // Watermark of the free version. It sits in the margin so it never covers data.
@@ -136,6 +159,10 @@
       var v = e.value.trim(); if(v) spec[key] = v;
     };
     set(map.title, 'title'); set(map.x, 'xlabel'); set(map.y, 'ylabel');
+    var num = function(id){ var e = document.getElementById(id); return e ? TK.toNum(e.value, ';') : NaN; };
+    var a = num('f_xmin'), b = num('f_xmax');
+    if(isFinite(a)) spec.xmin = a;
+    if(isFinite(b)) spec.xmax = b;
     return spec;
   }
 
@@ -236,5 +263,5 @@
 
   window.TKUI = { plot: plot, downloadText: downloadText, downloadSVG: downloadSVG, downloadPNG: downloadPNG, csv: csv,
                   el: el, table: table, notes: notes, wire: wire, esc: esc, applyLabels: applyLabels,
-                  exclusions: exclusions, check: check, ptsBox: ptsBox, pointGrid: pointGrid, seriesColor: seriesColor, mutedColor: mutedColor };
+                  exclusions: exclusions, check: check, ptsBox: ptsBox, pointGrid: pointGrid, seriesColor: seriesColor, mutedColor: mutedColor, exampleHint: exampleHint };
 })();

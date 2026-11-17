@@ -155,7 +155,7 @@
     var win = parseInt(el('o_win').value, 10); if(!(win >= 3)) win = 9; if(win % 2 === 0) win += 1;
     if(d.T.length < win + 2 || !d.cols.length){
       plotBox.innerHTML = '<div class="empty">Not enough data: at least ' + (win + 2) + ' temperature steps and one complete well column are needed.</div>'; res.innerHTML = '';
-      nt.innerHTML = UI.notes([d.lay && d.lay.n && d.ignored.length ? { warn: true, text: 'The plate layout names none of the wells in the data. Use positions like A1 or A01 in the layout and in the column names.' } : { warn: true, text: 'Could read ' + d.T.length + ' temperature steps and ' + d.cols.length + ' complete well column(s). Expected: first column temperature, one column per well, header like Reference_1, Reference_2, Ligand_1.' }]); return;
+      nt.innerHTML = UI.notes([d.lay && d.lay.n && d.ignored.length ? { warn: true, text: 'The plate layout names none of the wells in the data. Use positions like A1 or A01 in the layout and in the column names.' } : { warn: true, text: 'Could read ' + d.T.length + ' temperature steps and ' + d.cols.length + ' complete well column(s). Expected: first column temperature, one column per well, header like Reference_1, Reference_2, Ligand_1, or one row per well and reading with columns for well, temperature and fluorescence.' + UI.exampleHint() }]); return;
     }
     ex.sync(d.cols.map(function(c){ return c.name; }).join('|'));
     var meanMode = el('v_mean').checked, norm = el('n_norm').checked;

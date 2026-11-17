@@ -15,7 +15,7 @@
 <meta property="og:url" content="https://triplicat.com/bradford.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
-<link rel="stylesheet" href="css/site.css?v=d6fe5d66">
+<link rel="stylesheet" href="css/site.css?v=82973e16">
 </head>
 <body data-brand="Triplicat" data-counter="https://triplicat.goatcounter.com/count">
 <header class="top"><div class="wrap">
@@ -34,10 +34,11 @@
 <span class="chips"><label class="chip">Open file<input type="file" accept=".xlsx,.xlsm,.csv,.tsv,.txt" data-target="in2" hidden></label></span></div>
 <textarea id="in2" rows="6" spellcheck="false" autocomplete="off" placeholder="sample&#9;dilution&#9;A1&#9;A2&#10;Lysate&#9;20&#9;0.512&#9;0.498"></textarea></div>
     <div class="calc-grid" style="margin-top:14px"><div class="calc-lbl">Curve</div><div class="calc-mode" style="margin:0"><input type="radio" name="m" id="m_lin" checked><label for="m_lin">Linear</label><input type="radio" name="m" id="m_quad"><label for="m_quad">Quadratic</label></div><div class="calc-lbl">Unit of concentration</div><div class="calc-in"><input id="u_c" type="text" inputmode="text" autocomplete="off" value="mg/mL" placeholder="optional" style="text-align:left"></div></div>
-    <details class="figopts"><summary>Figure labels</summary><div class="calc-grid"><div class="calc-lbl">Title</div><div class="calc-in"><input id="f_title" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">X axis label</div><div class="calc-in"><input id="f_x" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Y axis label</div><div class="calc-in"><input id="f_y" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div></div>
-    <p class="muted" style="margin:8px 0 0">Leave a field empty to use the default shown in grey.</p></details>
+    <details class="figopts"><summary>Figure labels</summary><div class="calc-grid"><div class="calc-lbl">Title</div><div class="calc-in"><input id="f_title" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">X axis label</div><div class="calc-in"><input id="f_x" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Y axis label</div><div class="calc-in"><input id="f_y" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">X axis from</div><div class="calc-in"><input id="f_xmin" type="text" inputmode="decimal" autocomplete="off" placeholder="auto" style="text-align:left"></div><div class="calc-lbl">X axis to</div><div class="calc-in"><input id="f_xmax" type="text" inputmode="decimal" autocomplete="off" placeholder="auto" style="text-align:left"></div></div>
+    <p class="muted" style="margin:8px 0 0">Leave a field empty to use the default shown in grey. The axis range only changes the figure, not the calculation.</p></details>
     <div class="tool-foot"><button class="chip quiet" type="button" data-act="clear" data-target="in,in2">Clear</button>
     <span class="muted">Your data stays in this browser tab.</span></div>
+    <p class="muted send-example">File from your instrument not read correctly? <a class="send-ex" href="mailto:triplicat.service@gmail.com?subject=Triplicat%20file%20example%20%28Bradford%29&amp;body=Instrument%20and%20software%20version%3A%0AWhat%20went%20wrong%3A%0A%0A%28Please%20attach%20the%20file.%20Only%20send%20data%20you%20are%20allowed%20to%20share.%29">Send me an example</a> with the name of the instrument, and I will add the format. Only send data you are allowed to share.</p>
   </section>
   <section class="tool-out" aria-label="Results" aria-live="polite">
     <div class="card plotcard"><div id="out_plot"></div></div>
@@ -57,7 +58,7 @@
 <script src="js/site.js?v=1385b09c"></script>
 <script src="js/stats.js?v=d6d2f5b3"></script>
 <script src="js/xlsx.js?v=dd5bb396"></script>
-<script src="js/toolkit.js?v=74854fd9"></script>
-<script src="js/tool-bradford.js?v=dfaa9a6a"></script>
+<script src="js/toolkit.js?v=08056c06"></script>
+<script src="js/tool-bradford.js?v=17635aa2"></script>
 </body>
 </html>

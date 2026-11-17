@@ -51,7 +51,7 @@
     }
     if(d.S.length < 3 || d.levels < 3){
       plotBox.innerHTML = '<div class="empty">At least three substrate concentrations with a rate are needed.</div>'; res.innerHTML = gridHtml(d);
-      nt.innerHTML = UI.notes([{ warn: true, text: 'Could read ' + d.S.length + ' data points at ' + d.levels + ' concentrations. Expected: first column substrate concentration, further columns rates (one column per replicate).' }]);
+      nt.innerHTML = UI.notes([{ warn: true, text: 'Could read ' + d.S.length + ' data points at ' + d.levels + ' concentrations. Expected: first column substrate concentration, further columns rates (one column per replicate).' + UI.exampleHint() }]);
       return;
     }
     var fit = TK.mmFit(d.S, d.v);

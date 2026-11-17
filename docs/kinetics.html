@@ -15,7 +15,7 @@
 <meta property="og:url" content="https://triplicat.com/kinetics.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
-<link rel="stylesheet" href="css/site.css?v=d6fe5d66">
+<link rel="stylesheet" href="css/site.css?v=82973e16">
 </head>
 <body data-brand="Triplicat" data-counter="https://triplicat.goatcounter.com/count">
 <header class="top"><div class="wrap">
@@ -32,10 +32,11 @@
 <span class="chips"><button class="chip" type="button" data-act="demo">Load demo data</button><label class="chip">Open file<input type="file" accept=".xlsx,.xlsm,.csv,.tsv,.txt" data-target="in" hidden></label></span></div>
 <textarea id="in" rows="11" spellcheck="false" autocomplete="off" placeholder="S&#9;v1&#9;v2&#9;v3&#10;0.05&#9;0.71&#9;0.66&#9;0.74&#10;0.1&#9;1.34&#9;1.25&#9;1.41"></textarea></div>
     <div class="calc-grid" style="margin-top:14px"><div class="calc-lbl">Unit of [S]</div><div class="calc-in"><input id="u_s" type="text" inputmode="text" autocomplete="off" value="mM" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Unit of v</div><div class="calc-in"><input id="u_v" type="text" inputmode="text" autocomplete="off" value="U/mg" placeholder="optional" style="text-align:left"></div></div>
-    <details class="figopts"><summary>Figure labels</summary><div class="calc-grid"><div class="calc-lbl">Title</div><div class="calc-in"><input id="f_title" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">X axis label</div><div class="calc-in"><input id="f_x" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Y axis label</div><div class="calc-in"><input id="f_y" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div></div>
-    <p class="muted" style="margin:8px 0 0">Leave a field empty to use the default shown in grey.</p></details>
+    <details class="figopts"><summary>Figure labels</summary><div class="calc-grid"><div class="calc-lbl">Title</div><div class="calc-in"><input id="f_title" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">X axis label</div><div class="calc-in"><input id="f_x" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Y axis label</div><div class="calc-in"><input id="f_y" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">X axis from</div><div class="calc-in"><input id="f_xmin" type="text" inputmode="decimal" autocomplete="off" placeholder="auto" style="text-align:left"></div><div class="calc-lbl">X axis to</div><div class="calc-in"><input id="f_xmax" type="text" inputmode="decimal" autocomplete="off" placeholder="auto" style="text-align:left"></div></div>
+    <p class="muted" style="margin:8px 0 0">Leave a field empty to use the default shown in grey. The axis range only changes the figure, not the calculation.</p></details>
     <div class="tool-foot"><button class="chip quiet" type="button" data-act="clear" data-target="in">Clear</button>
     <span class="muted">Your data stays in this browser tab.</span></div>
+    <p class="muted send-example">File from your instrument not read correctly? <a class="send-ex" href="mailto:triplicat.service@gmail.com?subject=Triplicat%20file%20example%20%28Enzyme%20kinetics%29&amp;body=Instrument%20and%20software%20version%3A%0AWhat%20went%20wrong%3A%0A%0A%28Please%20attach%20the%20file.%20Only%20send%20data%20you%20are%20allowed%20to%20share.%29">Send me an example</a> with the name of the instrument, and I will add the format. Only send data you are allowed to share.</p>
   </section>
   <section class="tool-out" aria-label="Results" aria-live="polite">
     <div class="card plotcard"><div id="out_plot"></div></div>
@@ -55,7 +56,7 @@
 <script src="js/site.js?v=1385b09c"></script>
 <script src="js/stats.js?v=d6d2f5b3"></script>
 <script src="js/xlsx.js?v=dd5bb396"></script>
-<script src="js/toolkit.js?v=74854fd9"></script>
-<script src="js/tool-kinetics.js?v=3197defd"></script>
+<script src="js/toolkit.js?v=08056c06"></script>
+<script src="js/tool-kinetics.js?v=afa39d64"></script>
 </body>
 </html>

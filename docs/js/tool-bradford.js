@@ -81,7 +81,7 @@
     var need = quad ? 4 : 3;
     if(s.levels < need){
       plotBox.innerHTML = '<div class="empty">At least ' + need + ' standard concentrations are needed for this model.</div>'; res.innerHTML = gridHtml(s);
-      nt.innerHTML = UI.notes([{ warn: true, text: 'Could read ' + s.x.length + ' absorbance values at ' + s.levels + ' concentrations. Expected: first column concentration, further columns absorbance (one column per replicate).' }]); return;
+      nt.innerHTML = UI.notes([{ warn: true, text: 'Could read ' + s.x.length + ' absorbance values at ' + s.levels + ' concentrations. Expected: first column concentration, further columns absorbance (one column per replicate).' + UI.exampleHint() }]); return;
     }
     var fit = TK.polyfit(s.x, s.y, quad ? 2 : 1);
     if(!fit){ plotBox.innerHTML = '<div class="empty">No curve could be fitted to these standards.</div>'; res.innerHTML = gridHtml(s); nt.innerHTML = ''; return; }

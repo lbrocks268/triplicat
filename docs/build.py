@@ -5,6 +5,7 @@ Change BRAND here and rerun to rename the site everywhere.
 The calculator cards live in src/cards.html (plain HTML, edit there).
 """
 import hashlib
+from urllib.parse import quote
 import re
 from pathlib import Path
 
@@ -271,7 +272,9 @@ def text_in(i, v, mode="text"): return f'<input id="{i}" type="text" inputmode="
 
 def tool(fname, title, desc, h1, lead, inputs, options, script, second_plot=False, rscript=True, clear="in"):
     fig = (opt("Title", text_in("f_title", "")) + opt("X axis label", text_in("f_x", "")) + opt("Y axis label", text_in("f_y", ""))
-           + (opt("Y axis label (derivative)", text_in("f_y2", "")) if second_plot else ""))
+           + (opt("Y axis label (derivative)", text_in("f_y2", "")) if second_plot else "")
+           + opt("X axis from", '<input id="f_xmin" type="text" inputmode="decimal" autocomplete="off" placeholder="auto" style="text-align:left">')
+           + opt("X axis to", '<input id="f_xmax" type="text" inputmode="decimal" autocomplete="off" placeholder="auto" style="text-align:left">'))
     dl = ('<button class="chip" type="button" data-act="svg">Figure SVG</button><button class="chip" type="button" data-act="png">Figure PNG</button>'
           '<button class="chip" type="button" data-act="csv">Results CSV</button>'
           + ('<button class="chip" type="button" data-act="r">R script</button>' if rscript else ""))
@@ -283,9 +286,10 @@ def tool(fname, title, desc, h1, lead, inputs, options, script, second_plot=Fals
     {inputs}
     <div class="calc-grid" style="margin-top:14px">{options}</div>
     <details class="figopts"><summary>Figure labels</summary><div class="calc-grid">{fig}</div>
-    <p class="muted" style="margin:8px 0 0">Leave a field empty to use the default shown in grey.</p></details>
+    <p class="muted" style="margin:8px 0 0">Leave a field empty to use the default shown in grey. The axis range only changes the figure, not the calculation.</p></details>
     <div class="tool-foot"><button class="chip quiet" type="button" data-act="clear" data-target="{clear}">Clear</button>
     <span class="muted">Your data stays in this browser tab.</span></div>
+    <p class="muted send-example">File from your instrument not read correctly? <a class="send-ex" href="mailto:{LEGAL["email"]}?subject={quote("Triplicat file example (" + h1 + ")")}&amp;body={quote("Instrument and software version:" + chr(10) + "What went wrong:" + chr(10) + chr(10) + "(Please attach the file. Only send data you are allowed to share.)")}">Send me an example</a> with the name of the instrument, and I will add the format. Only send data you are allowed to share.</p>
   </section>
   <section class="tool-out" aria-label="Results" aria-live="polite">
     <div class="card plotcard"><div id="out_plot"></div>{'<div id="out_plot2"></div>' if second_plot else ''}</div>
