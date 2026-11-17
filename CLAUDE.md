@@ -56,7 +56,7 @@ Do not report a change as working without checking it.
 ## Adding things
 
 - **Article:** new Markdown file in `Articles/` (same structure as the existing ones), one line in `ARTICLES` in `build.py`, build.
-- **Calculator:** card markup in `src/cards.html`, a function in `calc.js` added to `ALL`, an entry in `NAV` and `TILES` in `build.py` (keep the tile grid filling its rows).
+- **Calculator:** card markup in `src/cards.html`, a function in `calc.js` added to `ALL`, an entry in `NAV` and `TILES` in `build.py` (keep the tile grid filling its rows), and its id in one of the two `CALC_COLS` lists (keep both columns about equally tall; the build stops if the ids do not match).
 - **Analysis:** numerics in `stats.js` (validated), a `tool-<name>.js`, a `tool(...)` call and a `TOOLS` entry in `build.py`.
 
 ## Publishing
