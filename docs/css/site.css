@@ -338,6 +338,8 @@ h2.sub{font-family:var(--display); font-size:24px; letter-spacing:-.02em; margin
 .kv b{font-family:var(--mono); color:var(--text); font-weight:600;}
 .flag{color:var(--critical); font-family:var(--sans); font-weight:600;}
 .more{margin-top:12px; font-size:13.5px;} .more summary{cursor:pointer; color:var(--text-dim); padding:4px 0;}
+.calc-tbl.wells input[type=checkbox]{width:17px; height:17px; margin:0; accent-color:var(--accent); cursor:pointer; vertical-align:middle;}
+.calc-tbl.wells s{color:var(--text-dim);}
 .dl{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--border);}
 .dl[hidden]{display:none;}
 #out_notes{margin-top:6px;}

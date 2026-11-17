@@ -321,7 +321,11 @@ tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from m
      opt("Reference group", '<select id="o_ref" aria-label="Reference group" style="width:100%"></select>')
      + opt("Smoothing window (points)", text_in("o_win", "9", "numeric"))
      + opt("Search from (&deg;C)", '<input id="o_min" type="text" inputmode="decimal" autocomplete="off" placeholder="optional">')
-     + opt("Search to (&deg;C)", '<input id="o_max" type="text" inputmode="decimal" autocomplete="off" placeholder="optional">'),
+     + opt("Search to (&deg;C)", '<input id="o_max" type="text" inputmode="decimal" autocomplete="off" placeholder="optional">')
+     + '<div class="calc-lbl">Curves</div><div class="calc-mode" style="margin:0"><input type="radio" name="v" id="v_well" checked><label for="v_well">Each well</label>'
+       '<input type="radio" name="v" id="v_mean"><label for="v_mean">Mean per group</label></div>'
+     + '<div class="calc-lbl">Scale</div><div class="calc-mode" style="margin:0"><input type="radio" name="n" id="n_raw" checked><label for="n_raw">Raw</label>'
+       '<input type="radio" name="n" id="n_norm"><label for="n_norm">Normalised 0 to 1</label></div>',
      "tool-tsa.js", second_plot=True, rscript=False)
 
 # ---------- Articles ----------

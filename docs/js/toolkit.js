@@ -25,13 +25,17 @@
   }
   function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
-  /* spec: { xlabel, ylabel, series: [{ kind: 'points'|'line', x, y, color (index), label, dash, width, hollow }],
+  /* spec: { xlabel, ylabel, series: [{ kind: 'points'|'line'|'band', x, y, y2 (band: upper edge), color (index), muted (grey),
+             label, dash, width, hollow, opacity }],
              vlines: [{ x, color, label }], zeroX, zeroY, height } */
   function plot(spec, pal){
     pal = pal || screenPalette();
     var W = 720, T = spec.title ? 46 : 16, H = (spec.height || 420) + (spec.title ? 30 : 0), L = 64, R = 18, B = 52;
     var xs = [], ys = [];
-    spec.series.forEach(function(s){ s.x.forEach(function(v, i){ if(isFinite(v) && isFinite(s.y[i])){ xs.push(v); ys.push(s.y[i]); } }); });
+    spec.series.forEach(function(s){ s.x.forEach(function(v, i){
+      if(isFinite(v) && isFinite(s.y[i])){ xs.push(v); ys.push(s.y[i]); }
+      if(s.y2 && isFinite(v) && isFinite(s.y2[i])) ys.push(s.y2[i]);
+    }); });
     if(!xs.length) return '';
     var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
     if(spec.zeroX) x0 = Math.min(0, x0);
@@ -60,9 +64,20 @@
       o += '<line x1="' + f(px(v.x)) + '" x2="' + f(px(v.x)) + '" y1="' + T + '" y2="' + (H - B) + '" stroke="' + c + '" stroke-width="1.2" stroke-dasharray="4 4" opacity=".8"/>';
       if(v.label) o += '<text x="' + f(px(v.x) + 5) + '" y="' + (T + 12) + '" font-size="12" fill="' + c + '" ' + font + '>' + esc(v.label) + '</text>';
     });
+    var colorOf = function(s){ return s.muted ? pal.faint : pal.series[(s.color || 0) % pal.series.length]; };
     spec.series.forEach(function(s){
-      var c = pal.series[(s.color || 0) % pal.series.length];
-      if(s.kind === 'line'){
+      var c = colorOf(s);
+      if(s.kind === 'band'){
+        // filled area between y (lower edge) and y2 (upper edge), e.g. mean ± SD; gaps split it into pieces
+        var seg = [], flush = function(){
+          if(seg.length > 1) o += '<path d="M' + seg.map(function(i){ return f(px(s.x[i])) + ' ' + f(py(s.y2[i])); }).join(' L') +
+            ' L' + seg.slice().reverse().map(function(i){ return f(px(s.x[i])) + ' ' + f(py(s.y[i])); }).join(' L') +
+            ' Z" fill="' + c + '" stroke="none" opacity="' + (s.opacity || 0.18) + '"/>';
+          seg = [];
+        };
+        for(var b = 0; b < s.x.length; b++){ if(isFinite(s.x[b]) && isFinite(s.y[b]) && isFinite(s.y2[b])) seg.push(b); else flush(); }
+        flush();
+      } else if(s.kind === 'line'){
         var d = '', pen = false;
         for(var i = 0; i < s.x.length; i++){
           if(!isFinite(s.x[i]) || !isFinite(s.y[i])){ pen = false; continue; }
@@ -86,13 +101,13 @@
     if(spec.title) o += '<text x="' + ((L + W - R) / 2) + '" y="24" text-anchor="middle" font-size="16" font-weight="600" fill="' + pal.text + '" ' + font + '>' + esc(spec.title) + '</text>';
     // legend
     var seen = {}, items = [];
-    spec.series.forEach(function(s){ if(s.label && !seen[s.label]){ seen[s.label] = 1; items.push(s); } });
+    spec.series.forEach(function(s){ if(s.label && s.kind !== 'band' && !seen[s.label]){ seen[s.label] = 1; items.push(s); } });
     if(items.length > 1 || spec.legend){
       var lx = spec.legendLeft ? L + 14 : W - R - 150, ly = spec.legendBottom ? H - B - 14 - items.length * 18 : T + 10;
       items.forEach(function(s, i){
-        var c = pal.series[(s.color || 0) % pal.series.length], y = ly + i * 18;
+        var c = colorOf(s), y = ly + i * 18;
         o += (s.kind === 'line'
-          ? '<line x1="' + lx + '" x2="' + (lx + 18) + '" y1="' + y + '" y2="' + y + '" stroke="' + c + '" stroke-width="2.4"/>'
+          ? '<line x1="' + lx + '" x2="' + (lx + 18) + '" y1="' + y + '" y2="' + y + '" stroke="' + c + '" stroke-width="2.4"' + (s.dash ? ' stroke-dasharray="' + s.dash + '"' : '') + '/>'
           : '<circle cx="' + (lx + 9) + '" cy="' + y + '" r="4" fill="' + (s.hollow ? 'none' : c) + '" stroke="' + c + '" stroke-width="1.8"/>') +
           '<text x="' + (lx + 25) + '" y="' + (y + 4) + '" font-size="12.5" fill="' + pal.text + '" ' + font + '>' + esc(s.label) + '</text>';
       });
