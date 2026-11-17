@@ -173,7 +173,17 @@ h2.big{font-family:var(--display); font-size:clamp(28px,4vw,40px); line-height:1
 .tile.tint{background:var(--accent-dim); border-color:transparent;}
 .tile.tint .f{color:var(--accent-strong);}
 @media (max-width:980px){ .bento{grid-template-columns:repeat(2,1fr);} }
-@media (max-width:520px){ .bento{grid-template-columns:1fr;} .tile.wide{grid-column:auto;} .tile{min-height:132px;} }
+@media (max-width:520px){
+  .bento{grid-template-columns:1fr; gap:8px;} .tile.wide{grid-column:auto;}
+  /* compact rows on phones: name and formula on one line, the short description below */
+  .bento .tile{min-height:0; display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"name f" "d d"; gap:3px 12px; padding:13px 16px;}
+  .bento .tile > div:not(.f){display:contents;}
+  .bento .tile b{grid-area:name; margin:0;}
+  .bento .tile .f{grid-area:f; font-size:13px; color:var(--text-faint); align-self:center; white-space:nowrap;}
+  .bento .tile.tint .f{color:var(--accent-strong);}
+  .bento .tile span.d{grid-area:d;}
+  .bento .tile .go{display:none;}
+}
 
 /* Three reasons */
 .trio{display:grid; grid-template-columns:repeat(3,1fr); gap:0; border:1px solid var(--border);
@@ -206,6 +216,19 @@ h2.big{font-family:var(--display); font-size:clamp(28px,4vw,40px); line-height:1
 .steps b{display:block; font-size:15.5px;}
 .steps span{font-size:14px; color:var(--on-ink-dim);}
 @media (max-width:860px){ .ink{grid-template-columns:1fr; gap:28px;} }
+.kits{display:grid; gap:10px;}
+.kits a{display:grid; grid-template-columns:120px minmax(0,1fr); gap:16px; align-items:center; text-decoration:none; color:inherit;
+  background:rgba(255,255,255,.05); border:1px solid var(--ink-line); border-radius:16px; padding:10px 16px 10px 12px;
+  transition:background .18s ease, border-color .18s ease;}
+.kits a:hover{background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.22);}
+.kits .ill{display:block; width:100%; height:auto;}
+.kits b{display:block; font-size:15.5px;}
+.kits span{font-size:14px; color:var(--on-ink-dim);}
+.ink .ill .ax{stroke:var(--ink-line);}
+.ink .ill .g,.ink .ill .ar{stroke:var(--on-ink-dim);}
+.ink .ill .pt{fill:var(--ink); stroke:var(--on-ink-dim);}
+.ink .ill text{fill:var(--on-ink-dim);}
+@media (max-width:420px){ .kits a{grid-template-columns:96px minmax(0,1fr); gap:12px;} }
 
 /* ---------- Footer ---------- */
 .foot{margin-top:96px; border-top:1px solid var(--border); padding:28px 0 40px; font-size:13.5px; color:var(--text-faint);}
