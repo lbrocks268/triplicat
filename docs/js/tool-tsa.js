@@ -115,6 +115,31 @@
   var ex = UI.exclusions();
   var OUTLIER = 2;   // °C away from the group median: a rule of thumb for "look at this well", not a statistical test
 
+  // Plate map of the wells as named in the data (positions like A01), coloured by group. Clicking a well ticks or
+  // unticks it, the same as the checkbox in the well table.
+  function plateMap(cols, ignored){
+    var info = {}, rows = {}, nums = {}, named = 0;
+    cols.forEach(function(c){ var k = wellKey(c.name); if(k){ info[k] = c; named++; } });
+    ignored.forEach(function(nm){ var k = wellKey(nm); if(k) info[k] = { name: nm, none: true }; });
+    if(named < Math.max(2, cols.length / 2)) return '';
+    Object.keys(info).forEach(function(k){ rows[k[0]] = 1; nums[Number(k.slice(1))] = 1; });
+    var R = Object.keys(rows).sort(), N = Object.keys(nums).map(Number).sort(function(a, b){ return a - b; });
+    var head = '<tr><th></th>' + N.map(function(n){ return '<th>' + n + '</th>'; }).join('') + '</tr>';
+    var body = R.map(function(r){
+      return '<tr><th>' + r + '</th>' + N.map(function(n){
+        var c = info[r + n];
+        if(!c) return '<td></td>';
+        if(c.none) return '<td><span class="well none" title="' + UI.esc(c.name) + ': no name in the layout">' + UI.esc(c.name) + '</span></td>';
+        var tip = c.name + ', ' + c.group + ', Tm ' + fx(c.tm, 2) + ' °C' + (c.off ? ', left out' : '') + (c.odd ? ', far from its group' : '');
+        return '<td><label class="well' + (c.off ? ' off' : '') + (c.odd ? ' odd' : '') + '" style="--c:' + UI.seriesColor(c.gi) + '" title="' + UI.esc(tip) + '">' +
+          '<input type="checkbox" data-pt="' + UI.esc(c.name) + '"' + (c.off ? '' : ' checked') + ' aria-label="Use ' + UI.esc(c.name) + '">' +
+          '<b>' + UI.esc(c.group) + '</b><span>' + fx(c.tm, 2) + '</span></label></td>';
+      }).join('') + '</tr>';
+    }).join('');
+    return '<div class="plate-head"><span class="meta">Plate</span><span class="muted">as named in the data. Click a well to leave it out or take it back.</span></div>' +
+      '<div class="calc-scroll"><table class="plate">' + head + body + '</table></div>';
+  }
+
   function run(){
     var d = read(), plotBox = el('out_plot'), plot2 = el('out_plot2'), res = el('out_res'), nt = el('out_notes');
     last = null; el('dl').hidden = true; plot2.innerHTML = '';
@@ -187,11 +212,11 @@
     plotBox.innerHTML = UI.plot(spec); plot2.innerHTML = UI.plot(spec2);
     var grow = groups.map(function(g){
       g.mean = TK.mean(g.tm); g.sd = TK.sd(g.tm); g.d = g.mean - ref.mean; g.p = g === ref ? NaN : TK.welch(g.tm, ref.tm).p;
-      return [UI.esc(g.name) + (g === ref ? ' <span class="meta">reference</span>' : ''), g.tm.length, '<b>' + fx(g.mean, 2) + '</b>', fx(g.sd, 2),
+      return ['<span class="gdot" style="background:' + UI.seriesColor(groups.indexOf(g)) + '"></span>' + UI.esc(g.name) + (g === ref ? ' <span class="meta">reference</span>' : ''), g.tm.length, '<b>' + fx(g.mean, 2) + '</b>', fx(g.sd, 2),
               g === ref || !isFinite(g.d) ? '—' : (g.d >= 0 ? '+' : '') + g.d.toFixed(2), isFinite(g.p) ? (g.p < 0.001 ? '&lt; 0.001' : g.p.toFixed(3)) : '—'];
     });
     var off = d.cols.filter(function(c){ return c.off; });
-    res.innerHTML = UI.table(['Group', 'n', 'Mean T<sub>m</sub> / °C', 'SD', 'ΔT<sub>m</sub> / °C', 'p (Welch)'], grow, 'res') +
+    res.innerHTML = UI.table(['Group', 'n', 'Mean T<sub>m</sub> / °C', 'SD', 'ΔT<sub>m</sub> / °C', 'p (Welch)'], grow, 'res') + plateMap(d.cols, d.ignored) +
       UI.ptsBox('T<sub>m</sub> per well' + (off.length ? ' (' + off.length + ' left out)' : '') + '. Untick a well to leave it out.',
         UI.table(['Well', 'Group', 'T<sub>m</sub> / °C', ''], d.cols.map(function(c){
           return [UI.check(c.name, c.off, c.name), UI.esc(c.group), c.off ? '<s>' + fx(c.tm, 2) + '</s>' : fx(c.tm, 2),

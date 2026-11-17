@@ -13,6 +13,8 @@
     return t ? t === 'dark' : !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
   }
   function screenPalette(){ var p = isDark() ? DARK : LIGHT, q = {}; for(var k in p) q[k] = p[k]; if(!isDark()) q.bg = 'transparent'; return q; }
+  // Series colour on screen, so tables and plate maps can match the plot
+  function seriesColor(i){ var p = screenPalette().series; return p[(i || 0) % p.length]; }
 
   // ---------- Plot ----------
   function niceTicks(lo, hi, count){
@@ -233,5 +235,5 @@
 
   window.TKUI = { plot: plot, downloadText: downloadText, downloadSVG: downloadSVG, downloadPNG: downloadPNG, csv: csv,
                   el: el, table: table, notes: notes, wire: wire, esc: esc, applyLabels: applyLabels,
-                  exclusions: exclusions, check: check, ptsBox: ptsBox, pointGrid: pointGrid };
+                  exclusions: exclusions, check: check, ptsBox: ptsBox, pointGrid: pointGrid, seriesColor: seriesColor };
 })();
