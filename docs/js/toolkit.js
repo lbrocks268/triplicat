@@ -222,9 +222,49 @@
   function notes(list){
     return list.map(function(n){ return '<div class="' + (n.warn ? 'calc-warn' : 'calc-note') + '">' + n.text + '</div>'; }).join('');
   }
+  // ---------- Remembering inputs (opt-in) ----------
+  // Only when the user ticks #remember: the inputs of the data card are kept in localStorage for this page,
+  // nothing else. Unticking deletes them. Left-out wells and points are not kept.
+  var MEM = 'triplicat-inputs:' + location.pathname, MEM_ON = 'triplicat-remember';
+  function memFields(){
+    return Array.prototype.slice.call(document.querySelectorAll('.tool-in input[id], .tool-in textarea[id], .tool-in select[id]'))
+      .filter(function(e){ return e.type !== 'file' && e.id !== 'remember'; });
+  }
+  function memOn(){ try { return localStorage.getItem(MEM_ON) === '1'; } catch(e){ return false; } }
+  function memSave(){
+    if(!memOn()) return;
+    var data = {};
+    memFields().forEach(function(e){ data[e.id] = (e.type === 'radio' || e.type === 'checkbox') ? e.checked : e.value; });
+    try { localStorage.setItem(MEM, JSON.stringify(data)); } catch(e){}
+  }
+  function memLoad(){
+    var data = null;
+    try { data = memOn() ? JSON.parse(localStorage.getItem(MEM) || 'null') : null; } catch(e){}
+    if(!data) return null;
+    memFields().forEach(function(e){
+      if(!(e.id in data)) return;
+      if(e.type === 'radio' || e.type === 'checkbox') e.checked = !!data[e.id]; else if(e.tagName !== 'SELECT') e.value = data[e.id];
+    });
+    return data;
+  }
+  function memClear(){ try { localStorage.removeItem(MEM_ON); for(var i = localStorage.length - 1; i >= 0; i--){ var k = localStorage.key(i); if(k && k.indexOf('triplicat-inputs:') === 0) localStorage.removeItem(k); } } catch(e){} }
+
   // Wires a page: recompute on every input, on theme change, file -> textarea, demo button.
   function wire(opts){
-    var run = function(){ try { opts.run(); } catch(e){ console.error(e); if(opts.fail) opts.fail(e); } };
+    var saveTimer = null;
+    var run = function(){
+      try { opts.run(); } catch(e){ console.error(e); if(opts.fail) opts.fail(e); }
+      clearTimeout(saveTimer); saveTimer = setTimeout(memSave, 400);
+    };
+    var rem = el('remember');
+    if(rem){
+      rem.checked = memOn();
+      rem.addEventListener('change', function(){
+        if(rem.checked){ try { localStorage.setItem(MEM_ON, '1'); } catch(e){} memSave(); }
+        else memClear();
+      });
+    }
+    var saved = memLoad();
     document.addEventListener('input', run);
     document.addEventListener('change', function(ev){
       var t = ev.target;
@@ -259,6 +299,11 @@
     var th = el('theme'); if(th) th.addEventListener('click', function(){ setTimeout(run, 0); });
     if(window.matchMedia) try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', run); } catch(e){}
     run();
+    if(saved){
+      var again = false;
+      memFields().forEach(function(e){ if(e.tagName === 'SELECT' && (e.id in saved) && e.value !== saved[e.id]){ e.value = saved[e.id]; again = true; } });
+      if(again) run();
+    }
   }
 
   window.TKUI = { plot: plot, downloadText: downloadText, downloadSVG: downloadSVG, downloadPNG: downloadPNG, csv: csv,

@@ -289,6 +289,7 @@ def tool(fname, title, desc, h1, lead, inputs, options, script, second_plot=Fals
     <p class="muted" style="margin:8px 0 0">Leave a field empty to use the default shown in grey. The axis range only changes the figure, not the calculation.</p></details>
     <div class="tool-foot"><button class="chip quiet" type="button" data-act="clear" data-target="{clear}">Clear</button>
     <span class="muted">Your data stays in this browser tab.</span></div>
+    <label class="remember"><input type="checkbox" id="remember"> Remember my inputs in this browser (stored only on this device, untick to delete)</label>
     <p class="muted send-example">File from your instrument not read correctly? <a class="send-ex" href="mailto:{LEGAL["email"]}?subject={quote("Triplicat file example (" + h1 + ")")}&amp;body={quote("Instrument and software version:" + chr(10) + "What went wrong:" + chr(10) + chr(10) + "(Please attach the file. Only send data you are allowed to share.)")}">Send me an example</a> with the name of the instrument, and I will add the format. Only send data you are allowed to share.</p>
   </section>
   <section class="tool-out" aria-label="Results" aria-live="polite">
@@ -465,13 +466,14 @@ page("legal.html", f"Imprint and privacy | {BRAND}", "Imprint (Impressum) and pr
 <p>The controller in the sense of the GDPR is the person named in the imprint. You can reach me at <a href="mailto:{L["email"]}">{L["email"]}</a>.</p>
 
 <h3>Your data in the calculators and analyses</h3>
-<p>Everything you type, paste or open on this site is processed only in your own browser. Your values and files are not transmitted to me or to anyone else, and they are not stored after you close the page.</p>
+<p>Everything you type, paste or open on this site is processed only in your own browser. Your values and files are not transmitted to me or to anyone else, and they are not stored after you close the page, unless you choose to keep them as described under &ldquo;Cookies, tracking and local storage&rdquo;.</p>
 
 <h3>Hosting and server logs</h3>
 <p>This site is hosted on {HOSTING["name"]}, a service of {HOSTING["company"]}. When you open a page, the hosting provider processes technical data that your browser sends automatically, in particular your IP address, the time of the request and the requested file, in order to deliver the site and keep it secure. The legal basis is Art. 6 (1) (f) GDPR (legitimate interest in a reliable and secure website). The data may be processed in the USA. Details are in the provider's <a href="{HOSTING["privacy_url"]}" rel="noopener">privacy statement</a>.</p>
 
 <h3>Cookies, tracking and local storage</h3>
 <p>This site sets no cookies and uses no analytics or advertising services that follow you around.{COUNTER_NOTE} If you switch between the light and dark design, that choice is saved in your browser's local storage so that it is remembered on your next visit. It is not transmitted.</p>
+<p>On the analysis pages you can tick &ldquo;Remember my inputs in this browser&rdquo;. Only then are your inputs on that page (pasted data, plate layout and settings) saved in your browser's local storage on your device, so that they are still there after a reload. They are not transmitted to me or to anyone else. When you untick the box, the saved inputs are deleted; you can also delete them at any time in your browser settings. The legal basis is your consent by ticking the box (&sect; 25 (1) TDDDG, Art. 6 (1) (a) GDPR).</p>
 
 {COUNTER_SECTION}<h3>Contact by email</h3>
 <p>If you write to me, I use your address and the content of your message only to answer you (Art. 6 (1) (f) GDPR), and delete the correspondence when it is no longer needed. If you ask to be told about new analyses or the Pro version, I keep your address only for that purpose and delete it once I have told you, or earlier if you ask (Art. 6 (1) (a) GDPR, your request is the consent). Emails to this address are received and stored by Gmail, a service of Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland; data may also be processed in the USA. Details are in <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>
