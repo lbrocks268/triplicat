@@ -74,8 +74,3 @@ Paste your substrate concentrations and rates into the [enzyme kinetics tool](ki
 - Michaelis, L. and Menten, M.L. (1913) 'Die Kinetik der Invertinwirkung', *Biochemische Zeitschrift*, 49, pp. 333-369.
 - Lineweaver, H. and Burk, D. (1934) 'The determination of enzyme dissociation constants', *Journal of the American Chemical Society*, 56(3), pp. 658-666.
 - Johnson, K.A. and Goody, R.S. (2011) 'The original Michaelis constant: translation of the 1913 Michaelis-Menten paper', *Biochemistry*, 50(39), pp. 8264-8269.
-
-## Open points for Linus
-
-- The "0.2 to 5 times K<sub>m</sub>" rule is a common rule of thumb; I have no specific source for it. Either find one or phrase it as your own practice.
-- Add a real figure: the same data fitted both ways, with the two K<sub>m</sub> values side by side. The kinetics tool can produce the nonlinear one.

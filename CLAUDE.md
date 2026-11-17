@@ -28,7 +28,7 @@ If `CLAUDE.local.md` exists in this folder, read it first. It holds the owner's 
 **Build (`docs/build.py`)**
 - `page(fname, title, desc, body, current, scripts, robots)` wraps every page in the shared header, footer and head tags, appends a content hash to local css/js links (cache busting) and records the page for the sitemap. Pages with `noindex` are left out of the sitemap.
 - The landing page is written before the articles are loaded; its teaser row is filled in afterwards via the `__ARTICLE_TEASERS__` placeholder.
-- Articles: `load_article()` strips frontmatter, callout lines (starting with `>`), the `**Target search:**` and `**Links to:**` lines, and everything from `## Open points for Linus` on. `md_to_html()` is a small converter that knows h2/h3, paragraphs, bullet lists, fenced code, inline code, bold, italic and links. Inline HTML such as `<sub>` passes through. No tables or images yet.
+- Articles: `load_article()` strips frontmatter, callout lines (starting with `>`), the `**Target search:**` and `**Links to:**` lines, and everything from `## Open points for Linus` on. Open points are not kept in the public sources: they live in `Articles/open-points.local.md`, which is excluded from git on the owner's machine. Put new ones there, not in the article files. `md_to_html()` is a small converter that knows h2/h3, paragraphs, bullet lists, fenced code, inline code, bold, italic and links. Inline HTML such as `<sub>` passes through. No tables or images yet.
 - `ARTICLES_REVIEWED` is one switch for all articles. `False` adds a draft notice and `noindex`. Set it to `False` when adding an unchecked article, or make it per-article first.
 
 **Calculators (`js/calc.js`, `src/cards.html`)**

@@ -7,7 +7,7 @@ date: 2026-11-17
 # Enzyme kinetics, Bradford, thermal shift: what each assay tells you
 
 > [!info] Text checked by Linus on 2026-11-17
-> Drafted by Claude from general knowledge, the lab example from Linus's bachelor thesis in general terms. Edit here and run `python3 docs/build.py` to update the site.
+> Drafted by Claude from general knowledge, then reviewed. Edit here and run `python3 docs/build.py` to update the site.
 
 **Target search:** "what is a thermal shift assay used for", "Bradford assay principle and limitations", "why measure enzyme kinetics", "Km and Vmax meaning"
 **Links to:** `kinetics.html`, `bradford.html`, `thermal-shift.html`, `michaelis-menten-fit.html`, `bradford-curve-not-linear.html`, `thermal-shift-tm.html`
@@ -107,13 +107,3 @@ All three analyses run in your browser: [enzyme kinetics](kinetics.html), [Bradf
 - Bradford, M.M. (1976) 'A rapid and sensitive method for the quantitation of microgram quantities of protein utilizing the principle of protein-dye binding', *Analytical Biochemistry*, 72, pp. 248-254.
 - Michaelis, L. and Menten, M.L. (1913) 'Die Kinetik der Invertinwirkung', *Biochemische Zeitschrift*, 49, pp. 333-369.
 - Niesen, F.H., Berglund, H. and Vedadi, M. (2007) 'The use of differential scanning fluorimetry to detect ligand interactions that promote protein stability', *Nature Protocols*, 2(9), pp. 2212-2221.
-
-## Open points for Linus
-
-- Check every statement against your own experience. In particular: the dye shift "from about 465 nm to 595 nm", "binds mainly to basic and aromatic residues", "BCA for samples with detergents", and the claim that some ligands bind without a measurable thermal shift.
-- Check the three references (authors, year, volume, pages). Bradford 1976 and Niesen 2007 are the classic sources; Michaelis and Menten 1913 is in German.
-- Decide whether k<sub>cat</sub> and k<sub>cat</sub>/K<sub>m</sub> belong here. The kinetics tool reports only K<sub>m</sub> and V<sub>max</sub>, not k<sub>cat</sub>.
-- The thermal shift article ("Try it") says replicates are grouped by name. Since 2026-11-17 the tool also reads instrument exports and groups by a plate layout; that article could mention it.
-- "An example from the lab" is based on Linus's bachelor thesis (two point mutants), written in general terms on 2026-11-17: no residue numbers, no protein or substrate names, no absolute values (only "about half", "less than a tenth", "one to two orders of magnitude"). Check that the wording matches what the thesis found, that nothing identifies the protein, and whether the group is fine with describing it at this level.
-- The caveat about V<sub>max</sub> and inactive protein in the first example was added by Claude as a general point; it is not a statement from the thesis. Keep or drop it.
-- Once this is published: add a short "What is this for?" box on each analysis page with a link here (Claude can do that).

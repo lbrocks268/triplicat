@@ -65,9 +65,3 @@ The [thermal shift tool](thermal-shift.html) takes one column per well, calculat
 - Niesen, F.H., Berglund, H. and Vedadi, M. (2007) 'The use of differential scanning fluorimetry to detect ligand interactions that promote protein stability', *Nature Protocols*, 2(9), pp. 2212-2221.
 - Pantoliano, M.W. et al. (2001) 'High-density miniaturized thermal shift assays as a general strategy for drug discovery', *Journal of Biomolecular Screening*, 6(6), pp. 429-440.
 - Savitzky, A. and Golay, M.J.E. (1964) 'Smoothing and differentiation of data by simplified least squares procedures', *Analytical Chemistry*, 36(8), pp. 1627-1639.
-
-## Open points for Linus
-
-- The tool currently offers only method 1. Either say so in the article or wait until a Boltzmann fit is added.
-- Pantoliano et al. (2001) is listed as background but not cited in the text. Cite it where the method is introduced, or remove it.
-- You run thermal shift assays yourself: one of your own observations (for example what a bad curve looked like and why) would make this article more than a summary. Use only data you are allowed to show.

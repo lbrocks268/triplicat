@@ -58,9 +58,3 @@ The [Bradford tool](bradford.html) fits a linear or a quadratic curve through al
 - Bradford, M.M. (1976) 'A rapid and sensitive method for the quantitation of microgram quantities of protein utilizing the principle of protein-dye binding', *Analytical Biochemistry*, 72(1-2), pp. 248-254.
 - Compton, S.J. and Jones, C.G. (1985) 'Mechanism of dye response and interference in the Bradford protein assay', *Analytical Biochemistry*, 151(2), pp. 369-374.
 - Zor, T. and Selinger, Z. (1996) 'Linearization of the Bradford protein assay increases its sensitivity: theoretical and experimental studies', *Analytical Biochemistry*, 236(2), pp. 302-308.
-
-## Open points for Linus
-
-- I deliberately gave no numbers for the linear range, because they depend on the reagent and format (cuvette or microplate). Add the range from the manual of the reagent you use, with the source.
-- The description of the dye forms (reddish-brown free form, blue bound form, about 595 nm) is the standard account. Check the exact wording against Compton and Jones (1985).
-- A figure with one data set fitted both ways would make the point at a glance.
