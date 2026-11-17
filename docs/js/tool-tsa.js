@@ -18,15 +18,92 @@
     return out;
   }
 
+  // ---------- Long format (one row per well and reading), as many qPCR instruments export it ----------
+  // Recognised by a header with a well column, a temperature column and a fluorescence column. Only the first
+  // block is used: instruments often append further blocks (derivative, fitted curves) after an empty line.
+  var converted = null;   // { text, note } of the last conversion, so the note stays while the text is unchanged
+  function findCol(h, re, not){ for(var i = 0; i < h.length; i++) if(re.test(h[i]) && !(not && not.test(h[i]))) return i; return -1; }
+  function fromLong(text){
+    var first = text.split(/\r?\n[ \t;,]*\r?\n/)[0], t = TK.parseTable(first), h = t.header;
+    var w = findCol(h, /position/i); if(w < 0) w = findCol(h, /^(well|sample|pos)/i);
+    var tc = findCol(h, /temp/i), fc = findCol(h, /fluor|rfu|intensity|signal/i, /deriv|boltz|fit/i);
+    if(w < 0 || tc < 0 || fc < 0 || t.rows.length < 10) return null;
+    var wells = {}, order = [];
+    t.rows.forEach(function(r){
+      var k = (r[w] || '').trim(), x = TK.toNum(r[tc], t.delim), y = TK.toNum(r[fc], t.delim);
+      if(!k || !isFinite(x) || !isFinite(y)) return;
+      if(!wells[k]){ wells[k] = { T: [], F: [] }; order.push(k); }
+      wells[k].T.push(x); wells[k].F.push(y);
+    });
+    if(order.length < 1 || wells[order[0]].T.length < 10) return null;
+    // common temperature grid: the first well's readings, inside the range that every well covers
+    var lo = -Infinity, hi = Infinity, same = true, ref = wells[order[0]].T;
+    order.forEach(function(k){
+      var T = wells[k].T; lo = Math.max(lo, Math.min.apply(null, T)); hi = Math.min(hi, Math.max.apply(null, T));
+      if(T.length !== ref.length || T.some(function(v, i){ return Math.abs(v - ref[i]) > 0.05; })) same = false;
+    });
+    var grid = ref.filter(function(v){ return v >= lo && v <= hi; });
+    var at = function(W, x){   // linear interpolation, readings sorted by temperature
+      for(var i = 1; i < W.T.length; i++) if(W.T[i] >= x){ var a = W.T[i - 1], b = W.T[i]; return b === a ? W.F[i] : W.F[i - 1] + (W.F[i] - W.F[i - 1]) * (x - a) / (b - a); }
+      return W.T[0] === x ? W.F[0] : NaN;
+    };
+    var out = 'temp\t' + order.join('\t') + '\n';
+    grid.forEach(function(x, i){
+      out += TK.sig(x, 8) + '\t' + order.map(function(k){ return TK.sig(same ? wells[k].F[ref.indexOf(x)] : at(wells[k], x), 8); }).join('\t') + '\n';
+    });
+    var more = text.length > first.length + 5;
+    return { text: out, note: 'Converted from one row per well and reading: ' + order.length + ' wells, ' + grid.length + ' temperature steps, columns &ldquo;' + UI.esc(h[w]) + '&rdquo;, &ldquo;' + UI.esc(h[tc]) + '&rdquo; and &ldquo;' + UI.esc(h[fc]) + '&rdquo;' +
+      (more ? '. Further blocks after the first empty line (for example the instrument&rsquo;s own derivative) were not used' : '') +
+      (same ? '' : '. The wells had slightly different temperatures, so their readings were interpolated onto the temperatures of ' + UI.esc(order[0])) + '.' };
+  }
+
+  // ---------- Plate layout: sample name per well position ----------
+  // Accepts a plate map pasted from a spreadsheet (row letters down, column numbers across) or a list "well, name".
+  function wellKey(n){ var m = /^\s*([A-Pa-p])\s*0*(\d{1,2})\s*$/.exec(n || ''); return m ? m[1].toUpperCase() + Number(m[2]) : null; }
+  function readLayout(text){
+    var lines = String(text || '').replace(/\r/g, '').split('\n').filter(function(l){ return l.trim() !== ''; });
+    if(!lines.length) return null;
+    var d = lines[0].indexOf('\t') >= 0 || lines.some(function(l){ return l.indexOf('\t') >= 0; }) ? '\t' : lines[0].indexOf(';') >= 0 ? ';' : ',';
+    var cells = lines.map(function(l){ return l.split(d).map(function(c){ return c.trim().replace(/^"(.*)"$/, '$1'); }); });
+    var map = {}, n = 0;
+    // list form: first cell is a well position, second the name
+    if(cells.filter(function(r){ return wellKey(r[0]); }).length >= cells.length / 2 && cells.every(function(r){ return r.length <= 3; })){
+      cells.forEach(function(r){ var k = wellKey(r[0]); if(k && r[1]){ map[k] = r[1]; n++; } });
+      return { map: map, n: n };
+    }
+    // grid form: a header row with column numbers (optional), rows starting with a letter
+    var nums = null;
+    cells.forEach(function(r){ if(!nums && r.slice(1).filter(Boolean).length && r.slice(1).every(function(c){ return c === '' || /^\d{1,2}$/.test(c); })) nums = r.map(function(c){ return Number(c); }); });
+    cells.forEach(function(r){
+      if(!/^[A-Pa-p]$/.test(r[0])) return;
+      for(var j = 1; j < r.length; j++){ var col = nums ? nums[j] : j; if(r[j] && col){ map[r[0].toUpperCase() + col] = r[j]; n++; } }
+    });
+    return { map: map, n: n };
+  }
+
   function read(){
+    var raw = el('in').value;
+    if(!(converted && raw === converted.text) && /temp/i.test(raw.slice(0, 300)) && /(position|well)/i.test(raw.slice(0, 300))){
+      var c = fromLong(raw);
+      if(c){ el('in').value = c.text; converted = c; }
+    }
     var t = TK.parseTable(el('in').value), T = [], cols = [];
-    for(var j = 1; j < t.header.length; j++) cols.push({ name: t.header[j], group: t.header[j].replace(/[_\s.-]*\d+$/, '') || t.header[j], F: [] });
+    var lay = readLayout(el('lay') ? el('lay').value : ''), ignored = [];
+    for(var j = 1; j < t.header.length; j++){
+      var nm = t.header[j], group = nm.replace(/[_\s.-]*\d+$/, '') || nm;
+      if(lay && lay.n){
+        var k = wellKey(nm);
+        if(!k || !lay.map[k]){ ignored.push(nm); continue; }
+        group = lay.map[k];
+      }
+      cols.push({ name: nm, group: group, F: [], k: j });
+    }
     t.rows.forEach(function(r){
       var x = TK.toNum(r[0], t.delim); if(!isFinite(x)) return;
-      T.push(x); cols.forEach(function(c, k){ c.F.push(TK.toNum(r[k + 1], t.delim)); });
+      T.push(x); cols.forEach(function(c){ c.F.push(TK.toNum(r[c.k], t.delim)); });
     });
     cols = cols.filter(function(c){ return c.F.filter(isFinite).length === T.length && T.length; });
-    return { T: T, cols: cols };
+    return { T: T, cols: cols, lay: lay, ignored: ignored, conv: converted && el('in').value === converted.text ? converted.note : '' };
   }
 
   // Display helpers: '—' for missing values, NaN-safe mean and SD across wells at one temperature.
@@ -47,7 +124,7 @@
     var win = parseInt(el('o_win').value, 10); if(!(win >= 3)) win = 9; if(win % 2 === 0) win += 1;
     if(d.T.length < win + 2 || !d.cols.length){
       plotBox.innerHTML = '<div class="empty">Not enough data: at least ' + (win + 2) + ' temperature steps and one complete well column are needed.</div>'; res.innerHTML = '';
-      nt.innerHTML = UI.notes([{ warn: true, text: 'Could read ' + d.T.length + ' temperature steps and ' + d.cols.length + ' complete well column(s). Expected: first column temperature, one column per well, header like Reference_1, Reference_2, Ligand_1.' }]); return;
+      nt.innerHTML = UI.notes([d.lay && d.lay.n && d.ignored.length ? { warn: true, text: 'The plate layout names none of the wells in the data. Use positions like A1 or A01 in the layout and in the column names.' } : { warn: true, text: 'Could read ' + d.T.length + ' temperature steps and ' + d.cols.length + ' complete well column(s). Expected: first column temperature, one column per well, header like Reference_1, Reference_2, Ligand_1.' }]); return;
     }
     ex.sync(d.cols.map(function(c){ return c.name; }).join('|'));
     var meanMode = el('v_mean').checked, norm = el('n_norm').checked;
@@ -123,6 +200,9 @@
     var n = [], diffs = [];
     for(var i = 1; i < d.T.length; i++) diffs.push(d.T[i] - d.T[i - 1]);
     var step = TK.mean(diffs);
+    if(d.conv) n.push({ text: d.conv });
+    if(d.lay && !d.lay.n) n.push({ warn: true, text: 'The plate layout could not be read. Paste the plate map with row letters in the first column and column numbers in the first row, or a list of well and name.' });
+    if(d.lay && d.lay.n) n.push({ text: 'Groups from the plate layout' + (d.ignored.length ? '. ' + d.ignored.length + ' well(s) without a name in the layout are ignored: ' + d.ignored.map(UI.esc).join(', ') : '') + '.' });
     var odd = d.cols.filter(function(c){ return c.odd; });
     if(odd.length) n.push({ warn: true, text: odd.map(function(c){ return UI.esc(c.name) + ' (' + fx(c.tm, 1) + ' °C)'; }).join(', ') + (odd.length > 1 ? ' are' : ' is') + ' more than ' + OUTLIER + ' °C away from the median of ' + (odd.length > 1 ? 'their groups' : 'its group') + '. If the well failed, untick it in the table above.' });
     if(off.length) n.push({ text: off.length + ' well(s) left out (' + off.map(function(c){ return UI.esc(c.name); }).join(', ') + '). They are left out of means, SD, ΔT<sub>m</sub> and p values' + (meanMode ? ' and the mean curves' : ' and drawn grey and dashed') + '. Say so in your methods.' });
@@ -135,7 +215,7 @@
     else n.push({ text: 'With three wells per group the p value is an orientation only.' });
     if(meanMode) n.push({ text: 'Mean per group: each curve is the point-by-point mean of the included wells, the shaded band ± 1 SD. The curves are for display. T<sub>m</sub>, SD and p still come from the single wells, and the dashed lines mark the mean T<sub>m</sub>, which can sit slightly off the peak of the mean derivative.' });
     if(norm) n.push({ text: 'Normalised: each well is scaled to 0 at its lowest and 1 at its highest reading over the whole range. This does not change T<sub>m</sub>.' });
-    n.push({ text: 'T<sub>m</sub> is the temperature of the steepest increase: first derivative from a Savitzky-Golay filter (quadratic, ' + win + ' points = ' + TK.sig((win - 1) * step, 3) + ' °C), maximum refined with a parabola. A Boltzmann fit can give slightly different values. Wells are grouped by their column name without the trailing number.' });
+    n.push({ text: 'T<sub>m</sub> is the temperature of the steepest increase: first derivative from a Savitzky-Golay filter (quadratic, ' + win + ' points = ' + TK.sig((win - 1) * step, 3) + ' °C), maximum refined with a parabola. A Boltzmann fit can give slightly different values.' + (d.lay && d.lay.n ? '' : ' Wells are grouped by their column name without the trailing number, or by the plate layout if you paste one.') });
     nt.innerHTML = UI.notes(n);
     last = { spec: spec, spec2: spec2, d: d, groups: groups, ref: ref, win: win, fKey: fKey, norm: norm }; el('dl').hidden = false;
   }

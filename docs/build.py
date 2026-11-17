@@ -316,8 +316,10 @@ tool("bradford.html", "Bradford assay calculator: standard curve and sample conc
 
 tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from melting curves",
      "Analyse thermal shift (DSF) melting curves in the browser: Tm per well from the first derivative, group means, delta Tm against a reference and figures.",
-     "Thermal shift", "Melting temperature from the steepest point of each curve. First column temperature, then one column per well, named like Reference_1, Reference_2, Ligand_1.",
-     data_box("in", "Temperature and fluorescence per well", "temp&#9;Reference_1&#9;Reference_2&#9;Ligand_1&#9;Ligand_2&#10;25&#9;118.2&#9;121.5&#9;119.9&#9;117.3", rows=12),
+     "Thermal shift", "Melting temperature from the steepest point of each curve. First column temperature, then one column per well, named like Reference_1, Reference_2, Ligand_1. Instrument exports with one row per well and reading are converted automatically.",
+     data_box("in", "Temperature and fluorescence per well", "temp&#9;Reference_1&#9;Reference_2&#9;Ligand_1&#9;Ligand_2&#10;25&#9;118.2&#9;121.5&#9;119.9&#9;117.3", rows=12)
+     + data_box("lay", "Plate layout (optional)", "&#9;1&#9;2&#9;3&#10;A&#9;Reference&#9;Ligand&#9;Ligand&#10;B&#9;Reference&#9;Ligand&#9;Ligand", rows=5, demo=False)
+     + '<p class="muted" style="margin:8px 0 0">Paste your plate map from the spreadsheet: row letters down, column numbers across, a sample name per well. Wells with the same name form a group, empty wells are left out. Needed when the wells are named by position (A01, B01, ...).</p>',
      opt("Reference group", '<select id="o_ref" aria-label="Reference group" style="width:100%"></select>')
      + opt("Smoothing window (points)", text_in("o_win", "9", "numeric"))
      + opt("Search from (&deg;C)", '<input id="o_min" type="text" inputmode="decimal" autocomplete="off" placeholder="optional">')
@@ -326,7 +328,7 @@ tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from m
        '<input type="radio" name="v" id="v_mean"><label for="v_mean">Mean per group</label></div>'
      + '<div class="calc-lbl">Scale</div><div class="calc-mode" style="margin:0"><input type="radio" name="n" id="n_raw" checked><label for="n_raw">Raw</label>'
        '<input type="radio" name="n" id="n_norm"><label for="n_norm">Normalised 0 to 1</label></div>',
-     "tool-tsa.js", second_plot=True, rscript=False)
+     "tool-tsa.js", second_plot=True, rscript=False, clear="in,lay")
 
 # ---------- Articles ----------
 # Source of truth: the Markdown drafts in ../Articles/. Internal parts (frontmatter, warning box,

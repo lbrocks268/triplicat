@@ -25,16 +25,18 @@
 </div></header>
 <main class="wrap">
 <div class="page-head tool-head"><a class="crumb" href="toolkit.html">&larr; Toolkit</a>
-<h1>Thermal shift</h1><p>Melting temperature from the steepest point of each curve. First column temperature, then one column per well, named like Reference_1, Reference_2, Ligand_1.</p></div>
+<h1>Thermal shift</h1><p>Melting temperature from the steepest point of each curve. First column temperature, then one column per well, named like Reference_1, Reference_2, Ligand_1. Instrument exports with one row per well and reading are converted automatically.</p></div>
 <div class="tool">
   <section class="card tool-in" aria-label="Data">
     <div class="field"><div class="field-head"><label for="in">Temperature and fluorescence per well</label>
 <span class="chips"><button class="chip" type="button" data-act="demo">Load demo data</button><label class="chip">Open file<input type="file" accept=".xlsx,.xlsm,.csv,.tsv,.txt" data-target="in" hidden></label></span></div>
-<textarea id="in" rows="12" spellcheck="false" autocomplete="off" placeholder="temp&#9;Reference_1&#9;Reference_2&#9;Ligand_1&#9;Ligand_2&#10;25&#9;118.2&#9;121.5&#9;119.9&#9;117.3"></textarea></div>
+<textarea id="in" rows="12" spellcheck="false" autocomplete="off" placeholder="temp&#9;Reference_1&#9;Reference_2&#9;Ligand_1&#9;Ligand_2&#10;25&#9;118.2&#9;121.5&#9;119.9&#9;117.3"></textarea></div><div class="field"><div class="field-head"><label for="lay">Plate layout (optional)</label>
+<span class="chips"><label class="chip">Open file<input type="file" accept=".xlsx,.xlsm,.csv,.tsv,.txt" data-target="lay" hidden></label></span></div>
+<textarea id="lay" rows="5" spellcheck="false" autocomplete="off" placeholder="&#9;1&#9;2&#9;3&#10;A&#9;Reference&#9;Ligand&#9;Ligand&#10;B&#9;Reference&#9;Ligand&#9;Ligand"></textarea></div><p class="muted" style="margin:8px 0 0">Paste your plate map from the spreadsheet: row letters down, column numbers across, a sample name per well. Wells with the same name form a group, empty wells are left out. Needed when the wells are named by position (A01, B01, ...).</p>
     <div class="calc-grid" style="margin-top:14px"><div class="calc-lbl">Reference group</div><div class="calc-in"><select id="o_ref" aria-label="Reference group" style="width:100%"></select></div><div class="calc-lbl">Smoothing window (points)</div><div class="calc-in"><input id="o_win" type="text" inputmode="numeric" autocomplete="off" value="9" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Search from (&deg;C)</div><div class="calc-in"><input id="o_min" type="text" inputmode="decimal" autocomplete="off" placeholder="optional"></div><div class="calc-lbl">Search to (&deg;C)</div><div class="calc-in"><input id="o_max" type="text" inputmode="decimal" autocomplete="off" placeholder="optional"></div><div class="calc-lbl">Curves</div><div class="calc-mode" style="margin:0"><input type="radio" name="v" id="v_well" checked><label for="v_well">Each well</label><input type="radio" name="v" id="v_mean"><label for="v_mean">Mean per group</label></div><div class="calc-lbl">Scale</div><div class="calc-mode" style="margin:0"><input type="radio" name="n" id="n_raw" checked><label for="n_raw">Raw</label><input type="radio" name="n" id="n_norm"><label for="n_norm">Normalised 0 to 1</label></div></div>
     <details class="figopts"><summary>Figure labels</summary><div class="calc-grid"><div class="calc-lbl">Title</div><div class="calc-in"><input id="f_title" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">X axis label</div><div class="calc-in"><input id="f_x" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Y axis label</div><div class="calc-in"><input id="f_y" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div><div class="calc-lbl">Y axis label (derivative)</div><div class="calc-in"><input id="f_y2" type="text" inputmode="text" autocomplete="off" value="" placeholder="optional" style="text-align:left"></div></div>
     <p class="muted" style="margin:8px 0 0">Leave a field empty to use the default shown in grey.</p></details>
-    <div class="tool-foot"><button class="chip quiet" type="button" data-act="clear" data-target="in">Clear</button>
+    <div class="tool-foot"><button class="chip quiet" type="button" data-act="clear" data-target="in,lay">Clear</button>
     <span class="muted">Your data stays in this browser tab.</span></div>
   </section>
   <section class="tool-out" aria-label="Results" aria-live="polite">
@@ -55,7 +57,7 @@
 <script src="js/site.js?v=1385b09c"></script>
 <script src="js/stats.js?v=d6d2f5b3"></script>
 <script src="js/xlsx.js?v=dd5bb396"></script>
-<script src="js/toolkit.js?v=759d6326"></script>
-<script src="js/tool-tsa.js?v=e8db1206"></script>
+<script src="js/toolkit.js?v=ff07d5f3"></script>
+<script src="js/tool-tsa.js?v=c7b4b896"></script>
 </body>
 </html>

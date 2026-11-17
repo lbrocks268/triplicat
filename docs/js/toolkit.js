@@ -30,7 +30,10 @@
              vlines: [{ x, color, label }], zeroX, zeroY, height } */
   function plot(spec, pal){
     pal = pal || screenPalette();
-    var W = 720, T = spec.title ? 46 : 16, H = (spec.height || 420) + (spec.title ? 30 : 0), L = 64, R = 18, B = 52;
+    var seen = {}, items = [];
+    spec.series.forEach(function(s){ if(s.label && s.kind !== 'band' && !seen[s.label]){ seen[s.label] = 1; items.push(s); } });
+    var below = items.length > 6, LH = below ? Math.ceil(items.length / 4) * 18 + 12 : 0;
+    var W = 720, T = spec.title ? 46 : 16, H = (spec.height || 420) + (spec.title ? 30 : 0) + LH, L = 64, R = 18, B = 52 + LH;
     var xs = [], ys = [];
     spec.series.forEach(function(s){ s.x.forEach(function(v, i){
       if(isFinite(v) && isFinite(s.y[i])){ xs.push(v); ys.push(s.y[i]); }
@@ -65,6 +68,7 @@
       if(v.label) o += '<text x="' + f(px(v.x) + 5) + '" y="' + (T + 12) + '" font-size="12" fill="' + c + '" ' + font + '>' + esc(v.label) + '</text>';
     });
     var colorOf = function(s){ return s.muted ? pal.faint : pal.series[(s.color || 0) % pal.series.length]; };
+    var dashOf = function(s){ return s.dash || (!s.muted && (s.color || 0) >= pal.series.length ? '7 4' : ''); };
     spec.series.forEach(function(s){
       var c = colorOf(s);
       if(s.kind === 'band'){
@@ -84,7 +88,7 @@
           d += (pen ? 'L' : 'M') + f(px(s.x[i])) + ' ' + f(py(s.y[i])) + ' '; pen = true;
         }
         o += '<path d="' + d + '" fill="none" stroke="' + c + '" stroke-width="' + (s.width || 2.4) + '" stroke-linejoin="round" stroke-linecap="round"' +
-             (s.dash ? ' stroke-dasharray="' + s.dash + '"' : '') + (s.opacity ? ' opacity="' + s.opacity + '"' : '') + '/>';
+             (dashOf(s) ? ' stroke-dasharray="' + dashOf(s) + '"' : '') + (s.opacity ? ' opacity="' + s.opacity + '"' : '') + '/>';
       } else {
         for(var k = 0; k < s.x.length; k++){
           if(!isFinite(s.x[k]) || !isFinite(s.y[k])) continue;
@@ -98,21 +102,20 @@
         }
       }
     });
-    o += '<text x="' + ((L + W - R) / 2) + '" y="' + (H - 10) + '" text-anchor="middle" font-size="13.5" fill="' + pal.text + '" ' + font + '>' + esc(spec.xlabel || '') + '</text>' +
+    o += '<text x="' + ((L + W - R) / 2) + '" y="' + (H - LH - 10) + '" text-anchor="middle" font-size="13.5" fill="' + pal.text + '" ' + font + '>' + esc(spec.xlabel || '') + '</text>' +
          '<text transform="translate(16 ' + ((T + H - B) / 2) + ') rotate(-90)" text-anchor="middle" font-size="13.5" fill="' + pal.text + '" ' + font + '>' + esc(spec.ylabel || '') + '</text>';
     // Watermark of the free version. It sits in the margin so it never covers data.
     var brand = document.body.getAttribute('data-brand');
-    if(brand && !spec.noMark) o += '<text x="' + (W - R) + '" y="' + (H - 8) + '" text-anchor="end" font-size="10.5" fill="' + pal.faint + '" opacity=".85" ' + font + '>made with ' + esc(brand) + '</text>';
+    if(brand && !spec.noMark) o += '<text x="' + (W - R) + '" y="' + (H - LH - 8) + '" text-anchor="end" font-size="10.5" fill="' + pal.faint + '" opacity=".85" ' + font + '>made with ' + esc(brand) + '</text>';
     if(spec.title) o += '<text x="' + ((L + W - R) / 2) + '" y="24" text-anchor="middle" font-size="16" font-weight="600" fill="' + pal.text + '" ' + font + '>' + esc(spec.title) + '</text>';
     // legend
-    var seen = {}, items = [];
-    spec.series.forEach(function(s){ if(s.label && s.kind !== 'band' && !seen[s.label]){ seen[s.label] = 1; items.push(s); } });
     if(items.length > 1 || spec.legend){
-      var lx = spec.legendLeft ? L + 14 : W - R - 150, ly = spec.legendBottom ? H - B - 14 - items.length * 18 : T + 10;
+      var lx0 = spec.legendLeft ? L + 14 : W - R - 150, ly = spec.legendBottom ? H - B - 14 - items.length * 18 : T + 10, cw = (W - L - R) / 4;
+      if(below){ lx0 = L; ly = H - LH + 10; }
       items.forEach(function(s, i){
-        var c = colorOf(s), y = ly + i * 18;
+        var c = colorOf(s), y = below ? ly + Math.floor(i / 4) * 18 : ly + i * 18, lx = below ? lx0 + (i % 4) * cw : lx0;
         o += (s.kind === 'line'
-          ? '<line x1="' + lx + '" x2="' + (lx + 18) + '" y1="' + y + '" y2="' + y + '" stroke="' + c + '" stroke-width="2.4"' + (s.dash ? ' stroke-dasharray="' + s.dash + '"' : '') + '/>'
+          ? '<line x1="' + lx + '" x2="' + (lx + 18) + '" y1="' + y + '" y2="' + y + '" stroke="' + c + '" stroke-width="2.4"' + (dashOf(s) ? ' stroke-dasharray="' + dashOf(s) + '"' : '') + '/>'
           : s.cross ? '<path d="M' + (lx + 5) + ' ' + (y - 4) + 'L' + (lx + 13) + ' ' + (y + 4) + 'M' + (lx + 5) + ' ' + (y + 4) + 'L' + (lx + 13) + ' ' + (y - 4) + '" stroke="' + c + '" stroke-width="2" stroke-linecap="round"/>'
           : '<circle cx="' + (lx + 9) + '" cy="' + y + '" r="4" fill="' + (s.hollow ? 'none' : c) + '" stroke="' + c + '" stroke-width="1.8"/>') +
           '<text x="' + (lx + 25) + '" y="' + (y + 4) + '" font-size="12.5" fill="' + pal.text + '" ' + font + '>' + esc(s.label) + '</text>';
