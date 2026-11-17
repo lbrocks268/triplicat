@@ -315,7 +315,7 @@ h2.sub{font-family:var(--display); font-size:24px; letter-spacing:-.02em; margin
 .crumb:hover{color:var(--text);}
 .tool{display:grid; grid-template-columns:minmax(0,400px) minmax(0,1fr); gap:18px; align-items:start; padding-top:26px;}
 .tool-in{position:sticky; top:78px;}
-.tool-out{display:grid; gap:18px; min-width:0;}
+.tool-out{display:grid; grid-template-columns:minmax(0,1fr); gap:18px; min-width:0;}
 @media (max-width:940px){ .tool{grid-template-columns:minmax(0,1fr);} .tool-in{position:static;} }
 .field + .field{margin-top:16px;}
 .field-head{display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;}
@@ -338,8 +338,10 @@ h2.sub{font-family:var(--display); font-size:24px; letter-spacing:-.02em; margin
 .kv b{font-family:var(--mono); color:var(--text); font-weight:600;}
 .flag{color:var(--critical); font-family:var(--sans); font-weight:600;}
 .more{margin-top:12px; font-size:13.5px;} .more summary{cursor:pointer; color:var(--text-dim); padding:4px 0;}
-.calc-tbl.wells input[type=checkbox]{width:17px; height:17px; margin:0; accent-color:var(--accent); cursor:pointer; vertical-align:middle;}
-.calc-tbl.wells s{color:var(--text-dim);}
+.calc-tbl.pts input[type=checkbox]{width:17px; height:17px; margin:0; accent-color:var(--accent); cursor:pointer; vertical-align:middle; flex:none;}
+.calc-tbl.pts label.pt{display:inline-flex; align-items:center; gap:7px; cursor:pointer; white-space:nowrap;}
+.calc-tbl.pts label.pt.off span,.calc-tbl.pts s{color:var(--text-dim); text-decoration:line-through;}
+.pts > summary{color:var(--text);}
 .dl{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--border);}
 .dl[hidden]{display:none;}
 #out_notes{margin-top:6px;}

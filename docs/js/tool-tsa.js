@@ -33,18 +33,13 @@
   function fx(v, d){ return isFinite(v) ? v.toFixed(d) : '—'; }
   function finite(a){ return a.filter(function(v){ return isFinite(v); }); }
 
+  function median(a){ var b = a.slice().sort(function(x, y){ return x - y; }), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
   // Wells the user unticked, by column name. Cleared when the set of column names changes (new data).
-  var excluded = {}, colKey = null;
-  document.addEventListener('input', function(ev){
-    var t = ev.target;
-    if(t && t.type === 'checkbox' && t.hasAttribute('data-well')){
-      if(t.checked) delete excluded[t.getAttribute('data-well')]; else excluded[t.getAttribute('data-well')] = 1;
-    }
-  });
+  var ex = UI.exclusions();
+  var OUTLIER = 2;   // °C away from the group median: a rule of thumb for "look at this well", not a statistical test
 
   function run(){
     var d = read(), plotBox = el('out_plot'), plot2 = el('out_plot2'), res = el('out_res'), nt = el('out_notes');
-    var openWells = !!(res.querySelector('details.wells') && res.querySelector('details.wells').open);
     last = null; el('dl').hidden = true; plot2.innerHTML = '';
     if(!el('in').value.trim()){
       plotBox.innerHTML = '<div class="empty">Paste your melting curves or load the demo data.</div>'; res.innerHTML = ''; nt.innerHTML = ''; return;
@@ -54,8 +49,7 @@
       plotBox.innerHTML = '<div class="empty">Not enough data: at least ' + (win + 2) + ' temperature steps and one complete well column are needed.</div>'; res.innerHTML = '';
       nt.innerHTML = UI.notes([{ warn: true, text: 'Could read ' + d.T.length + ' temperature steps and ' + d.cols.length + ' complete well column(s). Expected: first column temperature, one column per well, header like Reference_1, Reference_2, Ligand_1.' }]); return;
     }
-    var names = d.cols.map(function(c){ return c.name; }).join('|');
-    if(names !== colKey){ excluded = {}; colKey = names; }
+    ex.sync(d.cols.map(function(c){ return c.name; }).join('|'));
     var meanMode = el('v_mean').checked, norm = el('n_norm').checked;
     var tmin = TK.toNum(el('o_min').value, ';'), tmax = TK.toNum(el('o_max').value, ';');
     var groups = [], gi = {};
@@ -63,7 +57,7 @@
       if(!(c.group in gi)){ gi[c.group] = groups.length; groups.push({ name: c.group, tm: [], wells: [] }); }
       var m = TK.meltTm(d.T, c.F, win, tmin, tmax);
       c.tm = m.tm; c.deriv = m.deriv; c.gi = gi[c.group]; c.edge = m.index != null && (m.index <= (win - 1) / 2 || m.index >= d.T.length - 1 - (win - 1) / 2);
-      c.off = !!excluded[c.name];
+      c.off = ex.off(c.name);
       // 0 to 1 scaling per well (minimum and maximum of the whole curve); the derivative scales by the same factor
       var lo = Math.min.apply(null, c.F), span = Math.max.apply(null, c.F) - lo;
       c.Fn = c.F.map(function(v){ return span > 0 ? (v - lo) / span : NaN; });
@@ -79,6 +73,12 @@
       sel.setAttribute('data-key', key);
     }
     var ref = groups[Math.max(0, sel.selectedIndex)];
+    // wells far from the median of their group (only with at least three wells, otherwise there is no majority)
+    groups.forEach(function(g){
+      if(g.tm.length < 3) return;
+      var med = median(g.tm);
+      g.wells.forEach(function(c){ c.odd = isFinite(c.tm) && Math.abs(c.tm - med) > OUTLIER; });
+    });
     var fKey = norm ? 'Fn' : 'F', dKey = norm ? 'dn' : 'deriv';
     // mean and SD across the included wells of each group, point by point (display only; Tm comes from the single wells)
     groups.forEach(function(g){
@@ -99,7 +99,7 @@
           if(g.wells.length) series.push({ kind: 'line', x: d.T, y: g.curve[k], color: i, label: g.name + ' (n = ' + g.wells.length + ')', width: 2.2 });
         });
       } else {
-        d.cols.forEach(function(c){ if(c.off) series.push({ kind: 'line', x: d.T, y: c[k], muted: true, dash: '5 4', label: 'excluded', width: 1.3, opacity: 0.8 }); });
+        d.cols.forEach(function(c){ if(c.off) series.push({ kind: 'line', x: d.T, y: c[k], muted: true, dash: '5 4', label: 'left out', width: 1.3, opacity: 0.8 }); });
         d.cols.forEach(function(c){ if(!c.off) series.push({ kind: 'line', x: d.T, y: c[k], color: c.gi, label: c.group, width: 1.7, opacity: 0.9 }); });
       }
       return { xlabel: 'Temperature / °C', ylabel: ylabel, height: 330, legend: true, legendLeft: true, series: series,
@@ -115,17 +115,18 @@
     });
     var off = d.cols.filter(function(c){ return c.off; });
     res.innerHTML = UI.table(['Group', 'n', 'Mean T<sub>m</sub> / °C', 'SD', 'ΔT<sub>m</sub> / °C', 'p (Welch)'], grow, 'res') +
-      '<details class="more wells"' + (openWells ? ' open' : '') + '><summary>T<sub>m</sub> per well' + (off.length ? ' (' + off.length + ' excluded)' : '') + ', untick a well to leave it out</summary>' +
-      UI.table(['Use', 'Well', 'Group', 'T<sub>m</sub> / °C'], d.cols.map(function(c){
-        var nm = UI.esc(c.name);
-        return ['<input type="checkbox" data-well="' + nm + '" aria-label="Use ' + nm + '"' + (c.off ? '' : ' checked') + '>',
-                c.off ? '<s>' + nm + '</s>' : nm, UI.esc(c.group), c.off ? '<span class="muted">' + fx(c.tm, 2) + '</span>' : fx(c.tm, 2)];
-      }), 'wells') + '</details>';
+      UI.ptsBox('T<sub>m</sub> per well' + (off.length ? ' (' + off.length + ' left out)' : '') + '. Untick a well to leave it out.',
+        UI.table(['Well', 'Group', 'T<sub>m</sub> / °C', ''], d.cols.map(function(c){
+          return [UI.check(c.name, c.off, c.name), UI.esc(c.group), c.off ? '<s>' + fx(c.tm, 2) + '</s>' : fx(c.tm, 2),
+                  c.odd ? '<span class="flag">check</span>' : ''];
+        }), 'pts'));
     var n = [], diffs = [];
     for(var i = 1; i < d.T.length; i++) diffs.push(d.T[i] - d.T[i - 1]);
     var step = TK.mean(diffs);
-    if(off.length) n.push({ text: off.length + ' well(s) excluded (' + off.map(function(c){ return UI.esc(c.name); }).join(', ') + '). They are left out of means, SD, ΔT<sub>m</sub> and p values' + (meanMode ? ' and the mean curves' : ' and drawn grey and dashed') + '. Say so in your methods.' });
-    if(groups.some(function(g){ return !g.wells.length; })) n.push({ warn: true, text: 'All wells of a group are excluded, so that group has no result.' });
+    var odd = d.cols.filter(function(c){ return c.odd; });
+    if(odd.length) n.push({ warn: true, text: odd.map(function(c){ return UI.esc(c.name) + ' (' + fx(c.tm, 1) + ' °C)'; }).join(', ') + (odd.length > 1 ? ' are' : ' is') + ' more than ' + OUTLIER + ' °C away from the median of ' + (odd.length > 1 ? 'their groups' : 'its group') + '. If the well failed, untick it in the table above.' });
+    if(off.length) n.push({ text: off.length + ' well(s) left out (' + off.map(function(c){ return UI.esc(c.name); }).join(', ') + '). They are left out of means, SD, ΔT<sub>m</sub> and p values' + (meanMode ? ' and the mean curves' : ' and drawn grey and dashed') + '. Say so in your methods.' });
+    if(groups.some(function(g){ return !g.wells.length; })) n.push({ warn: true, text: 'All wells of a group are left out, so that group has no result.' });
     if(Math.max.apply(null, diffs.map(function(x){ return Math.abs(x - step); })) > Math.abs(step) * 0.02) n.push({ warn: true, text: 'The temperature steps are not evenly spaced. The derivative assumes equal steps, so T<sub>m</sub> may be off.' });
     var edge = d.cols.filter(function(c){ return c.edge && !c.off; }).length;
     if(edge) n.push({ warn: true, text: edge + ' well(s) have their steepest point at the edge of the temperature range or search window. That is usually not a melting transition: check the curves and set a search window, or exclude the well.' });

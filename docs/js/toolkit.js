@@ -88,6 +88,11 @@
       } else {
         for(var k = 0; k < s.x.length; k++){
           if(!isFinite(s.x[k]) || !isFinite(s.y[k])) continue;
+          if(s.cross){
+            var cx = px(s.x[k]), cy = py(s.y[k]), cr = (s.r || 4.2) * 0.9;
+            o += '<path d="M' + f(cx - cr) + ' ' + f(cy - cr) + 'L' + f(cx + cr) + ' ' + f(cy + cr) + 'M' + f(cx - cr) + ' ' + f(cy + cr) + 'L' + f(cx + cr) + ' ' + f(cy - cr) + '" stroke="' + c + '" stroke-width="2" stroke-linecap="round"/>';
+            continue;
+          }
           o += '<circle cx="' + f(px(s.x[k])) + '" cy="' + f(py(s.y[k])) + '" r="' + (s.r || 4.2) + '" fill="' + (s.hollow ? (pal.bg === 'transparent' ? 'none' : pal.bg) : c) +
                '" stroke="' + c + '" stroke-width="1.8"' + (s.hollow ? '' : ' fill-opacity=".85"') + '/>';
         }
@@ -108,6 +113,7 @@
         var c = colorOf(s), y = ly + i * 18;
         o += (s.kind === 'line'
           ? '<line x1="' + lx + '" x2="' + (lx + 18) + '" y1="' + y + '" y2="' + y + '" stroke="' + c + '" stroke-width="2.4"' + (s.dash ? ' stroke-dasharray="' + s.dash + '"' : '') + '/>'
+          : s.cross ? '<path d="M' + (lx + 5) + ' ' + (y - 4) + 'L' + (lx + 13) + ' ' + (y + 4) + 'M' + (lx + 5) + ' ' + (y + 4) + 'L' + (lx + 13) + ' ' + (y - 4) + '" stroke="' + c + '" stroke-width="2" stroke-linecap="round"/>'
           : '<circle cx="' + (lx + 9) + '" cy="' + y + '" r="4" fill="' + (s.hollow ? 'none' : c) + '" stroke="' + c + '" stroke-width="1.8"/>') +
           '<text x="' + (lx + 25) + '" y="' + (y + 4) + '" font-size="12.5" fill="' + pal.text + '" ' + font + '>' + esc(s.label) + '</text>';
       });
@@ -146,6 +152,32 @@
   }
   function csv(rows){
     return rows.map(function(r){ return r.map(function(c){ c = String(c == null ? '' : c); return /[",\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(','); }).join('\n') + '\n';
+  }
+
+  // ---------- Leaving out single readings ----------
+  // The tables of wells or readings are open until the user closes one; that choice holds while the page is open.
+  var gridOpen = true;
+  document.addEventListener('toggle', function(e){ if(e.target && e.target.classList && e.target.classList.contains('pts')) gridOpen = e.target.open; }, true);
+  // Keys of unticked checkboxes (data-pt). sync(shape) clears them when the data have a new shape (other file, demo).
+  // Call it at load time, before wire(), so a click updates the set before the page reruns.
+  function exclusions(){
+    var ex = {}, shape = null;
+    document.addEventListener('input', function(ev){
+      var t = ev.target;
+      if(t && t.type === 'checkbox' && t.hasAttribute('data-pt')){ if(t.checked) delete ex[t.getAttribute('data-pt')]; else ex[t.getAttribute('data-pt')] = 1; }
+    });
+    return { off: function(k){ return !!ex[k]; }, sync: function(k){ if(k !== shape){ ex = {}; shape = k; } } };
+  }
+  function check(key, off, text){
+    return '<label class="pt' + (off ? ' off' : '') + '"><input type="checkbox" data-pt="' + esc(key) + '"' + (off ? '' : ' checked') + '>' + (text != null ? '<span>' + esc(text) + '</span>' : '') + '</label>';
+  }
+  function ptsBox(summary, inner){ return '<details class="more pts"' + (gridOpen ? ' open' : '') + '><summary>' + summary + '</summary>' + inner + '</details>'; }
+  // Grid of readings: rows = levels, columns = replicates. rows: [{ label, cells: [{ key, text, off } or null] }]
+  function pointGrid(title, head, rows){
+    var nOff = 0;
+    rows.forEach(function(r){ r.cells.forEach(function(c){ if(c && c.off) nOff++; }); });
+    return ptsBox(title + (nOff ? ' (' + nOff + ' left out)' : '') + '. Untick a value to leave it out of the fit.',
+      table(head, rows.map(function(r){ return [esc(r.label)].concat(r.cells.map(function(c){ return c ? check(c.key, c.off, c.text) : ''; })); }), 'pts'));
   }
 
   // ---------- DOM helpers ----------
@@ -197,5 +229,6 @@
   }
 
   window.TKUI = { plot: plot, downloadText: downloadText, downloadSVG: downloadSVG, downloadPNG: downloadPNG, csv: csv,
-                  el: el, table: table, notes: notes, wire: wire, esc: esc, applyLabels: applyLabels };
+                  el: el, table: table, notes: notes, wire: wire, esc: esc, applyLabels: applyLabels,
+                  exclusions: exclusions, check: check, ptsBox: ptsBox, pointGrid: pointGrid };
 })();
