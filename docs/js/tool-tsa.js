@@ -113,11 +113,17 @@
   function median(a){ var b = a.slice().sort(function(x, y){ return x - y; }), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
   // Wells the user unticked, by column name. Cleared when the set of column names changes (new data).
   var ex = UI.exclusions();
+  // Groups the user took out of the figure (they stay in the table and the statistics). Cleared when the groups change.
+  var hidden = {}, groupKey = null;
+  document.addEventListener('input', function(ev){
+    var t = ev.target;
+    if(t && t.type === 'checkbox' && t.hasAttribute('data-show')){ if(t.checked) delete hidden[t.getAttribute('data-show')]; else hidden[t.getAttribute('data-show')] = 1; }
+  });
   var OUTLIER = 2;   // °C away from the group median: a rule of thumb for "look at this well", not a statistical test
 
   // Plate map of the wells as named in the data (positions like A01), coloured by group. Clicking a well ticks or
   // unticks it, the same as the checkbox in the well table.
-  function plateMap(cols, ignored){
+  function plateMap(cols, ignored, colorOf){
     var info = {}, rows = {}, nums = {}, named = 0;
     cols.forEach(function(c){ var k = wellKey(c.name); if(k){ info[k] = c; named++; } });
     ignored.forEach(function(nm){ var k = wellKey(nm); if(k) info[k] = { name: nm, none: true }; });
@@ -131,7 +137,7 @@
         if(!c) return '<td></td>';
         if(c.none) return '<td><span class="well none" title="' + UI.esc(c.name) + ': no name in the layout">' + UI.esc(c.name) + '</span></td>';
         var tip = c.name + ', ' + c.group + ', Tm ' + fx(c.tm, 2) + ' °C' + (c.off ? ', left out' : '') + (c.odd ? ', far from its group' : '');
-        return '<td><label class="well' + (c.off ? ' off' : '') + (c.odd ? ' odd' : '') + '" style="--c:' + UI.seriesColor(c.gi) + '" title="' + UI.esc(tip) + '">' +
+        return '<td><label class="well' + (c.off ? ' off' : '') + (c.odd ? ' odd' : '') + '" style="--c:' + colorOf(c) + '" title="' + UI.esc(tip) + '">' +
           '<input type="checkbox" data-pt="' + UI.esc(c.name) + '"' + (c.off ? '' : ' checked') + ' aria-label="Use ' + UI.esc(c.name) + '">' +
           '<b>' + UI.esc(c.group) + '</b><span>' + fx(c.tm, 2) + '</span></label></td>';
       }).join('') + '</tr>';
@@ -190,33 +196,41 @@
         g.curveSd[k] = d.T.map(function(_, i){ return TK.sd(finite(g.wells.map(function(c){ return c[k][i]; }))); });
       });
     });
+    var gk = groups.map(function(g){ return g.name; }).join('|');
+    if(gk !== groupKey){ hidden = {}; groupKey = gk; }
+    var rank = 0;
+    groups.forEach(function(g){ g.show = !hidden[g.name]; g.ci = g.show ? rank++ : -1; });
+    var gcol = function(g){ return g.show ? UI.seriesColor(g.ci) : UI.mutedColor(); };
     var mk = function(k, ylabel){
       var series = [];
       if(meanMode){
-        groups.forEach(function(g, i){
-          if(!g.wells.length) return;
-          if(g.wells.length > 1) series.push({ kind: 'band', x: d.T, y: g.curve[k].map(function(v, j){ return v - g.curveSd[k][j]; }), y2: g.curve[k].map(function(v, j){ return v + g.curveSd[k][j]; }), color: i });
+        groups.forEach(function(g){
+          if(!g.show || g.wells.length < 2) return;
+          series.push({ kind: 'band', x: d.T, y: g.curve[k].map(function(v, j){ return v - g.curveSd[k][j]; }), y2: g.curve[k].map(function(v, j){ return v + g.curveSd[k][j]; }), color: g.ci });
         });
-        groups.forEach(function(g, i){
-          if(g.wells.length) series.push({ kind: 'line', x: d.T, y: g.curve[k], color: i, label: g.name + ' (n = ' + g.wells.length + ')', width: 2.2 });
+        groups.forEach(function(g){
+          if(g.show && g.wells.length) series.push({ kind: 'line', x: d.T, y: g.curve[k], color: g.ci, label: g.name + ' (n = ' + g.wells.length + ')', width: 2.2 });
         });
       } else {
-        d.cols.forEach(function(c){ if(c.off) series.push({ kind: 'line', x: d.T, y: c[k], muted: true, dash: '5 4', label: 'left out', width: 1.3, opacity: 0.8 }); });
-        d.cols.forEach(function(c){ if(!c.off) series.push({ kind: 'line', x: d.T, y: c[k], color: c.gi, label: c.group, width: 1.7, opacity: 0.9 }); });
+        d.cols.forEach(function(c){ if(c.off && groups[c.gi].show) series.push({ kind: 'line', x: d.T, y: c[k], muted: true, dash: '5 4', label: 'left out', width: 1.3, opacity: 0.8 }); });
+        d.cols.forEach(function(c){ if(!c.off && groups[c.gi].show) series.push({ kind: 'line', x: d.T, y: c[k], color: groups[c.gi].ci, label: c.group, width: 1.7, opacity: 0.9 }); });
       }
       return { xlabel: 'Temperature / °C', ylabel: ylabel, height: 330, legend: true, legendLeft: true, series: series,
-        vlines: groups.map(function(g, i){ return { x: TK.mean(g.tm), color: i }; }) };
+        vlines: groups.filter(function(g){ return g.show; }).map(function(g){ return { x: TK.mean(g.tm), color: g.ci }; }) };
     };
     var spec = mk(fKey, norm ? 'Normalised fluorescence' : 'Fluorescence'), spec2 = mk(dKey, norm ? 'dF/dT (normalised)' : 'dF/dT');
     UI.applyLabels(spec); UI.applyLabels(spec2, { x: 'f_x', y: 'f_y2' });
-    plotBox.innerHTML = UI.plot(spec); plot2.innerHTML = UI.plot(spec2);
+    plotBox.innerHTML = UI.plot(spec) || '<div class="empty">No group is ticked for the figure. Tick at least one in the table.</div>'; plot2.innerHTML = UI.plot(spec2);
     var grow = groups.map(function(g){
       g.mean = TK.mean(g.tm); g.sd = TK.sd(g.tm); g.d = g.mean - ref.mean; g.p = g === ref ? NaN : TK.welch(g.tm, ref.tm).p;
-      return ['<span class="gdot" style="background:' + UI.seriesColor(groups.indexOf(g)) + '"></span>' + UI.esc(g.name) + (g === ref ? ' <span class="meta">reference</span>' : ''), g.tm.length, '<b>' + fx(g.mean, 2) + '</b>', fx(g.sd, 2),
+      return ['<label class="pt"><input type="checkbox" data-show="' + UI.esc(g.name) + '" aria-label="Show ' + UI.esc(g.name) + ' in the figure"' + (g.show ? ' checked' : '') + '>' +
+              '<span class="gdot" style="background:' + gcol(g) + '"></span></label>' + (g.show ? '' : '<span class="muted">') + UI.esc(g.name) + (g.show ? '' : '</span>') + (g === ref ? ' <span class="meta">reference</span>' : ''), g.tm.length, '<b>' + fx(g.mean, 2) + '</b>', fx(g.sd, 2),
               g === ref || !isFinite(g.d) ? '—' : (g.d >= 0 ? '+' : '') + g.d.toFixed(2), isFinite(g.p) ? (g.p < 0.001 ? '&lt; 0.001' : g.p.toFixed(3)) : '—'];
     });
     var off = d.cols.filter(function(c){ return c.off; });
-    res.innerHTML = UI.table(['Group', 'n', 'Mean T<sub>m</sub> / °C', 'SD', 'ΔT<sub>m</sub> / °C', 'p (Welch)'], grow, 'res') + plateMap(d.cols, d.ignored) +
+    res.innerHTML = UI.table(['Group', 'n', 'Mean T<sub>m</sub> / °C', 'SD', 'ΔT<sub>m</sub> / °C', 'p (Welch)'], grow, 'res pts') +
+      '<p class="muted" style="margin:6px 0 0; font-size:13px">Untick a group to take it out of the figure. It stays in the table and the statistics.</p>' +
+      plateMap(d.cols, d.ignored, function(c){ return gcol(groups[c.gi]); }) +
       UI.ptsBox('T<sub>m</sub> per well' + (off.length ? ' (' + off.length + ' left out)' : '') + '. Untick a well to leave it out.',
         UI.table(['Well', 'Group', 'T<sub>m</sub> / °C', ''], d.cols.map(function(c){
           return [UI.check(c.name, c.off, c.name), UI.esc(c.group), c.off ? '<s>' + fx(c.tm, 2) + '</s>' : fx(c.tm, 2),
@@ -226,6 +240,8 @@
     for(var i = 1; i < d.T.length; i++) diffs.push(d.T[i] - d.T[i - 1]);
     var step = TK.mean(diffs);
     if(d.conv) n.push({ text: d.conv });
+    var nHidden = groups.filter(function(g){ return !g.show; }).length;
+    if(nHidden) n.push({ text: nHidden + ' group(s) not shown in the figure. They are still in the table, the statistics and the CSV.' });
     if(d.lay && !d.lay.n) n.push({ warn: true, text: 'The plate layout could not be read. Paste the plate map with row letters in the first column and column numbers in the first row, or a list of well and name.' });
     if(d.lay && d.lay.n) n.push({ text: 'Groups from the plate layout' + (d.ignored.length ? '. ' + d.ignored.length + ' well(s) without a name in the layout are ignored: ' + d.ignored.map(UI.esc).join(', ') : '') + '.' });
     var odd = d.cols.filter(function(c){ return c.odd; });
