@@ -103,7 +103,7 @@
       T.push(x); cols.forEach(function(c){ c.F.push(TK.toNum(r[c.k], t.delim)); });
     });
     cols = cols.filter(function(c){ return c.F.filter(isFinite).length === T.length && T.length; });
-    return { T: T, cols: cols, lay: lay, ignored: ignored, conv: converted && el('in').value === converted.text ? converted.note : '' };
+    return { T: T, cols: cols, lay: lay, ignored: ignored, names: t.header.slice(1), conv: converted && el('in').value === converted.text ? converted.note : '' };
   }
 
   // Display helpers: '—' for missing values, NaN-safe mean and SD across wells at one temperature.
@@ -146,8 +146,107 @@
       '<div class="calc-scroll"><table class="plate">' + head + body + '</table></div>';
   }
 
+  // ---------- Plate editor: assign sample names by clicking wells ----------
+  // Shown when the data columns are named by position. It reads and writes the "Plate layout" field, so pasting a
+  // plate map and the editor always show the same thing.
+  var pedSel = {}, pedR = [], pedN = [], pedHtml = '', pedDrag = null;
+  function pedKeys(){ var a = []; pedR.forEach(function(r){ pedN.forEach(function(n){ if(document.querySelector('.pw[data-w="' + r + n + '"]')) a.push(r + n); }); }); return a; }
+  function pedPaint(){ Array.prototype.forEach.call(document.querySelectorAll('.pw'), function(b){ b.classList.toggle('sel', !!pedSel[b.getAttribute('data-w')]); }); }
+  function writeLayout(map){
+    var rows = {}, nums = {};
+    pedR.forEach(function(r){ rows[r] = 1; }); pedN.forEach(function(n){ nums[n] = 1; });
+    Object.keys(map).forEach(function(k){ rows[k[0]] = 1; nums[Number(k.slice(1))] = 1; });
+    var R = Object.keys(rows).sort(), N = Object.keys(nums).map(Number).sort(function(a, b){ return a - b; });
+    var txt = '\t' + N.join('\t') + '\n' + R.map(function(r){ return r + '\t' + N.map(function(n){ return map[r + n] || ''; }).join('\t'); }).join('\n') + '\n';
+    var lay = el('lay'); lay.value = Object.keys(map).length ? txt : '';
+    lay.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  function currentMap(){ var l = readLayout(el('lay').value); return l && l.n ? l.map : {}; }
+  // short label for a small well: "Sample 12" -> "S12", "Reference" -> "Refe."; the full name is in the tooltip
+  function shortName(g){
+    if(g.length <= 5) return g;
+    var m = /^(.*?)[\s_-]*(\d+)$/.exec(g);
+    if(m && m[1]) return m[1].slice(0, m[2].length > 1 ? 1 : 2) + m[2];
+    return g.slice(0, 4).trim() + '.';
+  }
+  function renderEditor(names, layMap){
+    var box = el('ped'); if(!box) return;
+    var pos = names.map(wellKey).filter(Boolean);
+    if(pos.length < Math.max(2, names.length / 2)){ box.hidden = true; pedHtml = ''; return; }
+    box.hidden = false;
+    var rows = {}, nums = {}; pos.forEach(function(k){ rows[k[0]] = 1; nums[Number(k.slice(1))] = 1; });
+    pedR = Object.keys(rows).sort(); pedN = Object.keys(nums).map(Number).sort(function(a, b){ return a - b; });
+    var have = {}; pos.forEach(function(k){ have[k] = 1; });
+    // colours in the order in which groups appear in the data, the same order as the results table
+    var order = [], seen = {};
+    names.forEach(function(nm){ var k = wellKey(nm), g = k && layMap[k]; if(g && !seen[g]){ seen[g] = 1; order.push(g); } });
+    var html = '<table class="plate ped-grid"><tr><th></th>' + pedN.map(function(n){ return '<th>' + n + '</th>'; }).join('') + '</tr>' + pedR.map(function(r){
+      return '<tr><th>' + r + '</th>' + pedN.map(function(n){
+        var k = r + n; if(!have[k]) return '<td></td>';
+        var g = layMap[k], st = g ? ' style="--c:' + UI.seriesColor(order.indexOf(g)) + '"' : '';
+        return '<td><button type="button" class="pw' + (g ? '' : ' unset') + '" data-w="' + k + '"' + st + ' title="' + k + (g ? ': ' + UI.esc(g) : ': empty') + '">' +
+          '<span>' + k + '</span><b>' + (g ? UI.esc(shortName(g)) : '&nbsp;') + '</b></button></td>';
+      }).join('') + '</tr>';
+    }).join('') + '</table>';
+    if(html !== pedHtml){ el('ped_grid').innerHTML = html; pedHtml = html; }
+    Object.keys(pedSel).forEach(function(k){ if(!have[k]) delete pedSel[k]; });
+    pedPaint();
+  }
+  function rect(a, b){
+    var r0 = pedR.indexOf(a[0]), r1 = pedR.indexOf(b[0]), n0 = pedN.indexOf(Number(a.slice(1))), n1 = pedN.indexOf(Number(b.slice(1))), out = [];
+    for(var i = Math.min(r0, r1); i <= Math.max(r0, r1); i++) for(var j = Math.min(n0, n1); j <= Math.max(n0, n1); j++) out.push(pedR[i] + pedN[j]);
+    return out;
+  }
+  function wellAt(x, y){ var e = document.elementFromPoint(x, y); e = e && e.closest ? e.closest('.pw') : null; return e ? e.getAttribute('data-w') : null; }
+  document.addEventListener('pointerdown', function(ev){
+    var b = ev.target.closest ? ev.target.closest('.pw') : null; if(!b || ev.button > 0) return;
+    ev.preventDefault();
+    var k = b.getAttribute('data-w'), base = {}; Object.keys(pedSel).forEach(function(x){ base[x] = 1; });
+    pedDrag = { anchor: k, base: base, add: !pedSel[k] };
+    if(pedDrag.add) pedSel[k] = 1; else delete pedSel[k];
+    pedPaint();
+  });
+  document.addEventListener('pointermove', function(ev){
+    if(!pedDrag) return;
+    var k = wellAt(ev.clientX, ev.clientY); if(!k) return;
+    var s = {}; Object.keys(pedDrag.base).forEach(function(x){ s[x] = 1; });
+    rect(pedDrag.anchor, k).forEach(function(x){ if(pedDrag.add) s[x] = 1; else delete s[x]; });
+    pedSel = s; pedPaint();
+  });
+  document.addEventListener('pointerup', function(){ if(pedDrag){ pedDrag = null; var f = el('ped_name'); if(f && Object.keys(pedSel).length) f.focus(); } });
+  document.addEventListener('click', function(ev){
+    var b = ev.target.closest ? ev.target.closest('.pw') : null;
+    if(b && ev.detail === 0){ var k = b.getAttribute('data-w'); if(pedSel[k]) delete pedSel[k]; else pedSel[k] = 1; pedPaint(); return; }   // keyboard
+    var a = ev.target.closest ? ev.target.closest('[data-ped]') : null; if(!a) return;
+    var act = a.getAttribute('data-ped'), keys = pedKeys(), chosen = keys.filter(function(k){ return pedSel[k]; }), map = currentMap();
+    if(act === 'all'){ keys.forEach(function(k){ pedSel[k] = 1; }); pedPaint(); return; }
+    if(act === 'none'){ pedSel = {}; pedPaint(); return; }
+    if(!chosen.length) return;
+    if(act === 'assign' || act === 'clear'){
+      var name = act === 'assign' ? el('ped_name').value.trim() : '';
+      chosen.forEach(function(k){ if(name) map[k] = name; else delete map[k]; });
+    } else if(act === 'down' || act === 'across'){
+      var size = Math.max(1, parseInt(el('ped_n').value, 10) || 3), next = 1;
+      Object.keys(map).forEach(function(k){ var m = /^Sample (\d+)$/.exec(map[k]); if(m && !pedSel[k]) next = Math.max(next, Number(m[1]) + 1); });
+      var seq = chosen.slice().sort(function(p, q){
+        var pr = pedR.indexOf(p[0]), qr = pedR.indexOf(q[0]), pn = Number(p.slice(1)), qn = Number(q.slice(1));
+        return act === 'down' ? (pn - qn || pr - qr) : (pr - qr || pn - qn);
+      });
+      seq.forEach(function(k, i){ map[k] = 'Sample ' + (next + Math.floor(i / size)); });
+    }
+    pedSel = {};
+    writeLayout(map);
+    var f = el('ped_name'); if(f && act === 'assign'){ f.select(); }
+  });
+  document.addEventListener('keydown', function(ev){
+    if(ev.key === 'Enter' && ev.target && ev.target.id === 'ped_name'){ ev.preventDefault(); var b = document.querySelector('[data-ped="assign"]'); if(b) b.click(); }
+  });
+  // a group with one of these names is taken as the reference when the groups change
+  var REF_RE = /\b(ref|reference|wt|wild[\s_-]?type|apo|control|ctrl|dmso|no[\s_-]?ligand)\b/i;
+
   function run(){
     var d = read(), plotBox = el('out_plot'), plot2 = el('out_plot2'), res = el('out_res'), nt = el('out_notes');
+    renderEditor(el('in').value.trim() ? d.names : [], d.lay && d.lay.n ? d.lay.map : {});
     last = null; el('dl').hidden = true; plot2.innerHTML = '';
     if(!el('in').value.trim()){
       plotBox.innerHTML = '<div class="empty">Paste your melting curves or load the demo data.</div>'; res.innerHTML = ''; nt.innerHTML = ''; return;
@@ -179,6 +278,8 @@
     if(sel.getAttribute('data-key') !== key){
       sel.innerHTML = groups.map(function(g){ return '<option>' + UI.esc(g.name) + '</option>'; }).join('');
       sel.setAttribute('data-key', key);
+      var guess = groups.map(function(g){ return REF_RE.test(g.name); }).indexOf(true);
+      sel.selectedIndex = guess >= 0 ? guess : 0;
     }
     var ref = groups[Math.max(0, sel.selectedIndex)];
     // wells far from the median of their group (only with at least three wells, otherwise there is no majority)
@@ -221,8 +322,10 @@
     var spec = mk(fKey, norm ? 'Normalised fluorescence' : 'Fluorescence'), spec2 = mk(dKey, norm ? 'dF/dT (normalised)' : 'dF/dT');
     UI.applyLabels(spec); UI.applyLabels(spec2, { x: 'f_x', y: 'f_y2' });
     plotBox.innerHTML = UI.plot(spec) || '<div class="empty">No group is ticked for the figure. Tick at least one in the table.</div>'; plot2.innerHTML = UI.plot(spec2);
+    // means first: the shift of every group needs the reference mean, wherever the reference sits in the list
+    groups.forEach(function(g){ g.mean = TK.mean(g.tm); g.sd = TK.sd(g.tm); });
     var grow = groups.map(function(g){
-      g.mean = TK.mean(g.tm); g.sd = TK.sd(g.tm); g.d = g.mean - ref.mean; g.p = g === ref ? NaN : TK.welch(g.tm, ref.tm).p;
+      g.d = g.mean - ref.mean; g.p = g === ref ? NaN : TK.welch(g.tm, ref.tm).p;
       return ['<label class="pt"><input type="checkbox" data-show="' + UI.esc(g.name) + '" aria-label="Show ' + UI.esc(g.name) + ' in the figure"' + (g.show ? ' checked' : '') + '>' +
               '<span class="gdot" style="background:' + gcol(g) + '"></span></label>' + (g.show ? '' : '<span class="muted">') + UI.esc(g.name) + (g.show ? '' : '</span>') + (g === ref ? ' <span class="meta">reference</span>' : ''), g.tm.length, '<b>' + fx(g.mean, 2) + '</b>', fx(g.sd, 2),
               g === ref || !isFinite(g.d) ? '—' : (g.d >= 0 ? '+' : '') + g.d.toFixed(2), isFinite(g.p) ? (g.p < 0.001 ? '&lt; 0.001' : g.p.toFixed(3)) : '—'];
@@ -244,6 +347,8 @@
     if(nHidden) n.push({ text: nHidden + ' group(s) not shown in the figure. They are still in the table, the statistics and the CSV.' });
     if(d.lay && !d.lay.n) n.push({ warn: true, text: 'The plate layout could not be read. Paste the plate map with row letters in the first column and column numbers in the first row, or a list of well and name.' });
     if(d.lay && d.lay.n) n.push({ text: 'Groups from the plate layout' + (d.ignored.length ? '. ' + d.ignored.length + ' well(s) without a name in the layout are ignored: ' + d.ignored.map(UI.esc).join(', ') : '') + '.' });
+    var byPos = d.names.filter(function(nm){ return wellKey(nm); }).length >= Math.max(2, d.names.length / 2);
+    if(byPos && !(d.lay && d.lay.n)) n.push({ warn: true, text: 'The wells are named by position, but no plate layout is given, so the groups are only the row letters (A, B, ...). Assign your samples on the plate under &ldquo;Plate layout&rdquo;.' });
     var odd = d.cols.filter(function(c){ return c.odd; });
     if(odd.length) n.push({ warn: true, text: odd.map(function(c){ return UI.esc(c.name) + ' (' + fx(c.tm, 1) + ' °C)'; }).join(', ') + (odd.length > 1 ? ' are' : ' is') + ' more than ' + OUTLIER + ' °C away from the median of ' + (odd.length > 1 ? 'their groups' : 'its group') + '. If the well failed, untick it in the table above.' });
     if(off.length) n.push({ text: off.length + ' well(s) left out (' + off.map(function(c){ return UI.esc(c.name); }).join(', ') + '). They are left out of means, SD, ΔT<sub>m</sub> and p values' + (meanMode ? ' and the mean curves' : ' and drawn grey and dashed') + '. Say so in your methods.' });

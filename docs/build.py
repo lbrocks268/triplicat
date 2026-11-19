@@ -389,8 +389,15 @@ tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from m
      "Analyse thermal shift (DSF) melting curves in the browser: Tm per well from the first derivative, group means, delta Tm against a reference and figures.",
      "Thermal shift", "Melting temperature from the steepest point of each curve. First column temperature, then one column per well, named like Reference_1, Reference_2, Ligand_1. Instrument exports with one row per well and reading are converted automatically.",
      data_box("in", "Temperature and fluorescence per well", "temp&#9;Reference_1&#9;Reference_2&#9;Ligand_1&#9;Ligand_2&#10;25&#9;118.2&#9;121.5&#9;119.9&#9;117.3", rows=12)
-     + data_box("lay", "Plate layout (optional)", "&#9;1&#9;2&#9;3&#10;A&#9;Reference&#9;Ligand&#9;Ligand&#10;B&#9;Reference&#9;Ligand&#9;Ligand", rows=5, demo=False)
-     + '<p class="muted" style="margin:8px 0 0">Paste your plate map from the spreadsheet: row letters down, column numbers across, a sample name per well. Wells with the same name form a group, empty wells are left out. Needed when the wells are named by position (A01, B01, ...).</p>',
+     + data_box("lay", "Plate layout (optional)", "&#9;1&#9;2&#9;3&#10;A&#9;Reference&#9;Ligand&#9;Ligand&#10;B&#9;Reference&#9;Ligand&#9;Ligand", rows=4, demo=False)
+     + '<p class="muted" style="margin:8px 0 0">Needed when the wells are named by position (A01, B01, ...). Assign the samples on the plate below, or paste your plate map from the spreadsheet: row letters down, column numbers across, a sample name per well. Wells with the same name form a group, empty wells are left out.</p>'
+     + '<div class="ped" id="ped" hidden><div class="ped-head"><span class="meta">Plate</span><span class="muted">Click or drag over wells, type a name, press Enter.</span></div>'
+       '<div class="calc-scroll"><div id="ped_grid"></div></div>'
+       '<div class="ped-bar"><input id="ped_name" type="text" autocomplete="off" placeholder="Sample name" aria-label="Sample name for the selected wells">'
+       '<button class="chip" type="button" data-ped="assign">Assign</button><button class="chip" type="button" data-ped="clear">Clear</button></div>'
+       '<div class="ped-bar"><button class="chip quiet" type="button" data-ped="all">Select all</button><button class="chip quiet" type="button" data-ped="none">Select none</button>'
+       '<span class="muted">Number the selection in groups of</span><input id="ped_n" type="text" inputmode="numeric" autocomplete="off" value="3" aria-label="Wells per group">'
+       '<button class="chip quiet" type="button" data-ped="down">down</button><button class="chip quiet" type="button" data-ped="across">across</button></div></div>',
      opt("Reference group", '<select id="o_ref" aria-label="Reference group" style="width:100%"></select>')
      + opt("Smoothing window (points)", text_in("o_win", "9", "numeric"))
      + opt("Search from (&deg;C)", '<input id="o_min" type="text" inputmode="decimal" autocomplete="off" placeholder="optional">')
