@@ -226,14 +226,43 @@
     }
     return { tm: tm, deriv: d, index: best };
   }
-  // Welch's t test (unequal variances), two-sided.
+  // Boltzmann fit of one melting curve: F = Fmin + (Fmax - Fmin) / (1 + exp((Tm - T) / a)).
+  // Fitted range: from the lowest reading before the maximum up to the maximum (the fall after it is left out),
+  // both inside the search window if one is given. tmStart is a starting value for Tm (e.g. the derivative Tm).
+  function boltzModel(T, q){ return q[0] + (q[1] - q[0]) / (1 + Math.exp((q[2] - T) / q[3])); }
+  function boltzFit(T, F, tmin, tmax, tmStart){
+    var idx = [];
+    for(var i = 0; i < T.length; i++){
+      if(!isFinite(T[i]) || !isFinite(F[i])) continue;
+      if(isFinite(tmin) && T[i] < tmin) continue;
+      if(isFinite(tmax) && T[i] > tmax) continue;
+      idx.push(i);
+    }
+    if(idx.length < 8) return { tm: NaN, error: 'Too few points in the search range.' };
+    var iMax = idx[0];
+    idx.forEach(function(i){ if(F[i] > F[iMax]) iMax = i; });
+    var iMin = idx[0];
+    idx.forEach(function(i){ if(i < iMax && F[i] < F[iMin]) iMin = i; });
+    var x = [], y = [];
+    idx.forEach(function(i){ if(i >= iMin && i <= iMax){ x.push(T[i]); y.push(F[i]); } });
+    if(x.length < 6) return { tm: NaN, error: 'The rising part of the curve has too few points.', lo: T[iMin], hi: T[iMax] };
+    var tm0 = isFinite(tmStart) && tmStart > x[0] && tmStart < x[x.length - 1] ? tmStart : (x[0] + x[x.length - 1]) / 2;
+    var fit = nls(x, y, boltzModel, [y[0], y[y.length - 1], tm0, Math.max((x[x.length - 1] - x[0]) / 10, 0.5)]);
+    if(fit.error) return { tm: NaN, error: fit.error, lo: x[0], hi: x[x.length - 1] };
+    var tm = fit.params[2];
+    return { tm: tm, se: fit.se[2], slope: fit.params[3], fmin: fit.params[0], fmax: fit.params[1], r2: fit.r2, n: fit.n,
+             lo: x[0], hi: x[x.length - 1], converged: fit.converged, inside: tm >= x[0] && tm <= x[x.length - 1] };
+  }
+
+  // Welch's t test (unequal variances), two-sided. diff = mean(a) - mean(b), ci = its 95 % confidence interval.
   function welch(a, b){
-    if(a.length < 2 || b.length < 2) return { p: NaN, t: NaN, df: NaN };
+    if(a.length < 2 || b.length < 2) return { p: NaN, t: NaN, df: NaN, ci: [NaN, NaN] };
     var va = sd(a) * sd(a) / a.length, vb = sd(b) * sd(b) / b.length;
-    if(va + vb === 0) return { p: NaN, t: NaN, df: NaN };
-    var t = (mean(a) - mean(b)) / Math.sqrt(va + vb);
+    if(va + vb === 0) return { p: NaN, t: NaN, df: NaN, ci: [NaN, NaN] };
+    var diff = mean(a) - mean(b), se = Math.sqrt(va + vb), t = diff / se;
     var df = (va + vb) * (va + vb) / (va * va / (a.length - 1) + vb * vb / (b.length - 1));
-    return { t: t, df: df, p: tP2(t, df) };
+    var tc = tCrit(0.95, df);
+    return { t: t, df: df, p: tP2(t, df), diff: diff, se: se, ci: [diff - tc * se, diff + tc * se] };
   }
 
   // Significant-figure formatting with a decimal point
@@ -247,6 +276,6 @@
   }
 
   var TK = { parseTable: parseTable, toNum: toNum, mean: mean, sd: sd, polyfit: polyfit, nls: nls, mmFit: mmFit, mmModel: mmModel,
-             savgolDeriv: savgolDeriv, meltTm: meltTm, welch: welch, tP2: tP2, tCrit: tCrit, sig: sig };
+             savgolDeriv: savgolDeriv, meltTm: meltTm, boltzModel: boltzModel, boltzFit: boltzFit, welch: welch, tP2: tP2, tCrit: tCrit, sig: sig };
   if(typeof module !== 'undefined' && module.exports) module.exports = TK; else root.TK = TK;
 })(typeof window !== 'undefined' ? window : this);

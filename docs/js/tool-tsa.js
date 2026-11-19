@@ -119,6 +119,13 @@
     var t = ev.target;
     if(t && t.type === 'checkbox' && t.hasAttribute('data-show')){ if(t.checked) delete hidden[t.getAttribute('data-show')]; else hidden[t.getAttribute('data-show')] = 1; }
   });
+  var bzCache = {};
+  function boltz(name, T, F, tmin, tmax, start){
+    var s = 0; for(var i = 0; i < F.length; i++) s += F[i] * (i + 1);
+    var key = name + '|' + T.length + '|' + T[0] + '|' + T[T.length - 1] + '|' + s + '|' + tmin + '|' + tmax;
+    if(!(key in bzCache)) bzCache[key] = TK.boltzFit(T, F, tmin, tmax, start);
+    return bzCache[key];
+  }
   var OUTLIER = 2;   // °C away from the group median: a rule of thumb for "look at this well", not a statistical test
 
   // Plate map of the wells as named in the data (positions like A01), coloured by group. Clicking a well ticks or
@@ -257,13 +264,16 @@
       nt.innerHTML = UI.notes([d.lay && d.lay.n && d.ignored.length ? { warn: true, text: 'The plate layout names none of the wells in the data. Use positions like A1 or A01 in the layout and in the column names.' } : { warn: true, text: 'Could read ' + d.T.length + ' temperature steps and ' + d.cols.length + ' complete well column(s). Expected: first column temperature, one column per well, header like Reference_1, Reference_2, Ligand_1, or one row per well and reading with columns for well, temperature and fluorescence.' + UI.exampleHint() }]); return;
     }
     ex.sync(d.cols.map(function(c){ return c.name; }).join('|'));
-    var meanMode = el('v_mean').checked, norm = el('n_norm').checked;
+    var meanMode = el('v_mean').checked, norm = el('n_norm').checked, useB = el('t_bol').checked;
     var tmin = TK.toNum(el('o_min').value, ';'), tmax = TK.toNum(el('o_max').value, ';');
     var groups = [], gi = {};
     d.cols.forEach(function(c){
       if(!(c.group in gi)){ gi[c.group] = groups.length; groups.push({ name: c.group, tm: [], wells: [] }); }
       var m = TK.meltTm(d.T, c.F, win, tmin, tmax);
-      c.tm = m.tm; c.deriv = m.deriv; c.gi = gi[c.group]; c.edge = m.index != null && (m.index <= (win - 1) / 2 || m.index >= d.T.length - 1 - (win - 1) / 2);
+      var bz = boltz(c.name, d.T, c.F, tmin, tmax, m.tm);
+      // a Boltzmann Tm outside the fitted range means there was no transition to fit (e.g. a blank)
+      c.tmD = m.tm; c.tmB = bz.converged && bz.inside ? bz.tm : NaN; c.bz = bz;
+      c.tm = useB ? c.tmB : c.tmD; c.deriv = m.deriv; c.gi = gi[c.group]; c.edge = m.index != null && (m.index <= (win - 1) / 2 || m.index >= d.T.length - 1 - (win - 1) / 2);
       c.off = ex.off(c.name);
       // 0 to 1 scaling per well (minimum and maximum of the whole curve); the derivative scales by the same factor
       var lo = Math.min.apply(null, c.F), span = Math.max.apply(null, c.F) - lo;
@@ -325,18 +335,22 @@
     // means first: the shift of every group needs the reference mean, wherever the reference sits in the list
     groups.forEach(function(g){ g.mean = TK.mean(g.tm); g.sd = TK.sd(g.tm); });
     var grow = groups.map(function(g){
-      g.d = g.mean - ref.mean; g.p = g === ref ? NaN : TK.welch(g.tm, ref.tm).p;
+      var w = g === ref ? null : TK.welch(g.tm, ref.tm);
+      g.d = g.mean - ref.mean; g.p = w ? w.p : NaN; g.ci = w ? w.ci : [NaN, NaN];
+      var sgn = function(v){ return (v >= 0 ? '+' : '') + v.toFixed(2); };
       return ['<label class="pt"><input type="checkbox" data-show="' + UI.esc(g.name) + '" aria-label="Show ' + UI.esc(g.name) + ' in the figure"' + (g.show ? ' checked' : '') + '>' +
               '<span class="gdot" style="background:' + gcol(g) + '"></span></label>' + (g.show ? '' : '<span class="muted">') + UI.esc(g.name) + (g.show ? '' : '</span>') + (g === ref ? ' <span class="meta">reference</span>' : ''), g.tm.length, '<b>' + fx(g.mean, 2) + '</b>', fx(g.sd, 2),
-              g === ref || !isFinite(g.d) ? '—' : (g.d >= 0 ? '+' : '') + g.d.toFixed(2), isFinite(g.p) ? (g.p < 0.001 ? '&lt; 0.001' : g.p.toFixed(3)) : '—'];
+              g === ref || !isFinite(g.d) ? '—' : sgn(g.d), isFinite(g.ci[0]) ? sgn(g.ci[0]) + ' to ' + sgn(g.ci[1]) : '—',
+              isFinite(g.p) ? (g.p < 0.001 ? '&lt; 0.001' : g.p.toFixed(3)) : '—'];
     });
     var off = d.cols.filter(function(c){ return c.off; });
-    res.innerHTML = UI.table(['Group', 'n', 'Mean T<sub>m</sub> / °C', 'SD', 'ΔT<sub>m</sub> / °C', 'p (Welch)'], grow, 'res pts') +
+    res.innerHTML = UI.table(['Group', 'n', 'Mean T<sub>m</sub> / °C', 'SD', 'ΔT<sub>m</sub> / °C', '95 % CI of ΔT<sub>m</sub>', 'p (Welch)'], grow, 'res pts') +
       '<p class="muted" style="margin:6px 0 0; font-size:13px">Untick a group to take it out of the figure. It stays in the table and the statistics.</p>' +
       plateMap(d.cols, d.ignored, function(c){ return gcol(groups[c.gi]); }) +
       UI.ptsBox('T<sub>m</sub> per well' + (off.length ? ' (' + off.length + ' left out)' : '') + '. Untick a well to leave it out.',
-        UI.table(['Well', 'Group', 'T<sub>m</sub> / °C', ''], d.cols.map(function(c){
-          return [UI.check(c.name, c.off, c.name), UI.esc(c.group), c.off ? '<s>' + fx(c.tm, 2) + '</s>' : fx(c.tm, 2),
+        UI.table(['Well', 'Group', 'T<sub>m</sub> derivative / °C', 'T<sub>m</sub> Boltzmann / °C', ''], d.cols.map(function(c){
+          var cell = function(v, used){ var t = fx(v, 2); if(c.off) return '<s>' + t + '</s>'; return used ? '<b>' + t + '</b>' : '<span class="muted">' + t + '</span>'; };
+          return [UI.check(c.name, c.off, c.name), UI.esc(c.group), cell(c.tmD, !useB), cell(c.tmB, useB),
                   c.odd ? '<span class="flag">check</span>' : ''];
         }), 'pts'));
     var n = [], diffs = [];
@@ -361,9 +375,13 @@
     else n.push({ text: 'With three wells per group the p value is an orientation only.' });
     if(meanMode) n.push({ text: 'Mean per group: each curve is the point-by-point mean of the included wells, the shaded band ± 1 SD. The curves are for display. T<sub>m</sub>, SD and p still come from the single wells, and the dashed lines mark the mean T<sub>m</sub>, which can sit slightly off the peak of the mean derivative.' });
     if(norm) n.push({ text: 'Normalised: each well is scaled to 0 at its lowest and 1 at its highest reading over the whole range. This does not change T<sub>m</sub>.' });
-    n.push({ text: 'T<sub>m</sub> is the temperature of the steepest increase: first derivative from a Savitzky-Golay filter (quadratic, ' + win + ' points = ' + TK.sig((win - 1) * step, 3) + ' °C), maximum refined with a parabola. A Boltzmann fit can give slightly different values.' + (d.lay && d.lay.n ? '' : ' Wells are grouped by their column name without the trailing number, or by the plate layout if you paste one.') });
+    var noB = d.cols.filter(function(c){ return !c.off && !isFinite(c.tmB); });
+    if(useB && noB.length) n.push({ warn: true, text: noB.length + ' well(s) without a Boltzmann T<sub>m</sub> (' + noB.map(function(c){ return UI.esc(c.name); }).join(', ') + '): the fit found no transition in the search range, which is usual for blanks. They are not in the group results.' });
+    if(useB) n.push({ text: 'T<sub>m</sub> from a Boltzmann fit, F = F<sub>min</sub> + (F<sub>max</sub> &minus; F<sub>min</sub>) / (1 + exp((T<sub>m</sub> &minus; T) / a)), by nonlinear least squares from the lowest reading before the maximum up to the maximum; the fall after the maximum is left out. The derivative values are shown in the well table for comparison.' });
+    else n.push({ text: 'T<sub>m</sub> is the temperature of the steepest increase: first derivative from a Savitzky-Golay filter (quadratic, ' + win + ' points = ' + TK.sig((win - 1) * step, 3) + ' °C), maximum refined with a parabola. The Boltzmann values are shown in the well table for comparison.' });
+    n.push({ text: 'The 95 % confidence interval of &Delta;T<sub>m</sub> comes from the same Welch test as the p value. If it does not include 0, the shift is distinguishable from the scatter of the replicates.' + (d.lay && d.lay.n ? '' : ' Wells are grouped by their column name without the trailing number, or by the plate layout if you paste one.') });
     nt.innerHTML = UI.notes(n);
-    last = { spec: spec, spec2: spec2, d: d, groups: groups, ref: ref, win: win, fKey: fKey, norm: norm }; el('dl').hidden = false;
+    last = { spec: spec, spec2: spec2, d: d, groups: groups, ref: ref, win: win, fKey: fKey, norm: norm, useB: useB }; el('dl').hidden = false;
   }
 
   UI.wire({ run: run, demo: function(){ el('in').value = demo(); },
@@ -371,10 +389,12 @@
       svg: function(){ if(last){ UI.downloadSVG('melting-curves.svg', last.spec); UI.downloadSVG('melting-derivative.svg', last.spec2); } },
       png: function(){ if(last){ UI.downloadPNG('melting-curves.png', last.spec); setTimeout(function(){ UI.downloadPNG('melting-derivative.png', last.spec2); }, 400); } },
       csv: function(){ if(!last) return;
-        var rows = [['group', 'n', 'Tm_mean', 'Tm_sd', 'dTm_vs_' + last.ref.name, 'p_welch']];
-        last.groups.forEach(function(g){ rows.push([g.name, g.tm.length, g.mean, isFinite(g.sd) ? g.sd : '', g === last.ref ? '' : g.d, isFinite(g.p) ? g.p : '']); });
-        rows.push([]); rows.push(['well', 'group', 'Tm', 'included']);
-        last.d.cols.forEach(function(c){ rows.push([c.name, c.group, c.tm, c.off ? 'no' : 'yes']); });
+        var rows = [['tm_method', last.useB ? 'boltzmann' : 'first derivative'], [],
+          ['group', 'n', 'Tm_mean', 'Tm_sd', 'dTm_vs_' + last.ref.name, 'dTm_ci95_low', 'dTm_ci95_high', 'p_welch']];
+        last.groups.forEach(function(g){ rows.push([g.name, g.tm.length, g.mean, isFinite(g.sd) ? g.sd : '', g === last.ref ? '' : g.d,
+          isFinite(g.ci[0]) ? g.ci[0] : '', isFinite(g.ci[1]) ? g.ci[1] : '', isFinite(g.p) ? g.p : '']); });
+        rows.push([]); rows.push(['well', 'group', 'Tm_derivative', 'Tm_boltzmann', 'Tm_boltzmann_se', 'included']);
+        last.d.cols.forEach(function(c){ rows.push([c.name, c.group, isFinite(c.tmD) ? c.tmD : '', isFinite(c.tmB) ? c.tmB : '', isFinite(c.tmB) ? c.bz.se : '', c.off ? 'no' : 'yes']); });
         // mean curve per group over the included wells, as shown in "Mean per group"
         var sfx = last.norm ? '_norm' : '', head = ['temp'];
         last.groups.forEach(function(g){ head.push(g.name + '_mean' + sfx, g.name + '_sd' + sfx); });

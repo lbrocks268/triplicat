@@ -399,6 +399,8 @@ tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from m
        '<span class="muted">Number the selection in groups of</span><input id="ped_n" type="text" inputmode="numeric" autocomplete="off" value="3" aria-label="Wells per group">'
        '<button class="chip quiet" type="button" data-ped="down">down</button><button class="chip quiet" type="button" data-ped="across">across</button></div></div>',
      opt("Reference group", '<select id="o_ref" aria-label="Reference group" style="width:100%"></select>')
+     + '<div class="calc-lbl">T<sub>m</sub> method</div><div class="calc-mode" style="margin:0"><input type="radio" name="tmm" id="t_der" checked><label for="t_der">First derivative</label>'
+       '<input type="radio" name="tmm" id="t_bol"><label for="t_bol">Boltzmann fit</label></div>'
      + opt("Smoothing window (points)", text_in("o_win", "9", "numeric"))
      + opt("Search from (&deg;C)", '<input id="o_min" type="text" inputmode="decimal" autocomplete="off" placeholder="optional">')
      + opt("Search to (&deg;C)", '<input id="o_max" type="text" inputmode="decimal" autocomplete="off" placeholder="optional">')
