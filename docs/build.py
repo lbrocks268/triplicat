@@ -397,7 +397,12 @@ tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from m
        '<button class="chip" type="button" data-ped="assign">Assign</button><button class="chip" type="button" data-ped="clear">Clear</button></div>'
        '<div class="ped-bar"><button class="chip quiet" type="button" data-ped="all">Select all</button><button class="chip quiet" type="button" data-ped="none">Select none</button>'
        '<span class="muted">Number the selection in groups of</span><input id="ped_n" type="text" inputmode="numeric" autocomplete="off" value="3" aria-label="Wells per group">'
-       '<button class="chip quiet" type="button" data-ped="down">down</button><button class="chip quiet" type="button" data-ped="across">across</button></div></div>',
+       '<button class="chip quiet" type="button" data-ped="down">down</button><button class="chip quiet" type="button" data-ped="across">across</button></div>'
+       '<div class="ped-tpl"><div class="ped-head"><span class="meta">Templates</span><span class="muted">Save a layout you use often and load it for the next run. Stored only in this browser.</span></div>'
+       '<div class="ped-bar"><select id="tpl_sel" aria-label="Saved templates"></select><button class="chip" type="button" data-ped="tload">Load</button><button class="chip quiet" type="button" data-ped="tdel">Delete</button></div>'
+       '<div class="ped-bar"><input id="tpl_name" type="text" autocomplete="off" placeholder="Template name" aria-label="Template name"><button class="chip" type="button" data-ped="tsave">Save layout</button>'
+       '<button class="chip quiet" type="button" data-ped="tdown">Download layout</button></div>'
+       '<p class="muted" id="tpl_msg" style="margin:6px 0 0; font-size:12.5px" aria-live="polite"></p></div></div>',
      opt("Reference group", '<select id="o_ref" aria-label="Reference group" style="width:100%"></select>')
      + '<div class="calc-lbl">T<sub>m</sub> method</div><div class="calc-mode" style="margin:0"><input type="radio" name="tmm" id="t_der" checked><label for="t_der">First derivative</label>'
        '<input type="radio" name="tmm" id="t_bol"><label for="t_bol">Boltzmann fit</label></div>'
@@ -550,6 +555,7 @@ page("legal.html", f"Imprint and privacy | {BRAND}", "Imprint (Impressum) and pr
 <h3>Cookies, tracking and local storage</h3>
 <p>This site sets no cookies and uses no analytics or advertising services that follow you around.{COUNTER_NOTE} If you switch between the light and dark design, that choice is saved in your browser's local storage so that it is remembered on your next visit. It is not transmitted.</p>
 <p>On the analysis pages you can tick &ldquo;Remember my inputs in this browser&rdquo;. Only then are your inputs on that page (pasted data, plate layout and settings) saved in your browser's local storage on your device, so that they are still there after a reload. They are not transmitted to me or to anyone else. When you untick the box, the saved inputs are deleted; you can also delete them at any time in your browser settings. The legal basis is your consent by ticking the box (&sect; 25 (1) TDDDG, Art. 6 (1) (a) GDPR).</p>
+<p>On the thermal shift page you can save a plate layout as a template. Only when you click &ldquo;Save layout&rdquo; is the layout (well positions and the sample names you typed) stored under the name you chose in your browser's local storage on your device. It is not transmitted. You can remove a template with &ldquo;Delete&rdquo; or in your browser settings. The storage is necessary to provide the function you asked for (&sect; 25 (2) No. 2 TDDDG).</p>
 
 {COUNTER_SECTION}<h3>Contact by email</h3>
 <p>If you write to me, I use your address and the content of your message only to answer you (Art. 6 (1) (f) GDPR), and delete the correspondence when it is no longer needed. If you ask to be told about new analyses or the Pro version, I keep your address only for that purpose and delete it once I have told you, or earlier if you ask (Art. 6 (1) (a) GDPR, your request is the consent). Emails to this address are received and stored by Gmail, a service of Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland; data may also be processed in the USA. Details are in <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>

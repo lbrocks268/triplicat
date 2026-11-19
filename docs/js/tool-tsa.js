@@ -224,7 +224,7 @@
   document.addEventListener('click', function(ev){
     var b = ev.target.closest ? ev.target.closest('.pw') : null;
     if(b && ev.detail === 0){ var k = b.getAttribute('data-w'); if(pedSel[k]) delete pedSel[k]; else pedSel[k] = 1; pedPaint(); return; }   // keyboard
-    var a = ev.target.closest ? ev.target.closest('[data-ped]') : null; if(!a) return;
+    var a = ev.target.closest ? ev.target.closest('[data-ped]') : null; if(!a || /^t/.test(a.getAttribute('data-ped'))) return;
     var act = a.getAttribute('data-ped'), keys = pedKeys(), chosen = keys.filter(function(k){ return pedSel[k]; }), map = currentMap();
     if(act === 'all'){ keys.forEach(function(k){ pedSel[k] = 1; }); pedPaint(); return; }
     if(act === 'none'){ pedSel = {}; pedPaint(); return; }
@@ -248,6 +248,45 @@
   document.addEventListener('keydown', function(ev){
     if(ev.key === 'Enter' && ev.target && ev.target.id === 'ped_name'){ ev.preventDefault(); var b = document.querySelector('[data-ped="assign"]'); if(b) b.click(); }
   });
+  // ---------- Templates: named plate layouts in this browser's local storage, written only on "Save layout" ----------
+  var TPL = 'triplicat-plate-templates';
+  function tplAll(){ try { return JSON.parse(localStorage.getItem(TPL) || '{}') || {}; } catch(e){ return {}; } }
+  function tplPut(all){ try { localStorage.setItem(TPL, JSON.stringify(all)); return true; } catch(e){ return false; } }
+  function tplMsg(t){ var m = el('tpl_msg'); if(m) m.textContent = t; }
+  function tplRender(pick){
+    var s = el('tpl_sel'); if(!s) return;
+    var names = Object.keys(tplAll()).sort(function(a, b){ return a.localeCompare(b); });
+    s.innerHTML = names.length ? names.map(function(n){ return '<option>' + UI.esc(n) + '</option>'; }).join('') : '<option value="">No templates yet</option>';
+    s.disabled = !names.length;
+    if(pick && names.indexOf(pick) >= 0) s.value = pick;
+  }
+  document.addEventListener('click', function(ev){
+    var a = ev.target.closest ? ev.target.closest('[data-ped^="t"]') : null; if(!a) return;
+    var act = a.getAttribute('data-ped'), all = tplAll(), lay = el('lay'), sel = el('tpl_sel');
+    if(act === 'tsave'){
+      var name = el('tpl_name').value.trim();
+      if(!lay.value.trim()){ tplMsg('There is no layout to save yet. Assign samples on the plate first.'); return; }
+      if(!name){ tplMsg('Type a name for the template first.'); el('tpl_name').focus(); return; }
+      var existed = name in all; all[name] = lay.value;
+      if(!tplPut(all)){ tplMsg('This browser does not allow storing data, so the template could not be saved. Use "Download layout" instead.'); return; }
+      tplRender(name); el('tpl_name').value = '';
+      tplMsg((existed ? 'Template "' : 'Saved template "') + name + (existed ? '" updated.' : '".'));
+    } else if(act === 'tload'){
+      if(!sel.value || !(sel.value in all)) return;
+      lay.value = all[sel.value]; lay.dispatchEvent(new Event('input', { bubbles: true }));
+      tplMsg('Loaded template "' + sel.value + '".');
+    } else if(act === 'tdel'){
+      if(!sel.value || !(sel.value in all)) return;
+      var gone = sel.value; delete all[gone]; tplPut(all); tplRender();
+      tplMsg('Deleted template "' + gone + '".');
+    } else if(act === 'tdown'){
+      if(!lay.value.trim()){ tplMsg('There is no layout to download yet.'); return; }
+      UI.downloadText('plate-layout.tsv', lay.value, 'text/tab-separated-values');
+      tplMsg('Downloaded as plate-layout.tsv. Open it later with "Open file" next to the plate layout.');
+    }
+  });
+  tplRender();
+
   // a group with one of these names is taken as the reference when the groups change
   var REF_RE = /\b(ref|reference|wt|wild[\s_-]?type|apo|control|ctrl|dmso|no[\s_-]?ligand)\b/i;
 
