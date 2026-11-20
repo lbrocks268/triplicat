@@ -343,7 +343,7 @@ def tool(fname, title, desc, h1, lead, inputs, options, script, second_plot=Fals
     dl = ('<button class="chip" type="button" data-act="svg">Figure SVG</button><button class="chip" type="button" data-act="png">Figure PNG</button>'
           '<button class="chip" type="button" data-act="csv">Results CSV</button>'
           + ('<button class="chip" type="button" data-act="r">R script</button>' if rscript else ""))
-    page(fname, f"{title} | {BRAND}", desc, f"""<main class="wrap">
+    page(fname, f"{title} | {BRAND}", desc, f"""<main class="wrap wide">
 <div class="page-head tool-head"><a class="crumb" href="toolkit.html">&larr; Toolkit</a>
 <h1>{h1}</h1><p>{lead}</p>
 <p class="whatfor"><b>What is this for?</b> {WHATFOR[fname]} <a href="enzyme-kinetics-bradford-thermal-shift.html">Which assay answers which question &rarr;</a></p></div>
@@ -392,7 +392,9 @@ tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from m
      + data_box("in", "Temperature and fluorescence per well", "temp&#9;Reference_1&#9;Reference_2&#9;Ligand_1&#9;Ligand_2&#10;25&#9;118.2&#9;121.5&#9;119.9&#9;117.3", rows=12)
      + data_box("lay", "Plate layout (optional)", "&#9;1&#9;2&#9;3&#10;A&#9;Reference&#9;Ligand&#9;Ligand&#10;B&#9;Reference&#9;Ligand&#9;Ligand", rows=4, demo=False)
      + '<p class="muted" style="margin:8px 0 0">Needed when the wells are named by position (A01, B01, ...). Assign the samples on the plate below, or paste your plate map from the spreadsheet: row letters down, column numbers across, a sample name per well. Wells with the same name form a group, empty wells are left out. Write a combination as &ldquo;A + B&rdquo; (with spaces); the order does not matter.</p>'
-     + '<div class="ped" id="ped" hidden><div class="ped-head"><span class="meta">Plate</span><span class="muted">Click or drag over wells, type a name, press Enter.</span></div>'
+     + '<p class="muted ped-hint" id="ped_hint" hidden>The wells in your data are named by sample (like Reference_1), so the groups come from those names and no plate layout is needed. The plate editor is for data named by position (A01, B01, ...).</p>'
+     + '<div class="ped" id="ped"><div class="ped-head"><span class="meta">Plate</span><span class="muted">Click or drag over wells, type a name, press Enter.</span></div>'
+       '<p class="muted" id="ped_empty" style="margin:0 0 6px; font-size:12.5px">No data yet, so this shows a 96-well plate. You can prepare the layout now; it adapts to the plate in your data.</p>'
        '<div class="calc-scroll"><div id="ped_grid"></div></div>'
        '<div class="ped-bar"><input id="ped_name" type="text" autocomplete="off" placeholder="Sample name" aria-label="Sample name for the selected wells">'
        '<button class="chip" type="button" data-ped="assign" title="Replace the name of the selected wells">Assign</button>'

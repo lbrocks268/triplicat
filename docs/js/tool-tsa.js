@@ -98,7 +98,10 @@
       if(c){ raw = c.text; P.conv = c; }
     }
     var t = TK.parseTable(raw), T = [], cols = [];
-    var lay = readLayout(layText), ignored = [];
+    var lay = readLayout(layText), ignored = [], layUnused = false;
+    // a layout only applies to wells named by position; with sample names (like the demo) it is left aside
+    var hdr = t.header.slice(1);
+    if(lay && lay.n && hdr.length && hdr.filter(function(h){ return wellKey(h); }).length < Math.max(2, hdr.length / 2)){ lay = null; layUnused = true; }
     for(var j = 1; j < t.header.length; j++){
       var nm = t.header[j], group = nm.replace(/[_\s.-]*\d+$/, '') || nm;
       if(lay && lay.n){
@@ -115,7 +118,7 @@
       T.push(x); cols.forEach(function(c){ c.F.push(TK.toNum(r[c.k], t.delim)); });
     });
     cols = cols.filter(function(c){ return c.F.filter(isFinite).length === T.length && T.length; });
-    return { T: T, cols: cols, lay: lay, ignored: ignored, names: t.header.slice(1), text: raw, conv: P.conv && raw === P.conv.text ? P.conv.note : '' };
+    return { T: T, cols: cols, lay: lay, layUnused: layUnused, ignored: ignored, names: t.header.slice(1), text: raw, conv: P.conv && raw === P.conv.text ? P.conv.note : '' };
   }
 
   // Display helpers: '—' for missing values, NaN-safe mean and SD across wells at one temperature.
@@ -191,9 +194,16 @@
   }
   function renderEditor(names, layMap){
     var box = el('ped'); if(!box) return;
-    var pos = names.map(wellKey).filter(Boolean);
-    if(pos.length < Math.max(2, names.length / 2)){ box.hidden = true; pedHtml = ''; return; }
-    box.hidden = false;
+    var pos = names.map(wellKey).filter(Boolean), hint = el('ped_hint');
+    // data named by sample (like the demo): groups come from the names, the editor would have nothing to place
+    if(names.length && pos.length < Math.max(2, names.length / 2)){ box.hidden = true; if(hint) hint.hidden = false; pedHtml = ''; return; }
+    if(hint) hint.hidden = true; box.hidden = false;
+    if(el('ped_empty')) el('ped_empty').hidden = !!names.length;
+    // no data yet: a 96-well plate, plus any wells the pasted layout names beyond it
+    if(!names.length){
+      'ABCDEFGH'.split('').forEach(function(r){ for(var c = 1; c <= 12; c++) pos.push(r + c); });
+      Object.keys(layMap).forEach(function(k){ if(pos.indexOf(k) < 0) pos.push(k); });
+    }
     var rows = {}, nums = {}; pos.forEach(function(k){ rows[k[0]] = 1; nums[Number(k.slice(1))] = 1; });
     pedR = Object.keys(rows).sort(); pedN = Object.keys(nums).map(Number).sort(function(a, b){ return a - b; });
     var have = {}; pos.forEach(function(k){ have[k] = 1; });
@@ -561,6 +571,7 @@
     if(nHidden) n.push({ text: nHidden + ' group(s) not shown in the figure. They are still in the table, the statistics and the CSV.' });
     D.forEach(function(d, i){
       if(!usable[i]) return;
+      if(d.layUnused) n.push({ text: pre(i) + 'The plate layout is not used: the wells in the data are named by sample, so the groups come from those names.' });
       if(d.lay && !d.lay.n) n.push({ warn: true, text: pre(i) + 'The plate layout could not be read. Paste the plate map with row letters in the first column and column numbers in the first row, or a list of well and name.' });
       if(d.lay && d.lay.n) n.push({ text: pre(i) + 'Groups from the plate layout' + (d.ignored.length ? '. ' + d.ignored.length + ' well(s) without a name in the layout are ignored: ' + d.ignored.map(UI.esc).join(', ') : '') + '.' });
       var byPos = d.names.filter(function(nm){ return wellKey(nm); }).length >= Math.max(2, d.names.length / 2);
