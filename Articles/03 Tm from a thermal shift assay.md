@@ -58,7 +58,7 @@ The two methods disagree mainly when the curve is asymmetric or the baselines ar
 
 ## Try it
 
-The [thermal shift tool](thermal-shift.html) takes one column per well or the export of a qPCR instrument, calculates T<sub>m</sub> either from the smoothed first derivative or with a Boltzmann fit (both values are shown side by side), groups replicates by their name or by a plate layout, and reports mean, standard deviation and ΔT<sub>m</sub> with its 95 % confidence interval against a reference of your choice. The smoothing window and the search range can be set.
+The [thermal shift tool](thermal-shift.html) takes one column per well or the export of a qPCR instrument, calculates T<sub>m</sub> either from the smoothed first derivative or with a Boltzmann fit (both values are shown side by side), groups replicates by their name or by a plate layout, and reports mean, standard deviation and ΔT<sub>m</sub> with its 95 % confidence interval against a reference of your choice. Wells with two substances, written as "A + B", are also compared with the wells that contain only one of them. The smoothing window and the search range can be set.
 
 ## References
 

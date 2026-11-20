@@ -5,7 +5,8 @@
 
   // Synthetic demo curves (not measured data): sigmoid unfolding, signal decay after the maximum, fixed pseudo-noise.
   function demo(){
-    var wells = [['Reference_1', 55.1], ['Reference_2', 54.8], ['Reference_3', 55.3], ['Ligand_1', 58.4], ['Ligand_2', 58.9], ['Ligand_3', 58.6]];
+    var wells = [['Reference_1', 55.1], ['Reference_2', 54.8], ['Reference_3', 55.3], ['Ligand_1', 58.4], ['Ligand_2', 58.9], ['Ligand_3', 58.6],
+                 ['Ligand + Additive_1', 60.2], ['Ligand + Additive_2', 59.8], ['Ligand + Additive_3', 60.4]];
     var out = 'temp\t' + wells.map(function(w){ return w[0]; }).join('\t') + '\n', seed = 3;
     var rnd = function(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647 - 0.5; };
     for(var T = 25; T <= 95; T += 0.5){
@@ -57,6 +58,12 @@
       (same ? '' : '. The wells had slightly different temperatures, so their readings were interpolated onto the temperatures of ' + UI.esc(order[0])) + '.' };
   }
 
+  // ---------- Combinations: several substances in one well, written "A + B" ----------
+  // The separator is a plus with spaces on both sides, so names like "Mg2+" or "Ca2+ + EDTA" stay intact.
+  function parts(name){ return String(name).split(/\s+\+\s+/).map(function(p){ return p.trim(); }).filter(Boolean); }
+  // same substances in any order and spacing count as one group
+  function comboKey(name){ return parts(name).slice().sort().join('\u0000'); }
+
   // ---------- Plate layout: sample name per well position ----------
   // Accepts a plate map pasted from a spreadsheet (row letters down, column numbers across) or a list "well, name".
   function wellKey(n){ var m = /^\s*([A-Pa-p])\s*0*(\d{1,2})\s*$/.exec(n || ''); return m ? m[1].toUpperCase() + Number(m[2]) : null; }
@@ -88,7 +95,7 @@
       if(c){ el('in').value = c.text; converted = c; }
     }
     var t = TK.parseTable(el('in').value), T = [], cols = [];
-    var lay = readLayout(el('lay') ? el('lay').value : ''), ignored = [];
+    var lay = readLayout(el('lay') ? el('lay').value : ''), ignored = [], spell = {};
     for(var j = 1; j < t.header.length; j++){
       var nm = t.header[j], group = nm.replace(/[_\s.-]*\d+$/, '') || nm;
       if(lay && lay.n){
@@ -96,6 +103,8 @@
         if(!k || !lay.map[k]){ ignored.push(nm); continue; }
         group = lay.map[k];
       }
+      // the first spelling of a combination names the group ("B + A" joins "A + B")
+      var ck = comboKey(group); if(ck && !(ck in spell)) spell[ck] = parts(group).join(' + '); if(ck) group = spell[ck];
       cols.push({ name: nm, group: group, F: [], k: j });
     }
     t.rows.forEach(function(r){
@@ -171,6 +180,7 @@
   function currentMap(){ var l = readLayout(el('lay').value); return l && l.n ? l.map : {}; }
   // short label for a small well: "Sample 12" -> "S12", "Reference" -> "Refe."; the full name is in the tooltip
   function shortName(g){
+    var p = parts(g); if(p.length > 1) return p.map(function(x){ return x.length <= 3 ? x : x.slice(0, 3); }).join('+');
     if(g.length <= 5) return g;
     var m = /^(.*?)[\s_-]*(\d+)$/.exec(g);
     if(m && m[1]) return m[1].slice(0, m[2].length > 1 ? 1 : 2) + m[2];
@@ -229,7 +239,14 @@
     if(act === 'all'){ keys.forEach(function(k){ pedSel[k] = 1; }); pedPaint(); return; }
     if(act === 'none'){ pedSel = {}; pedPaint(); return; }
     if(!chosen.length) return;
-    if(act === 'assign' || act === 'clear'){
+    if(act === 'add'){
+      var extra = parts(el('ped_name').value.trim()); if(!extra.length) return;
+      chosen.forEach(function(k){
+        var have = map[k] ? parts(map[k]) : [];
+        extra.forEach(function(x){ if(have.indexOf(x) < 0) have.push(x); });
+        map[k] = have.join(' + ');
+      });
+    } else if(act === 'assign' || act === 'clear'){
       var name = act === 'assign' ? el('ped_name').value.trim() : '';
       chosen.forEach(function(k){ if(name) map[k] = name; else delete map[k]; });
     } else if(act === 'down' || act === 'across'){
@@ -243,7 +260,7 @@
     }
     pedSel = {};
     writeLayout(map);
-    var f = el('ped_name'); if(f && act === 'assign'){ f.select(); }
+    var f = el('ped_name'); if(f && (act === 'assign' || act === 'add')){ f.select(); }
   });
   document.addEventListener('keydown', function(ev){
     if(ev.key === 'Enter' && ev.target && ev.target.id === 'ped_name'){ ev.preventDefault(); var b = document.querySelector('[data-ped="assign"]'); if(b) b.click(); }
@@ -327,7 +344,7 @@
     if(sel.getAttribute('data-key') !== key){
       sel.innerHTML = groups.map(function(g){ return '<option>' + UI.esc(g.name) + '</option>'; }).join('');
       sel.setAttribute('data-key', key);
-      var guess = groups.map(function(g){ return REF_RE.test(g.name); }).indexOf(true);
+      var guess = groups.map(function(g){ return parts(g.name).length === 1 && REF_RE.test(g.name); }).indexOf(true);
       sel.selectedIndex = guess >= 0 ? guess : 0;
     }
     var ref = groups[Math.max(0, sel.selectedIndex)];
@@ -382,9 +399,27 @@
               g === ref || !isFinite(g.d) ? '—' : sgn(g.d), isFinite(g.ci[0]) ? sgn(g.ci[0]) + ' to ' + sgn(g.ci[1]) : '—',
               isFinite(g.p) ? (g.p < 0.001 ? '&lt; 0.001' : g.p.toFixed(3)) : '—'];
     });
+    // every combination against each of its parts left out, where that group exists ("A + B" vs "A": what B adds)
+    var byKey = {}, combos = [];
+    groups.forEach(function(g){ byKey[comboKey(g.name)] = g; });
+    groups.forEach(function(g){
+      var p = parts(g.name); if(p.length < 2) return;
+      p.forEach(function(x){
+        var rest = p.filter(function(y){ return y !== x; }), base = byKey[rest.slice().sort().join('\u0000')];
+        if(!base) return;
+        var w = TK.welch(g.tm, base.tm);
+        combos.push({ g: g, base: base, added: x, d: g.mean - base.mean, ci: w.ci, p: w.p });
+      });
+    });
+    var sgn2 = function(v){ return isFinite(v) ? (v >= 0 ? '+' : '') + v.toFixed(2) : '—'; };
+    var comboHtml = combos.length ? '<div class="plate-head" style="margin-top:14px"><span class="meta">Combinations</span><span class="muted">each combination compared with the same wells without one of its substances</span></div>' +
+      UI.table(['Combination', 'compared with', 'effect of adding', 'ΔT<sub>m</sub> / °C', '95 % CI of ΔT<sub>m</sub>', 'p (Welch)'], combos.map(function(c){
+        return [UI.esc(c.g.name), UI.esc(c.base.name), UI.esc(c.added), sgn2(c.d), isFinite(c.ci[0]) ? sgn2(c.ci[0]) + ' to ' + sgn2(c.ci[1]) : '—',
+                isFinite(c.p) ? (c.p < 0.001 ? '&lt; 0.001' : c.p.toFixed(3)) : '—'];
+      }), 'res') : '';
     var off = d.cols.filter(function(c){ return c.off; });
     res.innerHTML = UI.table(['Group', 'n', 'Mean T<sub>m</sub> / °C', 'SD', 'ΔT<sub>m</sub> / °C', '95 % CI of ΔT<sub>m</sub>', 'p (Welch)'], grow, 'res pts') +
-      '<p class="muted" style="margin:6px 0 0; font-size:13px">Untick a group to take it out of the figure. It stays in the table and the statistics.</p>' +
+      '<p class="muted" style="margin:6px 0 0; font-size:13px">Untick a group to take it out of the figure. It stays in the table and the statistics.</p>' + comboHtml +
       plateMap(d.cols, d.ignored, function(c){ return gcol(groups[c.gi]); }) +
       UI.ptsBox('T<sub>m</sub> per well' + (off.length ? ' (' + off.length + ' left out)' : '') + '. Untick a well to leave it out.',
         UI.table(['Well', 'Group', 'T<sub>m</sub> derivative / °C', 'T<sub>m</sub> Boltzmann / °C', ''], d.cols.map(function(c){
@@ -419,8 +454,10 @@
     if(useB) n.push({ text: 'T<sub>m</sub> from a Boltzmann fit, F = F<sub>min</sub> + (F<sub>max</sub> &minus; F<sub>min</sub>) / (1 + exp((T<sub>m</sub> &minus; T) / a)), by nonlinear least squares from the lowest reading before the maximum up to the maximum; the fall after the maximum is left out. The derivative values are shown in the well table for comparison.' });
     else n.push({ text: 'T<sub>m</sub> is the temperature of the steepest increase: first derivative from a Savitzky-Golay filter (quadratic, ' + win + ' points = ' + TK.sig((win - 1) * step, 3) + ' °C), maximum refined with a parabola. The Boltzmann values are shown in the well table for comparison.' });
     n.push({ text: 'The 95 % confidence interval of &Delta;T<sub>m</sub> comes from the same Welch test as the p value. If it does not include 0, the shift is distinguishable from the scatter of the replicates.' + (d.lay && d.lay.n ? '' : ' Wells are grouped by their column name without the trailing number, or by the plate layout if you paste one.') });
+    if(combos.length) n.push({ text: 'Combinations: a group named &ldquo;A + B&rdquo; is also compared with &ldquo;A&rdquo; and with &ldquo;B&rdquo; if those groups exist, with the same Welch test. The &Delta;T<sub>m</sub> there is the shift caused by adding the second substance to the first.' });
+    else if(groups.some(function(g){ return parts(g.name).length > 1; })) n.push({ text: 'A combination is compared with its single substances only if those are on the plate as groups of their own, named the same way.' });
     nt.innerHTML = UI.notes(n);
-    last = { spec: spec, spec2: spec2, d: d, groups: groups, ref: ref, win: win, fKey: fKey, norm: norm, useB: useB }; el('dl').hidden = false;
+    last = { spec: spec, spec2: spec2, d: d, groups: groups, ref: ref, win: win, fKey: fKey, norm: norm, useB: useB, combos: combos }; el('dl').hidden = false;
   }
 
   UI.wire({ run: run, demo: function(){ el('in').value = demo(); },
@@ -432,6 +469,10 @@
           ['group', 'n', 'Tm_mean', 'Tm_sd', 'dTm_vs_' + last.ref.name, 'dTm_ci95_low', 'dTm_ci95_high', 'p_welch']];
         last.groups.forEach(function(g){ rows.push([g.name, g.tm.length, g.mean, isFinite(g.sd) ? g.sd : '', g === last.ref ? '' : g.d,
           isFinite(g.ci[0]) ? g.ci[0] : '', isFinite(g.ci[1]) ? g.ci[1] : '', isFinite(g.p) ? g.p : '']); });
+        if(last.combos.length){
+          rows.push([]); rows.push(['combination', 'compared_with', 'added', 'dTm', 'dTm_ci95_low', 'dTm_ci95_high', 'p_welch']);
+          last.combos.forEach(function(c){ rows.push([c.g.name, c.base.name, c.added, isFinite(c.d) ? c.d : '', isFinite(c.ci[0]) ? c.ci[0] : '', isFinite(c.ci[1]) ? c.ci[1] : '', isFinite(c.p) ? c.p : '']); });
+        }
         rows.push([]); rows.push(['well', 'group', 'Tm_derivative', 'Tm_boltzmann', 'Tm_boltzmann_se', 'included']);
         last.d.cols.forEach(function(c){ rows.push([c.name, c.group, isFinite(c.tmD) ? c.tmD : '', isFinite(c.tmB) ? c.tmB : '', isFinite(c.tmB) ? c.bz.se : '', c.off ? 'no' : 'yes']); });
         // mean curve per group over the included wells, as shown in "Mean per group"
