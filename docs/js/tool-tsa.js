@@ -202,10 +202,11 @@
     var named = names.length && pos.length < Math.max(2, names.length / 2);
     if(named){ names = []; pos = []; layMap = {}; }
     if(hint) hint.hidden = !named; box.hidden = false;
-    if(el('ped_empty')) el('ped_empty').hidden = !!names.length || named;
-    // no data yet: a 96-well plate, plus any wells the pasted layout names beyond it
+    if(el('ped_empty')) el('ped_empty').hidden = !!names.length;
+    // no data yet: an empty plate of the chosen size (rows x columns), plus any wells the pasted layout names beyond it
     if(!names.length){
-      'ABCDEFGH'.split('').forEach(function(r){ for(var c = 1; c <= 12; c++) pos.push(r + c); });
+      var dims = { 24: [4, 6], 48: [6, 8], 96: [8, 12], 384: [16, 24] }[el('ped_size') ? el('ped_size').value : '48'] || [6, 8];
+      'ABCDEFGHIJKLMNOP'.slice(0, dims[0]).split('').forEach(function(r){ for(var c = 1; c <= dims[1]; c++) pos.push(r + c); });
       Object.keys(layMap).forEach(function(k){ if(pos.indexOf(k) < 0) pos.push(k); });
     }
     var rows = {}, nums = {}; pos.forEach(function(k){ rows[k[0]] = 1; nums[Number(k.slice(1))] = 1; });
