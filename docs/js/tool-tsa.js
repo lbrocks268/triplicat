@@ -7,8 +7,9 @@
   // off: shift of every Tm in °C, seed: start of the pseudo-noise (the two-plate demo uses a second run)
   function demo(off, seed){
     off = off || 0; seed = seed || 3;
-    var wells = [['Reference_1', 55.1], ['Reference_2', 54.8], ['Reference_3', 55.3], ['Ligand_1', 58.4], ['Ligand_2', 58.9], ['Ligand_3', 58.6],
-                 ['Ligand + Additive_1', 60.2], ['Ligand + Additive_2', 59.8], ['Ligand + Additive_3', 60.4]];
+    // named by position like an instrument export; the groups come from DEMO_LAY (triplicates down each column)
+    var wells = [['A01', 55.1], ['B01', 54.8], ['C01', 55.3], ['A02', 58.4], ['B02', 58.9], ['C02', 58.6],
+                 ['A03', 60.2], ['B03', 59.8], ['C03', 60.4]];
     wells = wells.map(function(w){ return [w[0], w[1] + off]; });
     var out = 'temp\t' + wells.map(function(w){ return w[0]; }).join('\t') + '\n';
     var rnd = function(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647 - 0.5; };
@@ -21,6 +22,7 @@
     }
     return out;
   }
+  var DEMO_LAY = '\t1\t2\t3\nA\tReference\tLigand\tLigand + Additive\nB\tReference\tLigand\tLigand + Additive\nC\tReference\tLigand\tLigand + Additive\n';
 
   // ---------- Long format (one row per well and reading), as many qPCR instruments export it ----------
   // Recognised by a header with a well column, a temperature column and a fluorescence column. Only the first
@@ -196,9 +198,11 @@
     var box = el('ped'); if(!box) return;
     var pos = names.map(wellKey).filter(Boolean), hint = el('ped_hint');
     // data named by sample (like the demo): groups come from the names, the editor would have nothing to place
-    if(names.length && pos.length < Math.max(2, names.length / 2)){ box.hidden = true; if(hint) hint.hidden = false; pedHtml = ''; return; }
-    if(hint) hint.hidden = true; box.hidden = false;
-    if(el('ped_empty')) el('ped_empty').hidden = !!names.length;
+    // the editor stays visible; for data named by sample it shows an empty 96-well plate and a hint
+    var named = names.length && pos.length < Math.max(2, names.length / 2);
+    if(named){ names = []; pos = []; layMap = {}; }
+    if(hint) hint.hidden = !named; box.hidden = false;
+    if(el('ped_empty')) el('ped_empty').hidden = !!names.length || named;
     // no data yet: a 96-well plate, plus any wells the pasted layout names beyond it
     if(!names.length){
       'ABCDEFGH'.split('').forEach(function(r){ for(var c = 1; c <= 12; c++) pos.push(r + c); });
@@ -359,8 +363,8 @@
       if(a === 'demo2'){
         // two synthetic runs of the same plate; the second one reads about 1 °C higher, as can happen between days
         demo2 = [demo(0, 3), demo(1, 11)];
-        plates = [{ in: demo2[0], lay: '', conv: null }, { in: demo2[1], lay: '', conv: null }]; cur = 0;
-        el('in').value = plates[0].in; el('lay').value = ''; pedSel = {}; el('a_raw').checked = true;
+        plates = [{ in: demo2[0], lay: DEMO_LAY, conv: null }, { in: demo2[1], lay: DEMO_LAY, conv: null }]; cur = 0;
+        el('in').value = plates[0].in; el('lay').value = DEMO_LAY; pedSel = {}; el('a_raw').checked = true;
         el('in').dispatchEvent(new Event('input', { bubbles: true }));
       } else if(a === 'add'){
         plates[cur].in = el('in').value; plates[cur].lay = el('lay').value;
@@ -619,7 +623,7 @@
     last = { spec: spec, spec2: spec2, d: { T: G, cols: cols }, groups: groups, ref: ref, win: win, fKey: fKey, norm: norm, useB: useB, combos: combos, multi: multi, align: align, plateInfo: plateInfo }; el('dl').hidden = false;
   }
 
-  UI.wire({ run: run, demo: function(){ el('in').value = demo(); },
+  UI.wire({ run: run, demo: function(){ el('in').value = demo(); el('lay').value = DEMO_LAY; },
     actions: {
       svg: function(){ if(last){ UI.downloadSVG('melting-curves.svg', last.spec); UI.downloadSVG('melting-derivative.svg', last.spec2); } },
       png: function(){ if(last){ UI.downloadPNG('melting-curves.png', last.spec); setTimeout(function(){ UI.downloadPNG('melting-derivative.png', last.spec2); }, 400); } },
