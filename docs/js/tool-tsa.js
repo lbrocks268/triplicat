@@ -4,10 +4,13 @@
   var TK = window.TK, UI = window.TKUI, el = UI.el, last = null;
 
   // Synthetic demo curves (not measured data): sigmoid unfolding, signal decay after the maximum, fixed pseudo-noise.
-  function demo(){
+  // off: shift of every Tm in °C, seed: start of the pseudo-noise (the two-plate demo uses a second run)
+  function demo(off, seed){
+    off = off || 0; seed = seed || 3;
     var wells = [['Reference_1', 55.1], ['Reference_2', 54.8], ['Reference_3', 55.3], ['Ligand_1', 58.4], ['Ligand_2', 58.9], ['Ligand_3', 58.6],
                  ['Ligand + Additive_1', 60.2], ['Ligand + Additive_2', 59.8], ['Ligand + Additive_3', 60.4]];
-    var out = 'temp\t' + wells.map(function(w){ return w[0]; }).join('\t') + '\n', seed = 3;
+    wells = wells.map(function(w){ return [w[0], w[1] + off]; });
+    var out = 'temp\t' + wells.map(function(w){ return w[0]; }).join('\t') + '\n';
     var rnd = function(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647 - 0.5; };
     for(var T = 25; T <= 95; T += 0.5){
       out += T + '\t' + wells.map(function(w){
@@ -307,7 +310,7 @@
   // ---------- Several plates ----------
   // Each plate keeps its own data, layout and conversion. The textareas always show the current plate; the other plates
   // live in `plates`. A hidden field mirrors all plates so that "Remember my inputs" keeps them too.
-  var plates = [{ in: '', lay: '', conv: null }], cur = 0, restored = false;
+  var plates = [{ in: '', lay: '', conv: null }], cur = 0, restored = false, demo2 = null;
   function restorePlates(){
     if(restored) return; restored = true;
     try {
@@ -329,7 +332,8 @@
     bar.innerHTML = plates.map(function(p, i){
       return '<button type="button" class="chip' + (i === cur ? ' on' : ' quiet') + '" data-plate="' + i + '" aria-pressed="' + (i === cur) + '">Plate ' + (i + 1) + (p.in.trim() ? '' : ' (empty)') + '</button>';
     }).join('') + '<button type="button" class="chip quiet" data-plate="add">+ Add plate</button>' +
-      (plates.length > 1 ? '<button type="button" class="chip quiet" data-plate="remove">Remove plate ' + (cur + 1) + '</button>' : '');
+      (plates.length > 1 ? '<button type="button" class="chip quiet" data-plate="remove">Remove plate ' + (cur + 1) + '</button>'
+        : '<button type="button" class="linkbtn" data-plate="demo2">Try with two demo plates</button>');
     var multi = plates.length > 1;
     ['pl_lbl', 'pl_box'].forEach(function(id){ if(el(id)) el(id).hidden = !multi; });
   }
@@ -342,7 +346,13 @@
     var b = ev.target.closest ? ev.target.closest('[data-plate]') : null;
     if(b){
       var a = b.getAttribute('data-plate');
-      if(a === 'add'){
+      if(a === 'demo2'){
+        // two synthetic runs of the same plate; the second one reads about 1 °C higher, as can happen between days
+        demo2 = [demo(0, 3), demo(1, 11)];
+        plates = [{ in: demo2[0], lay: '', conv: null }, { in: demo2[1], lay: '', conv: null }]; cur = 0;
+        el('in').value = plates[0].in; el('lay').value = ''; pedSel = {}; el('a_raw').checked = true;
+        el('in').dispatchEvent(new Event('input', { bubbles: true }));
+      } else if(a === 'add'){
         plates[cur].in = el('in').value; plates[cur].lay = el('lay').value;
         // a new plate starts with the layout of the current one: replicate plates usually share it, and it is easy to change
         plates.push({ in: '', lay: plates[cur].lay, conv: null }); showPlate(plates.length - 1);
@@ -556,6 +566,8 @@
       var byPos = d.names.filter(function(nm){ return wellKey(nm); }).length >= Math.max(2, d.names.length / 2);
       if(byPos && !(d.lay && d.lay.n)) n.push({ warn: true, text: pre(i) + 'The wells are named by position, but no plate layout is given, so the groups are only the row letters (A, B, ...). Assign your samples on the plate under &ldquo;Plate layout&rdquo;.' });
     });
+    if(demo2 && plates.length === 2 && plates[0].in === demo2[0] && plates[1].in === demo2[1])
+      n.push({ text: 'Demo: two synthetic plates (not measured data) with the same samples. Plate 2 reads about 1 °C higher, as two runs on different days can. Compare &ldquo;As measured&rdquo; with &ldquo;Align on reference&rdquo; under &ldquo;Plates&rdquo;.' });
     if(multi){
       n.push({ text: 'Several plates: wells with the same sample name on different plates are pooled into one group. Means, SD, &Delta;T<sub>m</sub> and p values use all plates.' });
       if(align){

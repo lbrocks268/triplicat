@@ -384,6 +384,7 @@ h2.sub{font-family:var(--display); font-size:24px; letter-spacing:-.02em; margin
 .remember input{margin:2px 0 0; accent-color:var(--accent); flex:none;}
 .ped{margin-top:12px;}
 .ptabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;}
+.ptabs .linkbtn{background:none; border:0; padding:4px 2px; font:500 12.5px var(--sans); color:var(--accent-strong); text-decoration:underline; text-underline-offset:2px; cursor:pointer;}
 .ptabs .chip.on{border-color:var(--accent); color:var(--accent-strong); background:var(--accent-dim);}
 .calc-lbl[hidden], .calc-mode[hidden]{display:none;}
 .ped-head{display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; margin-bottom:6px; font-size:13px;}
