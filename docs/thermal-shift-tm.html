@@ -15,7 +15,7 @@
 <meta property="og:url" content="https://triplicat.com/thermal-shift-tm.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
-<link rel="stylesheet" href="css/site.css?v=cac7ac76">
+<link rel="stylesheet" href="css/site.css?v=3400594e">
 </head>
 <body data-brand="Triplicat" data-counter="https://triplicat.goatcounter.com/count">
 <header class="top"><div class="wrap">
@@ -47,7 +47,7 @@
 <h2>Things that go wrong</h2>
 <ul><li><strong>High fluorescence at the start.</strong> The dye already binds at low temperature. The protein may be partly unfolded or aggregated, or a buffer component such as a detergent binds the dye.</li><li><strong>Two transitions.</strong> Multi-domain proteins and complexes can unfold in steps. A single T<sub>m</sub> does not describe such a curve.</li><li><strong>The steepest point lies at the edge of the range.</strong> That is usually an artefact at the first or last temperatures. Restrict the search window to the region of the transition.</li><li><strong>Over-interpreting small shifts.</strong> Differences well below 1 °C are often within the well-to-well scatter. Measure at least triplicates and compare the shift with the standard deviation of the reference.</li><li><strong>Reading ΔT<sub>m</sub> as affinity.</strong> A larger shift does not by itself mean tighter binding. The size of the shift also depends on the ligand concentration and on the thermodynamics of binding and unfolding.</li></ul>
 <h2>Try it</h2>
-<p>The <a href="thermal-shift.html">thermal shift tool</a> takes one column per well or the export of a qPCR instrument, calculates T<sub>m</sub> either from the smoothed first derivative or with a Boltzmann fit (both values are shown side by side), groups replicates by their name or by a plate layout, and reports mean, standard deviation and ΔT<sub>m</sub> with its 95 % confidence interval against a reference of your choice. Wells with two substances, written as "A + B", are also compared with the wells that contain only one of them. The smoothing window and the search range can be set.</p>
+<p>The <a href="thermal-shift.html">thermal shift tool</a> takes one column per well or the export of a qPCR instrument, calculates T<sub>m</sub> either from the smoothed first derivative or with a Boltzmann fit (both values are shown side by side), groups replicates by their name or by a plate layout, and reports mean, standard deviation and ΔT<sub>m</sub> with its 95 % confidence interval against a reference of your choice. Wells with two substances, written as "A + B", are also compared with the wells that contain only one of them. Several plates can be analysed together, either as measured or aligned on the reference of each plate. The smoothing window and the search range can be set.</p>
 <h2>References</h2>
 <ul><li>Niesen, F.H., Berglund, H. and Vedadi, M. (2007) 'The use of differential scanning fluorimetry to detect ligand interactions that promote protein stability', <em>Nature Protocols</em>, 2(9), pp. 2212-2221.</li><li>Pantoliano, M.W. et al. (2001) 'High-density miniaturized thermal shift assays as a general strategy for drug discovery', <em>Journal of Biomolecular Screening</em>, 6(6), pp. 429-440.</li><li>Savitzky, A. and Golay, M.J.E. (1964) 'Smoothing and differentiation of data by simplified least squares procedures', <em>Analytical Chemistry</em>, 36(8), pp. 1627-1639.</li></ul>
 </div>

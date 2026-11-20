@@ -388,7 +388,8 @@ tool("bradford.html", "Bradford assay calculator: standard curve and sample conc
 tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from melting curves",
      "Analyse thermal shift (DSF) melting curves in the browser: Tm per well from the first derivative, group means, delta Tm against a reference and figures.",
      "Thermal shift", "Melting temperature from the steepest point of each curve. First column temperature, then one column per well, named like Reference_1, Reference_2, Ligand_1. Instrument exports with one row per well and reading are converted automatically.",
-     data_box("in", "Temperature and fluorescence per well", "temp&#9;Reference_1&#9;Reference_2&#9;Ligand_1&#9;Ligand_2&#10;25&#9;118.2&#9;121.5&#9;119.9&#9;117.3", rows=12)
+     '<div class="ptabs" id="ptabs" aria-label="Plates"></div><textarea id="plates_store" hidden aria-hidden="true" tabindex="-1"></textarea>'
+     + data_box("in", "Temperature and fluorescence per well", "temp&#9;Reference_1&#9;Reference_2&#9;Ligand_1&#9;Ligand_2&#10;25&#9;118.2&#9;121.5&#9;119.9&#9;117.3", rows=12)
      + data_box("lay", "Plate layout (optional)", "&#9;1&#9;2&#9;3&#10;A&#9;Reference&#9;Ligand&#9;Ligand&#10;B&#9;Reference&#9;Ligand&#9;Ligand", rows=4, demo=False)
      + '<p class="muted" style="margin:8px 0 0">Needed when the wells are named by position (A01, B01, ...). Assign the samples on the plate below, or paste your plate map from the spreadsheet: row letters down, column numbers across, a sample name per well. Wells with the same name form a group, empty wells are left out. Write a combination as &ldquo;A + B&rdquo; (with spaces); the order does not matter.</p>'
      + '<div class="ped" id="ped" hidden><div class="ped-head"><span class="meta">Plate</span><span class="muted">Click or drag over wells, type a name, press Enter.</span></div>'
@@ -409,6 +410,8 @@ tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from m
      opt("Reference group", '<select id="o_ref" aria-label="Reference group" style="width:100%"></select>')
      + '<div class="calc-lbl">T<sub>m</sub> method</div><div class="calc-mode" style="margin:0"><input type="radio" name="tmm" id="t_der" checked><label for="t_der">First derivative</label>'
        '<input type="radio" name="tmm" id="t_bol"><label for="t_bol">Boltzmann fit</label></div>'
+     + '<div class="calc-lbl" id="pl_lbl" hidden>Plates</div><div class="calc-mode" id="pl_box" style="margin:0" hidden><input type="radio" name="pl" id="a_raw" checked><label for="a_raw">As measured</label>'
+       '<input type="radio" name="pl" id="a_ref"><label for="a_ref">Align on reference</label></div>'
      + opt("Smoothing window (points)", text_in("o_win", "9", "numeric"))
      + opt("Search from (&deg;C)", '<input id="o_min" type="text" inputmode="decimal" autocomplete="off" placeholder="optional">')
      + opt("Search to (&deg;C)", '<input id="o_max" type="text" inputmode="decimal" autocomplete="off" placeholder="optional">')
