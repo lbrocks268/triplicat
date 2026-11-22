@@ -50,3 +50,9 @@ Then open http://localhost:8765. The build prints `NOT READY TO PUBLISH` while t
 ## Update the live site
 
 Edit, run `python3 docs/build.py`, commit, push. GitHub Pages publishes the new version within a minute or two.
+
+## Licence
+
+Copyright 2026 Linus Brocks. All rights reserved.
+
+The website at https://triplicat.com is free to use. The source code, the texts and the figures in this repository are published so they can be read and checked; they are not licensed for reuse, copying or redistribution. If you would like to use parts of it, please ask via the contact address on the site.
