@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rpm or × g? Converting centrifuge speed and why the rotor radius matters | Triplicat</title>
+<meta name="description" content="A protocol says &quot;centrifuge at 13 000 rpm&quot;. Your centrifuge has a different rotor. Will you get the same result? Not necessarily, because what pellets ...">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/rpm-to-rcf.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="rpm or × g? Converting centrifuge speed and why the rotor radius matters | Triplicat">
+<meta property="og:description" content="A protocol says &quot;centrifuge at 13 000 rpm&quot;. Your centrifuge has a different rotor. Will you get the same result? Not necessarily, because what pellets ...">
+<meta property="og:url" content="https://triplicat.com/rpm-to-rcf.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=7103ec3a">
+</head>
+<body data-brand="Triplicat" data-counter="https://triplicat.goatcounter.com/count">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html" aria-current="page">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap narrow">
+<article>
+<div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
+<p class="kicker">Centrifugation</p><h1>rpm or × g? Converting centrifuge speed and why the rotor radius matters</h1></div><p class="todo" style="margin-top:20px">Draft. The text and the references have not been checked yet.</p>
+<div class="prose">
+<p>A protocol says "centrifuge at 13 000 rpm". Your centrifuge has a different rotor. Will you get the same result? Not necessarily, because what pellets your sample is the acceleration, and the acceleration depends on the speed and on the radius. That is why × g (relative centrifugal force, RCF) is the number a protocol should give.</p>
+<h2>The formula</h2>
+<p>The acceleration at a distance r from the axis of a rotor turning at a given speed is ω² · r, with ω the angular velocity. Expressed as a multiple of the standard gravity g and with the speed in revolutions per minute:</p>
+<p>RCF = (2π · rpm / 60)² · r / g</p>
+<p>With r in millimetres this becomes</p>
+<p>RCF = 1.118 · 10<sup>-6</sup> · r · rpm²</p>
+<p>(with r in centimetres the constant is 1.118 · 10<sup>-5</sup>). The other way round:</p>
+<p>rpm = √(RCF / (1.118 · 10<sup>-6</sup> · r))</p>
+<h2>Same rpm, different force</h2>
+<p>Because the radius enters directly, the same rpm gives different forces in different rotors. Two example radii (illustrative, not specific rotors) at 13 000 rpm:</p>
+<ul><li>r = 60 mm: about 11 300 × g</li><li>r = 80 mm: about 15 100 × g</li></ul>
+<p>That is a difference of a third. And because the speed enters squared, a protocol in × g translated into rpm for the wrong radius is off accordingly. For 10 000 × g at r = 80 mm you need about 10 600 rpm.</p>
+<h2>Which radius</h2>
+<p>A tube spans a range of distances from the axis. Rotor manuals usually give:</p>
+<ul><li><strong>r<sub>max</sub></strong>, the distance to the bottom of the tube, where the force is largest and the pellet forms,</li><li><strong>r<sub>min</sub></strong>, the distance to the top of the liquid,</li><li>sometimes <strong>r<sub>av</sub></strong>, the average.</li></ul>
+<p>Protocols and centrifuge displays usually refer to r<sub>max</sub>. If you compare values, make sure both use the same radius. The radius differs between rotors and adapters, so take it from the manual or the label of the rotor you use, not from a different centrifuge.</p>
+<h2>Things to keep in mind</h2>
+<ul><li><strong>Time matters too.</strong> Pelleting depends on force and time together. Doubling the force does not mean you can halve the time for every sample, but for a given protocol keep both as stated.</li><li><strong>Do not exceed the rotor's limits.</strong> Every rotor and every tube type has a maximum speed or force. The conversion does not check that; the manual does.</li><li><strong>Balance the rotor.</strong> Opposite positions need equal masses, not just equal volumes, especially with dense solutions.</li><li><strong>Write × g in your own protocols.</strong> It is the only value that someone with a different centrifuge can reproduce.</li></ul>
+<h2>Try it</h2>
+<p>The <a href="calculators.html#rcf">rpm and RCF calculator</a> converts in both directions with the rotor radius in millimetres or centimetres and shows the formula it uses.</p>
+</div>
+</article>
+<h2 class="sub">More articles</h2>
+<div class="more-arts"><a class="more-art" href="enzyme-kinetics-bradford-thermal-shift.html"><span class="meta">Overview</span><b>Enzyme kinetics, Bradford, thermal shift: what each assay tells you</b></a><a class="more-art" href="michaelis-menten-fit.html"><span class="meta">Enzyme kinetics</span><b>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot)</b></a><a class="more-art" href="bradford-curve-not-linear.html"><span class="meta">Protein assays</span><b>Why your Bradford standard curve is not linear, and what to do about it</b></a><a class="more-art" href="thermal-shift-tm.html"><span class="meta">Thermal shift</span><b>Getting T<sub>m</sub> from a thermal shift assay: derivative or Boltzmann fit?</b></a><a class="more-art" href="initial-rates.html"><span class="meta">Enzyme kinetics</span><b>Initial rates from absorbance traces: getting v<sub>0</sub> right before the Michaelis-Menten fit</b></a><a class="more-art" href="delta-tm-significant.html"><span class="meta">Thermal shift</span><b>Is my ΔT<sub>m</sub> real? Replicates, confidence intervals and thermal shift data</b></a><a class="more-art" href="thermal-shift-instrument-export.html"><span class="meta">Thermal shift</span><b>Thermal shift data from a StepOne or other qPCR instrument: reading the export without reformatting</b></a></div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=1385b09c"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protein concentration from A280: extinction coefficient, units and pitfalls | Triplicat</title>
+<meta name="description" content="For a purified protein, the absorbance at 280 nm is the quickest way to its concentration: no reagent, no standard curve, and the sample can be recovered. ...">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/protein-concentration-a280.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="Protein concentration from A280: extinction coefficient, units and pitfalls | Triplicat">
+<meta property="og:description" content="For a purified protein, the absorbance at 280 nm is the quickest way to its concentration: no reagent, no standard curve, and the sample can be recovered. ...">
+<meta property="og:url" content="https://triplicat.com/protein-concentration-a280.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=7103ec3a">
+</head>
+<body data-brand="Triplicat" data-counter="https://triplicat.goatcounter.com/count">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html" aria-current="page">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap narrow">
+<article>
+<div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
+<p class="kicker">Protein assays</p><h1>Protein concentration from A<sub>280</sub>: extinction coefficient, units and pitfalls</h1></div><p class="todo" style="margin-top:20px">Draft. The text and the references have not been checked yet.</p>
+<div class="prose">
+<p>For a purified protein, the absorbance at 280 nm is the quickest way to its concentration: no reagent, no standard curve, and the sample can be recovered. It is also more accurate than a dye assay, provided the extinction coefficient is right and the sample is clean.</p>
+<h2>Where the absorbance comes from</h2>
+<p>At 280 nm, proteins absorb mainly through tryptophan and tyrosine, and a little through cystine (two cysteines joined by a disulfide bond). The other amino acids hardly contribute. That is why two proteins at the same mg/mL can give very different readings, and why each protein needs its own extinction coefficient.</p>
+<h2>The calculation</h2>
+<p>The Beer-Lambert law connects absorbance A, extinction coefficient ε, concentration c and path length l:</p>
+<p class="eq">A = ε · c · l</p>
+<p>so c = A / (ε · l), multiplied by the dilution factor if you diluted the sample before measuring.</p>
+<p>The coefficient comes in two forms, and confusing them is the most common error:</p>
+<ul><li><strong>Molar ε</strong> in M<sup>-1</sup> cm<sup>-1</sup>. It gives the concentration in mol/L. Multiply by the molar mass to get g/L, which is the same as mg/mL.</li><li><strong>ε<sub>0.1 %</sub></strong> (also written "Abs 0.1 %"), the absorbance of a 1 mg/mL solution at 1 cm path length. It gives the concentration directly in mg/mL.</li></ul>
+<p>They are related by ε<sub>0.1 %</sub> = ε / M, with M in g/mol.</p>
+<p><strong>Example with made-up values.</strong> A protein with ε = 30 000 M<sup>-1</sup> cm<sup>-1</sup> and M = 40 000 g/mol reads A<sub>280</sub> = 0.60 in a 1 cm cuvette. c = 0.60 / 30 000 M = 20 µM, which is 0.80 mg/mL. Its ε<sub>0.1 %</sub> is 30 000 / 40 000 = 0.75.</p>
+<h2>Getting ε for your protein</h2>
+<p>From the sequence, ε at 280 nm of a folded protein in water can be estimated as (Pace et al., 1995):</p>
+<p>ε = 5500 · (number of Trp) + 1490 · (number of Tyr) + 125 · (number of cystines), in M<sup>-1</sup> cm<sup>-1</sup></p>
+<p>Tools such as ProtParam do this for you from the sequence (Gasteiger et al., 2005). They usually give two values, one assuming all cysteines form disulfides and one assuming none do. Use the one that fits your protein: a cytoplasmic protein in a reducing buffer has no cystines.</p>
+<p>The estimate is reasonably reliable for proteins that contain tryptophan and less so for those that do not (Pace et al., 1995). If accuracy matters, measure ε, for example by comparing the absorbance in native buffer with that in denaturing conditions (Gill and von Hippel, 1989; Pace et al., 1995).</p>
+<p>Remember to use the sequence of the protein you actually have: with its tag, without a cleaved signal peptide.</p>
+<h2>Things that go wrong</h2>
+<ul><li><strong>Nucleic acids.</strong> DNA and RNA absorb strongly at 280 nm as well, with a maximum near 260 nm. A raised A<sub>260</sub>/A<sub>280</sub> ratio points to contamination, and the protein concentration will be overestimated.</li><li><strong>The blank.</strong> Use exactly the buffer the protein is in. Imidazole, DTT, some detergents and other additives absorb in the UV.</li><li><strong>Scattering.</strong> Aggregates and particles scatter light and raise the reading at all wavelengths. A reading at a wavelength where the protein does not absorb (above about 320 nm) shows whether this is happening. Centrifuge the sample before measuring.</li><li><strong>Outside the linear range.</strong> At high absorbances the photometer no longer responds linearly, and at very low ones the signal is close to the noise. Dilute concentrated samples and use a longer path or more concentrated sample for dilute ones.</li><li><strong>Mixtures.</strong> A<sub>280</sub> with a protein-specific ε only works for a pure protein. For a lysate or a mixture, use a dye or BCA assay with a standard instead; see <a href="enzyme-kinetics-bradford-thermal-shift.html">what each assay tells you</a>.</li></ul>
+<h2>Try it</h2>
+<p>The <a href="calculators.html#a280">A<sub>280</sub> calculator</a> takes the absorbance, ε (molar or ε<sub>0.1 %</sub>), the molar mass, the path length and the dilution factor, and gives mg/mL and the molar concentration. It warns about absorbances above 2 and below 0.05.</p>
+<h2>References</h2>
+<ul><li>Gasteiger, E., Hoogland, C., Gattiker, A., Duvaud, S., Wilkins, M.R., Appel, R.D. and Bairoch, A. (2005) 'Protein identification and analysis tools on the ExPASy server', in <em>The Proteomics Protocols Handbook</em>. Humana Press, pp. 571-607.</li><li>Gill, S.C. and von Hippel, P.H. (1989) 'Calculation of protein extinction coefficients from amino acid sequence data', <em>Analytical Biochemistry</em>, 182(2), pp. 319-326.</li><li>Pace, C.N., Vajdos, F., Fee, L., Grimsley, G. and Gray, T. (1995) 'How to measure and predict the molar absorption coefficient of a protein', <em>Protein Science</em>, 4(11), pp. 2411-2423.</li></ul>
+</div>
+</article>
+<h2 class="sub">More articles</h2>
+<div class="more-arts"><a class="more-art" href="enzyme-kinetics-bradford-thermal-shift.html"><span class="meta">Overview</span><b>Enzyme kinetics, Bradford, thermal shift: what each assay tells you</b></a><a class="more-art" href="michaelis-menten-fit.html"><span class="meta">Enzyme kinetics</span><b>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot)</b></a><a class="more-art" href="bradford-curve-not-linear.html"><span class="meta">Protein assays</span><b>Why your Bradford standard curve is not linear, and what to do about it</b></a><a class="more-art" href="thermal-shift-tm.html"><span class="meta">Thermal shift</span><b>Getting T<sub>m</sub> from a thermal shift assay: derivative or Boltzmann fit?</b></a><a class="more-art" href="initial-rates.html"><span class="meta">Enzyme kinetics</span><b>Initial rates from absorbance traces: getting v<sub>0</sub> right before the Michaelis-Menten fit</b></a><a class="more-art" href="delta-tm-significant.html"><span class="meta">Thermal shift</span><b>Is my ΔT<sub>m</sub> real? Replicates, confidence intervals and thermal shift data</b></a><a class="more-art" href="thermal-shift-instrument-export.html"><span class="meta">Thermal shift</span><b>Thermal shift data from a StepOne or other qPCR instrument: reading the export without reformatting</b></a></div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=1385b09c"></script>
+</body>
+</html>

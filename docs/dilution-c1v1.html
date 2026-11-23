@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C1V1 = C2V2: how to calculate a dilution, and what "1:10" really means | Triplicat</title>
+<meta name="description" content="Diluting a stock is the most common calculation at the bench, and the formula fits on a sticky note. Most mistakes do not come from the formula but from ...">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/dilution-c1v1.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="C1V1 = C2V2: how to calculate a dilution, and what &quot;1:10&quot; really means | Triplicat">
+<meta property="og:description" content="Diluting a stock is the most common calculation at the bench, and the formula fits on a sticky note. Most mistakes do not come from the formula but from ...">
+<meta property="og:url" content="https://triplicat.com/dilution-c1v1.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=7103ec3a">
+</head>
+<body data-brand="Triplicat" data-counter="https://triplicat.goatcounter.com/count">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html" aria-current="page">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap narrow">
+<article>
+<div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
+<p class="kicker">Solutions</p><h1>C<sub>1</sub>V<sub>1</sub> = C<sub>2</sub>V<sub>2</sub>: how to calculate a dilution, and what "1:10" really means</h1></div><p class="todo" style="margin-top:20px">Draft. The text and the references have not been checked yet.</p>
+<div class="prose">
+<p>Diluting a stock is the most common calculation at the bench, and the formula fits on a sticky note. Most mistakes do not come from the formula but from units, from the word "dilution factor", and from what exactly is added to what.</p>
+<h2>The formula</h2>
+<p>The amount of substance does not change when you add solvent. Concentration times volume is therefore the same before and after:</p>
+<p>C<sub>1</sub> · V<sub>1</sub> = C<sub>2</sub> · V<sub>2</sub></p>
+<ul><li>C<sub>1</sub> is the concentration of the stock, V<sub>1</sub> the volume of stock you take.</li><li>C<sub>2</sub> is the concentration you want, V<sub>2</sub> the final volume.</li></ul>
+<p>Usually you know C<sub>1</sub>, C<sub>2</sub> and V<sub>2</sub> and want V<sub>1</sub>:</p>
+<p>V<sub>1</sub> = C<sub>2</sub> · V<sub>2</sub> / C<sub>1</sub></p>
+<p><strong>Example.</strong> You need 50 mL of 150 mM NaCl from a 2 M stock. V<sub>1</sub> = 0.150 M · 50 mL / 2 M = 3.75 mL. Take 3.75 mL of stock and fill up to 50 mL, which means adding about 46.25 mL of water.</p>
+<h2>Units</h2>
+<p>C<sub>1</sub> and C<sub>2</sub> must be in the same unit, and V<sub>1</sub> comes out in the unit of V<sub>2</sub>. Mixing mM and M, or µg/mL and mg/mL, is the classic error that gives a result off by a factor of 1000. Convert first, then calculate.</p>
+<p>The formula works for any concentration unit (molar, mass per volume, percent, "×" for buffer concentrates) as long as both concentrations use the same one. It does not work across units that need a molar mass, such as from mg/mL to mM. That step comes first.</p>
+<h2>"Fill up to" versus "add"</h2>
+<p>V<sub>2</sub> is the final volume, not the volume of diluent. For 3.75 mL of stock in 50 mL final volume you add 46.25 mL of water, not 50 mL. For dilute aqueous solutions the difference between "fill up to" and "add the difference" is negligible. For concentrated stocks or mixtures with organic solvents, volumes are not strictly additive, and filling up to the mark is the more accurate way.</p>
+<h2>What "1:10" means</h2>
+<p>Here the conventions in labs differ, and it is worth saying which one you mean.</p>
+<ul><li><strong>1:10 as a dilution factor of 10.</strong> One part of sample in a total of ten parts: 1 part stock plus 9 parts diluent. This is the usual meaning in microbiology and biochemistry.</li><li><strong>1:10 as a ratio of parts.</strong> One part of sample plus ten parts of diluent, a total of eleven parts, which is a dilution factor of 11.</li></ul>
+<p>For a factor of 2, the difference is between 1+1 and 1+2, which is a big one. If a protocol says "1:10" and the context does not make it clear, ask or write it as "1 + 9" or "dilution factor 10". The Triplicat calculators use 1:10 to mean a dilution factor of 10.</p>
+<h2>Things that go wrong</h2>
+<ul><li><strong>The target is above the stock.</strong> A dilution can only lower the concentration. If V<sub>1</sub> comes out larger than V<sub>2</sub>, the stock is too dilute.</li><li><strong>Volumes too small to pipette.</strong> If V<sub>1</sub> is below what your pipette handles accurately, make an intermediate dilution first, or prepare a larger final volume.</li><li><strong>Mixing.</strong> A concentrated stock layered under water is not a solution yet. Mix by inverting or vortexing (gently for proteins), and pipette concentrated or viscous stocks slowly.</li><li><strong>Several dilutions in a row.</strong> The factors multiply. Three steps of 1:10 give 1:1000. For a whole series, see <a href="dilution-series.html">planning a dilution series</a>.</li></ul>
+<h2>Try it</h2>
+<p>The <a href="calculators.html#dilution">dilution calculator</a> takes stock concentration, target concentration and final volume, each with its own unit, and tells you how much stock and how much diluent to use.</p>
+</div>
+</article>
+<h2 class="sub">More articles</h2>
+<div class="more-arts"><a class="more-art" href="enzyme-kinetics-bradford-thermal-shift.html"><span class="meta">Overview</span><b>Enzyme kinetics, Bradford, thermal shift: what each assay tells you</b></a><a class="more-art" href="michaelis-menten-fit.html"><span class="meta">Enzyme kinetics</span><b>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot)</b></a><a class="more-art" href="bradford-curve-not-linear.html"><span class="meta">Protein assays</span><b>Why your Bradford standard curve is not linear, and what to do about it</b></a><a class="more-art" href="thermal-shift-tm.html"><span class="meta">Thermal shift</span><b>Getting T<sub>m</sub> from a thermal shift assay: derivative or Boltzmann fit?</b></a><a class="more-art" href="initial-rates.html"><span class="meta">Enzyme kinetics</span><b>Initial rates from absorbance traces: getting v<sub>0</sub> right before the Michaelis-Menten fit</b></a><a class="more-art" href="delta-tm-significant.html"><span class="meta">Thermal shift</span><b>Is my ΔT<sub>m</sub> real? Replicates, confidence intervals and thermal shift data</b></a><a class="more-art" href="thermal-shift-instrument-export.html"><span class="meta">Thermal shift</span><b>Thermal shift data from a StepOne or other qPCR instrument: reading the export without reformatting</b></a></div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=1385b09c"></script>
+</body>
+</html>
