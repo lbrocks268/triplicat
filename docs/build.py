@@ -186,7 +186,7 @@ KIT_SHORT = {"kinetics.html": "K<sub>m</sub> and V<sub>max</sub> with confidence
              "thermal-shift.html": "T<sub>m</sub> and &Delta;T<sub>m</sub>, plate layout and instrument exports."}
 KIT_LINKS = "".join(f'<a href="{h}">{_ill(ILL[h])}<div><b>{t}</b><span>{KIT_SHORT[h]}</span></div></a>' for h, t, d, f in TOOLS)
 TILES = [
-    ("dilution", "Dilution", "Stock and solvent volumes for any target.", "C&#8321;V&#8321; = C&#8322;V&#8322;", "wide tint"),
+    ("dilution", "Dilution", "Stock and solvent volumes for any target.", "C&#8321;V&#8321; = C&#8322;V&#8322;", "wide"),
     ("molarity", "Mass and molarity", "What to weigh, shown as it reads on the balance.", "m = c&middot;V&middot;M", ""),
     ("percent", "Percent solution", "% (w/v) and % (v/v).", "g <small>/</small> 100 mL", ""),
     ("series", "Dilution series", "Constant factor or a free list of targets, with a pipetting table.", "1:2 &rarr; 1:5 &rarr; 1:10", "wide"),
