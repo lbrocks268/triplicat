@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Thermal shift data straight from the qPCR instrument: reading the export without reformatting | Triplicat</title>
+<title>Thermal shift data from a StepOne or other qPCR instrument: reading the export without reformatting | Triplicat</title>
 <meta name="description" content="A thermal shift run on a qPCR instrument ends with a file full of numbers and, often, no licence for the analysis software on the computer where you want ...">
 <meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://triplicat.com/thermal-shift-instrument-export.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Triplicat">
-<meta property="og:title" content="Thermal shift data straight from the qPCR instrument: reading the export without reformatting | Triplicat">
+<meta property="og:title" content="Thermal shift data from a StepOne or other qPCR instrument: reading the export without reformatting | Triplicat">
 <meta property="og:description" content="A thermal shift run on a qPCR instrument ends with a file full of numbers and, often, no licence for the analysis software on the computer where you want ...">
 <meta property="og:url" content="https://triplicat.com/thermal-shift-instrument-export.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -26,7 +26,7 @@
 <main class="wrap narrow">
 <article>
 <div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
-<p class="kicker">Thermal shift</p><h1>Thermal shift data straight from the qPCR instrument: reading the export without reformatting</h1></div>
+<p class="kicker">Thermal shift</p><h1>Thermal shift data from a StepOne or other qPCR instrument: reading the export without reformatting</h1></div>
 <div class="prose">
 <p>A thermal shift run on a qPCR instrument ends with a file full of numbers and, often, no licence for the analysis software on the computer where you want to work. Many people then spend an hour in Excel rearranging columns before the actual analysis starts. This is rarely necessary. This article explains what a raw data export usually looks like, what to watch out for, and how to get from the file to T<sub>m</sub> values without retyping anything.</p>
 <h2>Export the raw data, not only the results</h2>
@@ -34,7 +34,7 @@
 <p>Keep one unchanged copy of the file, and note the instrument, the software and its version next to it. If a result is ever questioned, that file is the evidence.</p>
 <h2>What the file looks like</h2>
 <p>Two layouts are common.</p>
-<p><strong>Long format: one row per well and reading.</strong> An export we have seen from a qPCR instrument starts like this (values replaced by placeholders):</p>
+<p><strong>Long format: one row per well and reading.</strong> The raw data export of an Applied Biosystems StepOne Real-Time PCR System starts like this (values replaced by placeholders):</p>
 <pre><code>Well,Well Position,Reading,Temperature,Fluorescence
 1,A01,1,&lt;temperature>,&lt;fluorescence>
 1,A01,2,&lt;temperature>,&lt;fluorescence>

@@ -4,12 +4,12 @@ status: active
 date: 2026-11-23
 ---
 
-# Thermal shift data straight from the qPCR instrument: reading the export without reformatting
+# Thermal shift data from a StepOne or other qPCR instrument: reading the export without reformatting
 
 > [!info] Approved for publication by Linus on 2026-11-23
 > Drafted by Claude on 2026-11-23. The description of the export is based on one real export from Linus's lab (structure only, no values). Open points are in `Articles/open-points.local.md`. Edit here and run `python3 docs/build.py` to update the site.
 
-**Target search:** "thermal shift assay data export qPCR", "DSF raw data csv analysis", "analyse melt curve export excel", "thermal shift analysis without software licence"
+**Target search:** "StepOne thermal shift export", "thermal shift assay data export qPCR", "DSF raw data csv analysis", "analyse melt curve export excel", "thermal shift analysis without software licence"
 **Links to:** `thermal-shift.html`, `thermal-shift-tm.html`, `delta-tm-significant.html`
 
 ---
@@ -26,7 +26,7 @@ Keep one unchanged copy of the file, and note the instrument, the software and i
 
 Two layouts are common.
 
-**Long format: one row per well and reading.** An export we have seen from a qPCR instrument starts like this (values replaced by placeholders):
+**Long format: one row per well and reading.** The raw data export of an Applied Biosystems StepOne Real-Time PCR System starts like this (values replaced by placeholders):
 
 ```
 Well,Well Position,Reading,Temperature,Fluorescence

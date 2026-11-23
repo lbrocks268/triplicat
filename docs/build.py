@@ -527,8 +527,10 @@ page("articles.html", f"Articles on lab data analysis | {BRAND}",
 <div class="art-list">{cards}</div>
 </main>""", current="art")
 
-# the landing page was written before the articles were loaded: fill in its teaser row now
-teasers = "".join(f'<a class="art-card" href="{href}"><span class="meta">{topic}</span><h3>{a["title"]}</h3><span class="link">Read &rarr;</span></a>' for href, a, topic in listed)
+# the landing page was written before the articles were loaded: fill in its teaser row now.
+# Four cards fill the grid at every width (4, 2 or 1 columns): the overview (first entry) and the three newest.
+home = listed if len(listed) <= 4 else listed[:1] + listed[-3:]
+teasers = "".join(f'<a class="art-card" href="{href}"><span class="meta">{topic}</span><h3>{a["title"]}</h3><span class="link">Read &rarr;</span></a>' for href, a, topic in home)
 _idx = ROOT / "index.html"
 _idx.write_text(_idx.read_text(encoding="utf-8").replace("__ARTICLE_TEASERS__", teasers), encoding="utf-8")
 
