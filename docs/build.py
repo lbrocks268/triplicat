@@ -439,13 +439,13 @@ ARTICLES = [
     ("initial-rates.html", "05 Initial rates from absorbance traces.md", "Enzyme kinetics", True),
     ("delta-tm-significant.html", "06 Is my delta Tm significant.md", "Thermal shift", True),
     ("thermal-shift-instrument-export.html", "07 Thermal shift data from an instrument export.md", "Thermal shift", True),
-    ("dilution-c1v1.html", "08 Dilution C1V1.md", "Solutions", False),
-    ("molarity-mass.html", "09 Mass and molarity.md", "Solutions", False),
-    ("percent-solutions.html", "10 Percent solutions.md", "Solutions", False),
-    ("dilution-series.html", "11 Dilution series.md", "Pipetting", False),
-    ("master-mix.html", "12 Master mix.md", "Pipetting", False),
-    ("protein-concentration-a280.html", "13 Protein concentration from A280.md", "Protein assays", False),
-    ("rpm-to-rcf.html", "14 rpm and RCF.md", "Centrifugation", False),
+    ("dilution-c1v1.html", "08 Dilution C1V1.md", "Solutions", True),
+    ("molarity-mass.html", "09 Mass and molarity.md", "Solutions", True),
+    ("percent-solutions.html", "10 Percent solutions.md", "Solutions", True),
+    ("dilution-series.html", "11 Dilution series.md", "Pipetting", True),
+    ("master-mix.html", "12 Master mix.md", "Pipetting", True),
+    ("protein-concentration-a280.html", "13 Protein concentration from A280.md", "Protein assays", True),
+    ("rpm-to-rcf.html", "14 rpm and RCF.md", "Centrifugation", True),
 ]
 
 def md_inline(t):

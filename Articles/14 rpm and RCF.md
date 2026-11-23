@@ -1,12 +1,12 @@
 ---
 tags: [side-business, article]
-status: draft
+status: active
 date: 2026-11-23
 ---
 
 # rpm or × g? Converting centrifuge speed and why the rotor radius matters
 
-> [!warning] Draft, not checked yet
+> [!info] Approved for publication by Linus on 2026-11-23
 > Drafted by Claude from general knowledge on 2026-11-23. Open points are in `Articles/open-points.local.md`. Edit here and run `python3 docs/build.py` to update the site.
 
 **Target search:** "rpm to g calculator", "convert rpm to rcf", "rcf formula rotor radius", "centrifuge x g to rpm"

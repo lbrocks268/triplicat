@@ -1,12 +1,12 @@
 ---
 tags: [side-business, article]
-status: draft
+status: active
 date: 2026-11-23
 ---
 
 # C<sub>1</sub>V<sub>1</sub> = C<sub>2</sub>V<sub>2</sub>: how to calculate a dilution, and what "1:10" really means
 
-> [!warning] Draft, not checked yet
+> [!info] Approved for publication by Linus on 2026-11-23
 > Drafted by Claude from general knowledge on 2026-11-23. Open points are in `Articles/open-points.local.md`. Edit here and run `python3 docs/build.py` to update the site.
 
 **Target search:** "c1v1 c2v2 calculator", "how to calculate a dilution", "1:10 dilution meaning", "dilution formula biology"

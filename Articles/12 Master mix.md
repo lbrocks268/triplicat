@@ -1,12 +1,12 @@
 ---
 tags: [side-business, article]
-status: draft
+status: active
 date: 2026-11-23
 ---
 
 # Master mix: how much excess, and what belongs in it
 
-> [!warning] Draft, not checked yet
+> [!info] Approved for publication by Linus on 2026-11-23
 > Drafted by Claude from general knowledge on 2026-11-23. Open points are in `Articles/open-points.local.md`. Edit here and run `python3 docs/build.py` to update the site.
 
 **Target search:** "master mix calculator", "pcr master mix calculation", "how much extra master mix", "master mix excess percent"

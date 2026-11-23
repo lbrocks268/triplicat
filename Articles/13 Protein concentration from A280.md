@@ -1,12 +1,12 @@
 ---
 tags: [side-business, article]
-status: draft
+status: active
 date: 2026-11-23
 ---
 
 # Protein concentration from A<sub>280</sub>: extinction coefficient, units and pitfalls
 
-> [!warning] Draft, not checked yet
+> [!info] Approved for publication by Linus on 2026-11-23
 > Drafted by Claude from general knowledge on 2026-11-23. References checked by Claude via Crossref and PubMed. Open points are in `Articles/open-points.local.md`. Edit here and run `python3 docs/build.py` to update the site.
 
 **Target search:** "protein concentration a280 calculation", "extinction coefficient protein concentration", "a280 mg/ml formula", "abs 0.1% extinction coefficient"

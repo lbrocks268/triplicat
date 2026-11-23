@@ -1,12 +1,12 @@
 ---
 tags: [side-business, article]
-status: draft
+status: active
 date: 2026-11-23
 ---
 
 # Percent solutions: w/v, v/v and w/w are not the same
 
-> [!warning] Draft, not checked yet
+> [!info] Approved for publication by Linus on 2026-11-23
 > Drafted by Claude from general knowledge on 2026-11-23. Open points are in `Articles/open-points.local.md`. Edit here and run `python3 docs/build.py` to update the site.
 
 **Target search:** "percent solution w/v v/v", "how to make a 10% solution", "w/v vs w/w", "70% ethanol how to make"
