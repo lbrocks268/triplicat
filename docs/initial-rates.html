@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Initial rates from absorbance traces: getting v0 right before the Michaelis-Menten fit | Triplicat</title>
+<meta name="description" content="A Michaelis-Menten fit needs one number per substrate concentration: the initial rate v0. What the photometer gives you is a progress curve, the ...">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/initial-rates.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="Initial rates from absorbance traces: getting v0 right before the Michaelis-Menten fit | Triplicat">
+<meta property="og:description" content="A Michaelis-Menten fit needs one number per substrate concentration: the initial rate v0. What the photometer gives you is a progress curve, the ...">
+<meta property="og:url" content="https://triplicat.com/initial-rates.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=7103ec3a">
+</head>
+<body data-brand="Triplicat" data-counter="https://triplicat.goatcounter.com/count">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html" aria-current="page">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap narrow">
+<article>
+<div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
+<p class="kicker">Enzyme kinetics</p><h1>Initial rates from absorbance traces: getting v<sub>0</sub> right before the Michaelis-Menten fit</h1></div><p class="todo" style="margin-top:20px">Draft. The text and the references have not been checked yet.</p>
+<div class="prose">
+<p>A Michaelis-Menten fit needs one number per substrate concentration: the initial rate v<sub>0</sub>. What the photometer gives you is a progress curve, the absorbance over time. Turning that curve into a rate looks trivial, and it is the step where many kinetic data sets go wrong before any fitting starts.</p>
+<h2>Why the initial rate</h2>
+<p>The Michaelis-Menten equation describes the rate at the start of the reaction, when the substrate concentration is still the one you pipetted and there is practically no product. As the reaction runs, several things bend the progress curve:</p>
+<ul><li><strong>Substrate is used up.</strong> The rate falls because there is less substrate, not because the enzyme changed.</li><li><strong>Product accumulates.</strong> Many enzymes are inhibited by their product, and some reactions run backwards noticeably.</li><li><strong>The enzyme loses activity.</strong> At assay temperature, dilute enzymes can lose activity within minutes.</li></ul>
+<p>All three make later slopes smaller. A slope taken from too long a window therefore underestimates v<sub>0</sub>, and it does so more at low substrate concentrations, where the substrate is used up proportionally faster. That distorts K<sub>m</sub>, not only V<sub>max</sub>.</p>
+<h2>Finding the linear part</h2>
+<p>Plot every trace before you calculate anything. A typical trace has three parts:</p>
+<ul><li><strong>A short start that does not belong to the reaction.</strong> Mixing, temperature equilibration of the cuvette or plate, and in coupled assays the time until the coupling enzyme has caught up (the lag phase). Leave it out.</li><li><strong>A straight stretch.</strong> This is where the slope is v<sub>0</sub>.</li><li><strong>A bend towards a plateau.</strong> Leave it out.</li></ul>
+<p>Fit a straight line through the straight stretch, not just through the first and last point of it. A regression line uses all readings and is far less sensitive to a single noisy point. Then look at the residuals: if they form an arch instead of scattering around zero, the window still contains curvature and should be shorter.</p>
+<p>You do not need the same window for every substrate concentration. Traces at low substrate bend earlier, so their linear part is shorter. What should be the same is the rule by which you choose the window.</p>
+<h2>Correcting for the background</h2>
+<p>Subtract the slope of a control without enzyme (or without substrate, depending on what can react on its own), not just its absorbance. A constant offset in absorbance does not change a slope, but a slow non-enzymatic reaction, a drifting lamp or evaporation in a plate does. If the control slope is a sizeable part of the enzymatic slope at low substrate concentrations, those points carry little information.</p>
+<p>If the absorbance falls during the reaction (for example when NADH is consumed), the slope is negative. Use its absolute value as the rate, and make sure the background is handled with the same sign.</p>
+<h2>From absorbance per minute to concentration per minute</h2>
+<p>With the Beer-Lambert law the rate in concentration units is:</p>
+<p class="eq">v = (ΔA/Δt) / (ε · l)</p>
+<p>Here ε is the molar absorption coefficient of the compound whose absorbance changes, at the wavelength you measure, and l is the path length. With ε in M<sup>-1</sup> cm<sup>-1</sup>, l in cm and time in minutes, v comes out in M/min. Two points need care:</p>
+<ul><li><strong>ε of the right species at the right wavelength.</strong> Take it from a source you can cite, or measure it yourself with a dilution series of the product. If both substrate and product absorb at the wavelength, use the difference of their coefficients.</li><li><strong>The path length in a microplate is not 1 cm.</strong> It depends on the volume in the well and on the meniscus. Either use the path length correction of the plate reader, or calibrate with a standard curve of the product in the same plate, the same volume and the same buffer.</li></ul>
+<p>To compare enzymes or preparations, divide by the amount of enzyme in the assay. That gives a specific activity (for example in µmol min<sup>-1</sup> mg<sup>-1</sup>), and, if you know the concentration of active enzyme, the turnover number k<sub>cat</sub> from V<sub>max</sub>.</p>
+<h2>Things that go wrong</h2>
+<ul><li><strong>The absorbance is too high.</strong> Above the range in which your instrument responds linearly, a real change in concentration produces a smaller change in the reading, and the trace looks flatter than it is. The manual of the instrument states the range. Use less substrate or a shorter path length, or measure at a wavelength where the compound absorbs less.</li><li><strong>The rate is not proportional to the amount of enzyme.</strong> Check once with two or three enzyme amounts at the same substrate concentration. If doubling the enzyme does not double the slope, something else limits the rate (the coupling system, mixing, the detector) and v<sub>0</sub> is not a property of your enzyme.</li><li><strong>Too few readings in the linear part.</strong> If the reaction is so fast that the straight stretch contains only a handful of readings, use less enzyme rather than squeezing the window.</li><li><strong>Replicates averaged too early.</strong> Keep the rate of every replicate. The Michaelis-Menten fit should see all individual rates, so that their scatter enters the standard errors.</li></ul>
+<h2>Try it</h2>
+<p>The <a href="kinetics.html">enzyme kinetics tool</a> takes the initial rates you calculated, one column per replicate, and fits the Michaelis-Menten equation by nonlinear least squares with standard errors and 95 % confidence intervals. It does not read raw progress curves; calculate the slopes first as described above. Why the fit should be nonlinear and not a Lineweaver-Burk plot is explained in <a href="michaelis-menten-fit.html">how to fit Michaelis-Menten kinetics</a>.</p>
+</div>
+</article>
+<h2 class="sub">More articles</h2>
+<div class="more-arts"><a class="more-art" href="enzyme-kinetics-bradford-thermal-shift.html"><span class="meta">Overview</span><b>Enzyme kinetics, Bradford, thermal shift: what each assay tells you</b></a><a class="more-art" href="michaelis-menten-fit.html"><span class="meta">Enzyme kinetics</span><b>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot)</b></a><a class="more-art" href="bradford-curve-not-linear.html"><span class="meta">Protein assays</span><b>Why your Bradford standard curve is not linear, and what to do about it</b></a><a class="more-art" href="thermal-shift-tm.html"><span class="meta">Thermal shift</span><b>Getting T<sub>m</sub> from a thermal shift assay: derivative or Boltzmann fit?</b></a></div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=1385b09c"></script>
+</body>
+</html>

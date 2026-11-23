@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Is my ΔTm real? Replicates, confidence intervals and thermal shift data | Triplicat</title>
+<meta name="description" content="You add a compound, and the melting temperature goes up by 0.4 °C. Is that binding, or is it the normal scatter between wells? A single ΔTm cannot answer ...">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f7f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0d11" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://triplicat.com/delta-tm-significant.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Triplicat">
+<meta property="og:title" content="Is my ΔTm real? Replicates, confidence intervals and thermal shift data | Triplicat">
+<meta property="og:description" content="You add a compound, and the melting temperature goes up by 0.4 °C. Is that binding, or is it the normal scatter between wells? A single ΔTm cannot answer ...">
+<meta property="og:url" content="https://triplicat.com/delta-tm-significant.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="css/site.css?v=7103ec3a">
+</head>
+<body data-brand="Triplicat" data-counter="https://triplicat.goatcounter.com/count">
+<header class="top"><div class="wrap">
+<a class="brand" href="index.html" aria-label="Triplicat home"><svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b78ff"/><stop offset="1" stop-color="#2fe0b0"/></linearGradient></defs><rect width="28" height="28" rx="8" fill="#12141a"/><path d="M6 21c2.2-9.5 6.5-13 16-13.6" fill="none" stroke="url(#lg)" stroke-width="2.6" stroke-linecap="round"/><circle cx="8.6" cy="15.4" r="1.6" fill="#fff"/><circle cx="14.6" cy="10.2" r="1.6" fill="#fff"/></svg><b>Triplicat</b></a>
+<nav aria-label="Main"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html" aria-current="page">Articles</a>
+<button class="theme" id="theme" type="button" aria-label="Switch between light and dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg></button></nav>
+</div></header>
+<main class="wrap narrow">
+<article>
+<div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
+<p class="kicker">Thermal shift</p><h1>Is my ΔT<sub>m</sub> real? Replicates, confidence intervals and thermal shift data</h1></div><p class="todo" style="margin-top:20px">Draft. The text and the references have not been checked yet.</p>
+<div class="prose">
+<p>You add a compound, and the melting temperature goes up by 0.4 °C. Is that binding, or is it the normal scatter between wells? A single ΔT<sub>m</sub> cannot answer that. You need replicates and a way to say how sure the difference is. This article shows the arithmetic with a confidence interval, which tells you more than a p value alone.</p>
+<h2>Where the scatter comes from</h2>
+<p>Replicate wells of the same sample never give exactly the same T<sub>m</sub>. Pipetting, small differences in volume and evaporation, the position on the block and noise in the curve all contribute. The size of this scatter depends on your protein, your plate and your instrument, so it has to be measured in your own experiment, not assumed.</p>
+<p>It also matters what your replicates replicate:</p>
+<ul><li><strong>Wells from the same mix on the same plate</strong> (technical replicates) capture pipetting and instrument noise. They do not capture differences between protein preparations or days.</li><li><strong>Repeated runs or independent preparations</strong> capture those as well. A shift that holds up across runs is far more convincing than one seen on a single plate.</li></ul>
+<h2>From replicates to a confidence interval</h2>
+<p>Take the T<sub>m</sub> of every well, not only the means. With n<sub>1</sub> wells of the sample and n<sub>2</sub> wells of the reference, their means and standard deviations s<sub>1</sub> and s<sub>2</sub>:</p>
+<ul><li><strong>ΔT<sub>m</sub></strong> is the difference of the two means.</li><li><strong>Its standard error</strong> is SE = √(s<sub>1</sub>²/n<sub>1</sub> + s<sub>2</sub>²/n<sub>2</sub>).</li><li><strong>The 95 % confidence interval</strong> is ΔT<sub>m</sub> ± t · SE, where t comes from the t distribution with the Welch-Satterthwaite degrees of freedom (Welch, 1947). This form does not assume that both groups scatter equally.</li></ul>
+<p>If the interval excludes zero, the difference is significant at the 5 % level, which is the same decision as the Welch t test. The interval says more than that, though: its width shows how precisely you know the shift.</p>
+<h2>Two made-up examples</h2>
+<p>The numbers below are invented to show the arithmetic. They are not measurements.</p>
+<p><strong>A clear shift.</strong> Three reference wells give 55.1, 54.8 and 55.3 °C, three wells with ligand give 58.4, 58.9 and 58.6 °C. ΔT<sub>m</sub> is +3.57 °C, and the 95 % confidence interval runs from +3.00 to +4.14 °C. Even the lower end is a shift of 3 °C.</p>
+<p><strong>A small shift.</strong> The same reference, and the compound gives 55.6, 55.2 and 55.7 °C. ΔT<sub>m</sub> is +0.43 °C, but the interval runs from −0.15 to +1.02 °C (p = 0.11). The data are compatible with no shift at all and with a shift of about 1 °C. This is not "no effect". It is "not resolved with three wells".</p>
+<p>With only three wells per group the t value is large (about 2.8 for four degrees of freedom instead of about 2 for many), so small n is penalised twice: through the SE and through t.</p>
+<h2>How to get a narrower interval</h2>
+<ul><li><strong>More replicates.</strong> Four to six wells per condition narrow the interval noticeably compared with three. Put the reference on every plate with the same number of wells as the samples.</li><li><strong>Less scatter.</strong> One master mix per condition, the same volume in every well, a sealed plate, and no wells at the edge if your instrument shows edge effects.</li><li><strong>Look at outlier wells, then decide.</strong> A single well with a distorted curve can widen the interval a lot. Leave it out only for a reason you can name (a bubble, a curve without a transition, a pipetting error you noted), and say so in the methods. Do not leave wells out because the result looks nicer without them.</li><li><strong>Several runs.</strong> If you pool runs, check whether the reference itself moved between them. A whole plate can be shifted by a few tenths of a degree. In that case compare each sample with the reference of its own plate, or align the plates on the reference before pooling.</li></ul>
+<h2>Significant is not the same as meaningful</h2>
+<ul><li><strong>A tiny shift can be significant</strong> when the replicates agree very well. Whether 0.3 °C matters for your question is a scientific judgement, not a statistical one.</li><li><strong>Many compounds, many tests.</strong> If you compare twenty compounds with the reference at the 5 % level, about one of them is expected to come out significant by chance even if none binds. For screens, treat single hits as candidates and confirm them in a separate run, or correct the p values for multiple testing.</li><li><strong>ΔT<sub>m</sub> is not an affinity.</strong> A larger shift does not by itself mean tighter binding. The size of the shift depends on the ligand concentration and on the thermodynamics of binding and unfolding (Niesen, Berglund and Vedadi, 2007).</li><li><strong>The method has to be the same.</strong> Compare only T<sub>m</sub> values from the same method and settings. How the derivative and the Boltzmann fit differ is explained in <a href="thermal-shift-tm.html">getting T<sub>m</sub> from a thermal shift assay</a>.</li></ul>
+<h2>What to report</h2>
+<p>The mean T<sub>m</sub> and SD of each group with n, ΔT<sub>m</sub> with its 95 % confidence interval, the test used (Welch), the T<sub>m</sub> method with its settings, and which wells were left out and why. A plot of the individual well values next to the means lets readers judge the scatter themselves.</p>
+<h2>Try it</h2>
+<p>The <a href="thermal-shift.html">thermal shift tool</a> calculates T<sub>m</sub> for every well, groups replicates by name or plate layout, and reports mean, SD, ΔT<sub>m</sub> with its 95 % confidence interval and the Welch p value against a reference you choose. It marks wells that lie far from the median of their group, lets you leave out single wells, and pools several plates, either as measured or aligned on the reference. It does not correct p values for multiple comparisons.</p>
+<h2>References</h2>
+<ul><li>Niesen, F.H., Berglund, H. and Vedadi, M. (2007) 'The use of differential scanning fluorimetry to detect ligand interactions that promote protein stability', <em>Nature Protocols</em>, 2(9), pp. 2212-2221.</li><li>Welch, B.L. (1947) 'The generalization of "Student's" problem when several different population variances are involved', <em>Biometrika</em>, 34(1-2), pp. 28-35.</li></ul>
+</div>
+</article>
+<h2 class="sub">More articles</h2>
+<div class="more-arts"><a class="more-art" href="enzyme-kinetics-bradford-thermal-shift.html"><span class="meta">Overview</span><b>Enzyme kinetics, Bradford, thermal shift: what each assay tells you</b></a><a class="more-art" href="michaelis-menten-fit.html"><span class="meta">Enzyme kinetics</span><b>How to fit Michaelis-Menten kinetics (and why not with a Lineweaver-Burk plot)</b></a><a class="more-art" href="bradford-curve-not-linear.html"><span class="meta">Protein assays</span><b>Why your Bradford standard curve is not linear, and what to do about it</b></a><a class="more-art" href="thermal-shift-tm.html"><span class="meta">Thermal shift</span><b>Getting T<sub>m</sub> from a thermal shift assay: derivative or Boltzmann fit?</b></a></div>
+</main>
+<footer class="foot"><div class="wrap">
+<span>Triplicat &middot; Check critical results yourself before you pipette.</span>
+<nav aria-label="Footer"><a href="calculators.html">Calculators</a><a href="toolkit.html">Toolkit</a><a href="articles.html">Articles</a><a href="legal.html">Imprint &amp; privacy</a></nav>
+</div></footer>
+<script src="js/site.js?v=1385b09c"></script>
+</body>
+</html>

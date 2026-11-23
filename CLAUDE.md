@@ -29,7 +29,7 @@ If `CLAUDE.local.md` exists in this folder, read it first. It holds the owner's 
 - `page(fname, title, desc, body, current, scripts, robots)` wraps every page in the shared header, footer and head tags, appends a content hash to local css/js links (cache busting) and records the page for the sitemap. Pages with `noindex` are left out of the sitemap.
 - The landing page is written before the articles are loaded; its teaser row is filled in afterwards via the `__ARTICLE_TEASERS__` placeholder.
 - Articles: `load_article()` strips frontmatter, callout lines (starting with `>`), the `**Target search:**` and `**Links to:**` lines, and everything from `## Open points for Linus` on. Open points are not kept in the public sources: they live in `Articles/open-points.local.md`, which is excluded from git on the owner's machine. Put new ones there, not in the article files. `md_to_html()` is a small converter that knows h2/h3, paragraphs, bullet lists, fenced code, inline code, bold, italic and links. Inline HTML such as `<sub>` passes through. No tables or images yet.
-- `ARTICLES_REVIEWED` is one switch for all articles. `False` adds a draft notice and `noindex`. Set it to `False` when adding an unchecked article, or make it per-article first.
+- Each `ARTICLES` entry ends with a reviewed flag. `False` builds the page with a draft notice and `noindex` and keeps it out of the article list, the landing page, "More articles" and the sitemap. New articles start with `False`; set `True` only after Linus has checked text and references.
 
 **Calculators (`js/calc.js`, `src/cards.html`)**
 - Seven tools on one page: dilution, mass and molarity, percent solution, dilution series, master mix, A280, rpm and RCF. Ported from the owner's private dashboard module (German) and translated. A Bradford calculator was removed on purpose because Bradford belongs to the toolkit.
@@ -55,7 +55,7 @@ Do not report a change as working without checking it.
 
 ## Adding things
 
-- **Article:** new Markdown file in `Articles/` (same structure as the existing ones), one line in `ARTICLES` in `build.py`, build.
+- **Article:** new Markdown file in `Articles/` (same structure as the existing ones), one line in `ARTICLES` in `build.py` with the reviewed flag `False`, open points in `Articles/open-points.local.md`, build.
 - **Calculator:** card markup in `src/cards.html`, a function in `calc.js` added to `ALL`, an entry in `NAV` and `TILES` in `build.py` (keep the tile grid filling its rows), and its id in one of the two `CALC_COLS` lists (keep both columns about equally tall; the build stops if the ids do not match).
 - **Analysis:** numerics in `stats.js` (validated), a `tool-<name>.js`, a `tool(...)` call and a `TOOLS` entry in `build.py`.
 

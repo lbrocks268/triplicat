@@ -428,12 +428,17 @@ tool("thermal-shift.html", "Thermal shift assay analysis: Tm and delta Tm from m
 # ---------- Articles ----------
 # Source of truth: the Markdown drafts in ../Articles/. Internal parts (frontmatter, warning box,
 # "Target search" lines, "Open points for Linus") are stripped here and never reach the site.
-ARTICLES_REVIEWED = True   # Linus confirmed on 2026-11-16 that texts and references are checked; False shows a draft banner and sets noindex
+# The last field says whether Linus has checked text and references. False builds the page with a
+# draft notice and noindex, and keeps it out of the article list, the landing page and "More articles",
+# so it can be read locally (or by its URL) before it is approved.
 ARTICLES = [
-    ("enzyme-kinetics-bradford-thermal-shift.html", "04 What each assay tells you.md", "Overview"),
-    ("michaelis-menten-fit.html", "01 Michaelis-Menten fit without Lineweaver-Burk.md", "Enzyme kinetics"),
-    ("bradford-curve-not-linear.html", "02 Bradford standard curve not linear.md", "Protein assays"),
-    ("thermal-shift-tm.html", "03 Tm from a thermal shift assay.md", "Thermal shift"),
+    ("enzyme-kinetics-bradford-thermal-shift.html", "04 What each assay tells you.md", "Overview", True),
+    ("michaelis-menten-fit.html", "01 Michaelis-Menten fit without Lineweaver-Burk.md", "Enzyme kinetics", True),
+    ("bradford-curve-not-linear.html", "02 Bradford standard curve not linear.md", "Protein assays", True),
+    ("thermal-shift-tm.html", "03 Tm from a thermal shift assay.md", "Thermal shift", True),
+    ("initial-rates.html", "05 Initial rates from absorbance traces.md", "Enzyme kinetics", False),
+    ("delta-tm-significant.html", "06 Is my delta Tm significant.md", "Thermal shift", False),
+    ("thermal-shift-instrument-export.html", "07 Thermal shift data from an instrument export.md", "Thermal shift", False),
 ]
 
 def md_inline(t):
@@ -494,36 +499,36 @@ def load_article(fname):
 def clip(t, n):
     return t if len(t) <= n else t[:n].rsplit(" ", 1)[0].rstrip(",;:") + " ..."
 
-draft_note = "" if ARTICLES_REVIEWED else '<p class="todo" style="margin-top:20px">Draft. The text and the references have not been checked yet.</p>'
-art_robots = "" if ARTICLES_REVIEWED else '\n<meta name="robots" content="noindex">'
-loaded = [(href, load_article(src), topic) for href, src, topic in ARTICLES]
-for href, a, topic in loaded:
-    others = "".join(f'<a class="more-art" href="{h}"><span class="meta">{t}</span><b>{o["title"]}</b></a>' for h, o, t in loaded if h != href)
+DRAFT_NOTE = '<p class="todo" style="margin-top:20px">Draft. The text and the references have not been checked yet.</p>'
+loaded = [(href, load_article(src), topic, ok) for href, src, topic, ok in ARTICLES]
+listed = [(href, a, topic) for href, a, topic, ok in loaded if ok]
+for href, a, topic, ok in loaded:
+    others = "".join(f'<a class="more-art" href="{h}"><span class="meta">{t}</span><b>{o["title"]}</b></a>' for h, o, t in listed if h != href)
     page(href, f'{a["plain_title"]} | {BRAND}', clip(a["teaser"], 155).replace('"', "&quot;"),
          f"""<main class="wrap narrow">
 <article>
 <div class="page-head art-head"><a class="crumb" href="articles.html">&larr; Articles</a>
-<p class="kicker">{topic}</p><h1>{a["title"]}</h1></div>{draft_note}
+<p class="kicker">{topic}</p><h1>{a["title"]}</h1></div>{"" if ok else DRAFT_NOTE}
 <div class="prose">
 {a["html"]}
 </div>
 </article>
 <h2 class="sub">More articles</h2>
 <div class="more-arts">{others}</div>
-</main>""", current="art", robots=art_robots)
+</main>""", current="art", robots="" if ok else '\n<meta name="robots" content="noindex">')
 
 cards = "".join(
     f'<a class="art-card" href="{href}"><span class="meta">{topic}</span><h2>{a["title"]}</h2><p>{clip(a["teaser"], 210)}</p>'
-    f'<span class="link">Read &rarr;</span></a>' for href, a, topic in loaded)
+    f'<span class="link">Read &rarr;</span></a>' for href, a, topic in listed)
 page("articles.html", f"Articles on lab data analysis | {BRAND}",
      "Short, practical articles on analysing wet-lab data: enzyme kinetics, protein assays and thermal shift.",
      f"""<main class="wrap narrow">
-<div class="page-head"><h1>Articles</h1><p>Short, practical pieces on getting reliable numbers out of everyday assays.</p></div>{draft_note}
+<div class="page-head"><h1>Articles</h1><p>Short, practical pieces on getting reliable numbers out of everyday assays.</p></div>
 <div class="art-list">{cards}</div>
-</main>""", current="art", robots=art_robots)
+</main>""", current="art")
 
 # the landing page was written before the articles were loaded: fill in its teaser row now
-teasers = "".join(f'<a class="art-card" href="{href}"><span class="meta">{topic}</span><h3>{a["title"]}</h3><span class="link">Read &rarr;</span></a>' for href, a, topic in loaded)
+teasers = "".join(f'<a class="art-card" href="{href}"><span class="meta">{topic}</span><h3>{a["title"]}</h3><span class="link">Read &rarr;</span></a>' for href, a, topic in listed)
 _idx = ROOT / "index.html"
 _idx.write_text(_idx.read_text(encoding="utf-8").replace("__ARTICLE_TEASERS__", teasers), encoding="utf-8")
 
