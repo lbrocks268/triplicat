@@ -1,12 +1,12 @@
 ---
 tags: [side-business, article]
-status: draft
+status: active
 date: 2026-11-23
 ---
 
 # Is my ΔT<sub>m</sub> real? Replicates, confidence intervals and thermal shift data
 
-> [!warning] Draft, not checked yet
+> [!info] Approved for publication by Linus on 2026-11-23
 > Drafted by Claude from general knowledge on 2026-11-23. Open points are in `Articles/open-points.local.md`. Edit here and run `python3 docs/build.py` to update the site.
 
 **Target search:** "thermal shift assay significant shift", "delta Tm statistics", "how many replicates thermal shift assay", "DSF delta Tm confidence interval"

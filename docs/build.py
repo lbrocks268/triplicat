@@ -436,9 +436,9 @@ ARTICLES = [
     ("michaelis-menten-fit.html", "01 Michaelis-Menten fit without Lineweaver-Burk.md", "Enzyme kinetics", True),
     ("bradford-curve-not-linear.html", "02 Bradford standard curve not linear.md", "Protein assays", True),
     ("thermal-shift-tm.html", "03 Tm from a thermal shift assay.md", "Thermal shift", True),
-    ("initial-rates.html", "05 Initial rates from absorbance traces.md", "Enzyme kinetics", False),
-    ("delta-tm-significant.html", "06 Is my delta Tm significant.md", "Thermal shift", False),
-    ("thermal-shift-instrument-export.html", "07 Thermal shift data from an instrument export.md", "Thermal shift", False),
+    ("initial-rates.html", "05 Initial rates from absorbance traces.md", "Enzyme kinetics", True),
+    ("delta-tm-significant.html", "06 Is my delta Tm significant.md", "Thermal shift", True),
+    ("thermal-shift-instrument-export.html", "07 Thermal shift data from an instrument export.md", "Thermal shift", True),
 ]
 
 def md_inline(t):

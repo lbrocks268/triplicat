@@ -1,12 +1,12 @@
 ---
 tags: [side-business, article]
-status: draft
+status: active
 date: 2026-11-23
 ---
 
 # Initial rates from absorbance traces: getting v<sub>0</sub> right before the Michaelis-Menten fit
 
-> [!warning] Draft, not checked yet
+> [!info] Approved for publication by Linus on 2026-11-23
 > Drafted by Claude from general knowledge on 2026-11-23. Open points are in `Articles/open-points.local.md`. Edit here and run `python3 docs/build.py` to update the site.
 
 **Target search:** "how to calculate initial rate enzyme", "initial velocity from absorbance", "enzyme assay slope absorbance per minute to concentration"

@@ -1,12 +1,12 @@
 ---
 tags: [side-business, article]
-status: draft
+status: active
 date: 2026-11-23
 ---
 
 # Thermal shift data straight from the qPCR instrument: reading the export without reformatting
 
-> [!warning] Draft, not checked yet
+> [!info] Approved for publication by Linus on 2026-11-23
 > Drafted by Claude on 2026-11-23. The description of the export is based on one real export from Linus's lab (structure only, no values). Open points are in `Articles/open-points.local.md`. Edit here and run `python3 docs/build.py` to update the site.
 
 **Target search:** "thermal shift assay data export qPCR", "DSF raw data csv analysis", "analyse melt curve export excel", "thermal shift analysis without software licence"
